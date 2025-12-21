@@ -1,0 +1,270 @@
+# MoonBrook Ridge 🌾
+
+A farming and life simulation game inspired by Stardew Valley with enhanced NPC interaction systems similar to The Sims 4, **plus survival mechanics** (hunger and thirst). Built with MonoGame (C#).
+
+## 🎮 Game Features
+
+### Survival Mechanics ⭐ NEW
+- **Hunger System**: Depletes over time, faster during strenuous activities
+- **Thirst System**: Depletes faster than hunger, critical for survival
+- **Activity-Based Decay**: Running, mining, and tool use drain stats faster
+- **Debuff System**: Low hunger reduces movement speed; low thirst drains extra energy
+- **Critical State**: When hunger/thirst reach zero, health starts draining
+- **Blackout Mechanic**: Player blacks out if health drops to zero from starvation/dehydration
+- **Visual Warnings**: HUD shows critical warnings when stats are dangerously low
+- **Consumables**: Food items restore hunger, drinks restore thirst
+
+### Core Gameplay
+- **Farming System**: Plant, water, and harvest crops with seasonal variations
+- **Mining & Fishing**: Explore caves for resources and catch various fish species
+- **Crafting System**: Create items from collected resources using recipes
+- **Tool System**: Upgrade tools (hoe, watering can, axe, pickaxe, fishing rod, scythe)
+- **Time & Season System**: Dynamic day/night cycle with 4 seasons (28 days each)
+- **Weather System**: Different weather patterns affecting gameplay
+
+### Enhanced NPC Interactions
+- **Chat Bubble Conversations**: NPCs communicate through floating chat bubbles
+- **Radial Dialogue Wheel**: Sims 4-inspired dialogue selection system
+- **Relationship System**: Build friendships with NPCs (10 heart levels)
+- **Gift System**: Give gifts to NPCs to increase friendship
+- **NPC Schedules**: NPCs follow daily routines and move around the world
+- **Branching Dialogues**: Multiple conversation paths based on friendship level
+
+### Character Systems
+- **Player Character**: Fully customizable with stats (health, energy, money)
+- **Animation System**: Multiple animation states (idle, walking, running, using tools)
+- **Movement**: WASD or arrow keys for movement, Shift to run
+- **Inventory System**: 36-slot inventory with item stacking
+
+### World & Environment
+- **Tile-Based Map**: 50x50 grid world with multiple tile types
+- **Dynamic Camera**: Smooth camera following with zoom support
+- **Building System**: Construct buildings and place furniture
+
+### User Interface
+- **HUD**: Displays health, energy, time, date, season, and money
+- **Inventory Menu**: Manage items and tools
+- **Crafting Menu**: Browse and craft items from recipes
+- **Dialogue System**: Interactive conversation interface with radial wheel
+
+## 🎨 Art Assets
+
+The game uses the **Sunnyside World** sprite collection located in the `/sprites` folder, featuring:
+- Character sprites with multiple hairstyles and animations
+- Buildings and decorations
+- Crops and farming items
+- Tilesets for terrain
+- Resources and objects
+- Particle effects
+- Units and NPCs
+
+### Sprite Categories
+```
+sprites/
+├── Buildings/              # Farm buildings and structures
+├── Characters/             # NPC sprites
+├── Crops/                  # Crop growth stages
+├── Decorations/            # Decorative items
+├── Particle FX/            # Visual effects
+├── Resources/              # Harvestable resources
+├── Tilesets/              # Ground tiles and terrain
+├── Units/                  # Character units
+└── SUNNYSIDE_WORLD_*/     # Full asset packs
+```
+
+## 🏗️ Technical Architecture
+
+### Project Structure
+```
+MoonBrookRidge/
+├── Core/
+│   ├── Components/         # Reusable game components
+│   ├── Entities/          # Base entity classes
+│   ├── States/            # Game state management
+│   └── Systems/           # Core game systems (Time, Camera)
+├── Characters/
+│   ├── Player/            # Player character
+│   └── NPCs/              # NPC system and dialogue
+├── World/
+│   ├── Maps/              # World map system
+│   └── Tiles/             # Tile and crop systems
+├── Farming/
+│   ├── Crops/             # Crop definitions
+│   └── Tools/             # Farming tools
+├── Items/
+│   ├── Inventory/         # Inventory system
+│   └── Crafting/          # Crafting recipes
+├── UI/
+│   ├── HUD/               # Heads-up display
+│   ├── Menus/             # Game menus
+│   └── Dialogue/          # Dialogue UI (chat bubbles, radial wheel)
+└── Content/               # Game assets (sprites, fonts, sounds)
+```
+
+### Key Systems
+
+#### State Management
+- `StateManager`: Handles game state transitions
+- `GameState`: Abstract base class for all game states
+- `GameplayState`: Main game loop state
+
+#### Time System
+- Real-time to game-time conversion
+- Season progression (Spring → Summer → Fall → Winter)
+- Day/night cycle
+- 28 days per season
+
+#### Camera System
+- 2D camera with smooth following
+- Configurable zoom levels (0.5x to 4x)
+- Perfect for pixel art rendering
+
+#### Dialogue System
+- `DialogueTree`: Branching conversation system
+- `DialogueNode`: Individual dialogue entries with options
+- `RadialDialogueWheel`: Interactive circular menu for dialogue choices
+- `ChatBubble`: Floating speech bubbles above characters
+
+#### Inventory & Items
+- Stack-based inventory (items stack up to 99)
+- Multiple item types (tools, seeds, crops, fish, minerals, etc.)
+- Buy/sell pricing system
+
+#### Crafting
+- Recipe-based crafting
+- Ingredient checking
+- Automatic resource consumption
+
+## 🚀 Getting Started
+
+### Prerequisites
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
+- MonoGame 3.8.4 or later
+
+### Building the Game
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/shifty81/MoonBrook-Ridge.git
+   cd MoonBrook-Ridge
+   ```
+
+2. **Restore dependencies**
+   ```bash
+   cd MoonBrookRidge
+   dotnet restore
+   ```
+
+3. **Build the project**
+   ```bash
+   dotnet build
+   ```
+
+4. **Run the game**
+   ```bash
+   dotnet run
+   ```
+
+### Development
+
+The project uses MonoGame's Content Pipeline for asset management. To add new sprites:
+
+1. Place sprite files in the `Content/` directory
+2. Add them to `Content.mgcb` using the MGCB Editor
+3. Load them in code using `Content.Load<Texture2D>("filename")`
+
+## 🎮 Controls
+
+| Action | Key(s) |
+|--------|--------|
+| Move Up | W or ↑ |
+| Move Down | S or ↓ |
+| Move Left | A or ← |
+| Move Right | D or → |
+| Run | Hold Shift |
+| Interact | E (planned) |
+| Use Tool/Place Item | C or Left Mouse |
+| Do Action (talk, open door) | X or Right Mouse |
+| Open Menu/Inventory | E or Esc |
+| Open Journal/Quests | F |
+| Open Map | M |
+| Switch Toolbar | Tab |
+| Hotbar Slots | 1-9, 0, -, = |
+
+## 🗺️ Roadmap
+
+### Phase 1: Core Foundation ✅
+- [x] MonoGame project setup
+- [x] State management system
+- [x] Player character with movement
+- [x] Camera system
+- [x] Time and season system
+- [x] Basic HUD
+- [x] **Hunger and Thirst mechanics** ⭐
+- [x] **Input management system with configurable keybinds** ⭐
+- [x] **Animation controller with state machine** ⭐
+- [x] **Z-ordering rendering system** ⭐
+- [x] **PlayerStats system with survival mechanics** ⭐
+- [x] **Consumable items (food and drinks)** ⭐
+- [x] **Pause menu functionality** ⭐
+
+### Phase 2: World & Farming 🚧
+- [ ] Load and render Sunnyside World sprites
+- [ ] Tile-based world rendering with actual sprites
+- [ ] Farming mechanics (planting, watering, harvesting)
+- [ ] Tool usage system
+- [ ] Crop growth with seasons
+- [ ] Save/load system
+
+### Phase 3: NPC & Social 🚧
+- [ ] NPC spawning and movement
+- [ ] Chat bubble system implementation
+- [ ] Radial dialogue wheel with mouse interaction
+- [ ] Dialogue content and branching paths
+- [ ] Gift-giving mechanics
+- [ ] NPC schedules and pathfinding
+
+### Phase 4: Advanced Features 📋
+- [ ] Mining system with caves
+- [ ] Fishing minigame
+- [ ] Crafting UI and recipes
+- [ ] Building construction
+- [ ] Shop system
+- [ ] Quest/task system
+- [ ] Events and festivals
+
+### Phase 5: Polish & Content 📋
+- [ ] Sound effects and music
+- [ ] Particle effects
+- [ ] Weather effects
+- [ ] More crops, items, and recipes
+- [ ] Multiple NPCs with unique personalities
+- [ ] Marriage and family system
+- [ ] Achievements
+
+## 🤝 Contributing
+
+This is a personal project, but suggestions and ideas are welcome! Feel free to:
+- Open issues for bugs or feature requests
+- Submit pull requests for improvements
+- Share feedback on game mechanics
+
+## 📝 License
+
+This project is for educational and personal use. 
+
+**Sprite Assets**: The Sunnyside World asset pack has its own license. Please ensure you have proper rights to use these assets.
+
+## 🙏 Credits
+
+- **Game Framework**: [MonoGame](https://www.monogame.net/)
+- **Art Assets**: Sunnyside World sprite collection
+- **Inspired By**: Stardew Valley, The Sims 4, Harvest Moon
+
+## 📧 Contact
+
+Project maintained by [shifty81](https://github.com/shifty81)
+
+---
+
+**Note**: This project is in active development. Features and systems are subject to change.

@@ -1,0 +1,59 @@
+# MonoGame / .NET build outputs
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.pidb
+*.log
+
+# Visual Studio
+.vs/
+*.csproj.user
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# MonoGame Pipeline cache
+Content/**/*.mgcontent
+*.mgstats
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~
+
+# Package management
+packages/
+*.nupkg
+*.snupkg
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
