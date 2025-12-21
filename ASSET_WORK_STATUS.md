@@ -40,6 +40,8 @@ This document tracks the status of sprite asset integration for MoonBrook Ridge.
 | Digging | 13 | `base_dig_strip13.png` | ✅ Loaded |
 | Hammering | 23 | `base_hamering_strip23.png` | ✅ Loaded |
 
+> **Note:** The filename `base_hamering_strip23.png` has a typo in the original asset pack (missing one 'm' in "hammering").
+
 **Next Step:** Wire these into the AnimationController system
 
 ### 4. Tile Textures (2 types) ✅
