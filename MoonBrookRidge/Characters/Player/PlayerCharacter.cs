@@ -14,6 +14,7 @@ public class PlayerCharacter
     private Vector2 _position;
     private Vector2 _velocity;
     private Direction _facing;
+    private Texture2D _texture;
     
     // Stats system
     private PlayerStats _stats;
@@ -38,6 +39,11 @@ public class PlayerCharacter
         
         // Initialize animation controller
         _animationController = new AnimationController();
+    }
+    
+    public void LoadContent(Texture2D playerTexture)
+    {
+        _texture = playerTexture;
     }
     
     public void Update(GameTime gameTime, InputManager input)
@@ -122,20 +128,17 @@ public class PlayerCharacter
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        // Get current animation texture and source rect
-        Texture2D texture = _animationController.GetTexture();
-        Rectangle sourceRect = _animationController.GetSourceRectangle();
-        
-        if (texture != null)
+        if (_texture != null)
         {
+            // Draw the player sprite
             spriteBatch.Draw(
-                texture,
+                _texture,
                 _position,
-                sourceRect,
+                null, // Use full texture
                 Color.White,
                 0f,
-                new Vector2(sourceRect.Width / 2, sourceRect.Height / 2),
-                1f,
+                new Vector2(_texture.Width / 2, _texture.Height / 2), // Center origin
+                2f, // Scale up 2x
                 SpriteEffects.None,
                 0f
             );

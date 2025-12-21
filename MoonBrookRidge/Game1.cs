@@ -41,8 +41,8 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         
-        // Load default font (for now we'll use null checks until font is added)
-        // _defaultFont = Content.Load<SpriteFont>("Fonts/Default");
+        // Load default font
+        _defaultFont = Content.Load<SpriteFont>("Fonts/Default");
         
         // Start with gameplay state
         _stateManager.ChangeState(new GameplayState(this));

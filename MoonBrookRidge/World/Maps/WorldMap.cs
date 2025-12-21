@@ -13,6 +13,8 @@ public class WorldMap
     private int _width;
     private int _height;
     private const int TILE_SIZE = 16;
+    private Texture2D _grassTexture;
+    private Texture2D _plainsTexture;
     
     public WorldMap()
     {
@@ -35,6 +37,12 @@ public class WorldMap
         }
     }
     
+    public void LoadContent(Texture2D grassTexture, Texture2D plainsTexture)
+    {
+        _grassTexture = grassTexture;
+        _plainsTexture = plainsTexture;
+    }
+    
     public void Update(GameTime gameTime)
     {
         // Update tiles (crop growth, etc.)
@@ -49,17 +57,51 @@ public class WorldMap
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
-        
-        for (int x = 0; x < _width; x++)
+        // Use actual textures if available, otherwise fall back to colored squares
+        if (_grassTexture != null)
         {
-            for (int y = 0; y < _height; y++)
+            for (int x = 0; x < _width; x++)
             {
-                Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                Color tileColor = _tiles[x, y].GetColor();
-                spriteBatch.Draw(pixel, tileRect, tileColor);
+                for (int y = 0; y < _height; y++)
+                {
+                    Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    Texture2D texture = GetTileTexture(_tiles[x, y].Type);
+                    
+                    // Draw a single tile from the texture
+                    spriteBatch.Draw(texture, tileRect, new Rectangle(0, 0, 16, 16), Color.White);
+                }
             }
         }
+        else
+        {
+            // Fallback: colored squares
+            Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
+            
+            for (int x = 0; x < _width; x++)
+            {
+                for (int y = 0; y < _height; y++)
+                {
+                    Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    Color tileColor = _tiles[x, y].GetColor();
+                    spriteBatch.Draw(pixel, tileRect, tileColor);
+                }
+            }
+        }
+    }
+    
+    private Texture2D GetTileTexture(TileType type)
+    {
+        // Select texture based on tile type
+        return type switch
+        {
+            TileType.Grass => _grassTexture,
+            TileType.Dirt => _plainsTexture ?? _grassTexture,
+            TileType.Tilled => _plainsTexture ?? _grassTexture,
+            TileType.Stone => _plainsTexture ?? _grassTexture,
+            TileType.Water => _plainsTexture ?? _grassTexture,
+            TileType.Sand => _plainsTexture ?? _grassTexture,
+            _ => _grassTexture
+        };
     }
     
     public Tile GetTile(int x, int y)
