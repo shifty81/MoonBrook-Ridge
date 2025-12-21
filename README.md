@@ -49,14 +49,21 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 
 ## 🎨 Art Assets
 
-The game uses the **Sunnyside World** sprite collection located in the `/sprites` folder, featuring:
-- Character sprites with multiple hairstyles and animations
-- Buildings and decorations
-- Crops and farming items
-- Tilesets for terrain
-- Resources and objects
-- Particle effects
-- Units and NPCs
+The game combines assets from multiple high-quality pixel art packs for visual variety:
+
+### Primary Asset Packs
+1. **Sunnyside World** - Main asset pack for characters, buildings, and large objects
+2. **16x16 Tilemap Collection** - Ground tiles and terrain (Tiny Farm RPG / Mystic Woods inspired)
+3. **Custom Generated Tileset** - Combined ground tileset merging best tiles from all sources
+
+### Asset Categories
+- **Characters**: Sunnyside World sprites with multiple hairstyles and animations
+- **Buildings**: Detailed structures from Sunnyside World
+- **Crops**: Farming items with growth stages
+- **Terrain**: Custom 16x16 ground tileset (192 tiles)
+- **Resources**: Trees, rocks, and harvestable objects
+- **Particle Effects**: Visual feedback and animations
+- **UI Elements**: Icons, buttons, and interface graphics
 
 ### Asset Integration ⭐ NEW
 
@@ -65,11 +72,14 @@ Assets are now integrated through MonoGame's Content Pipeline:
 **Currently Loaded:**
 - ✅ DejaVu Sans font for UI text
 - ✅ Player character sprites
-- ✅ Tile textures (grass, plains)
+- ✅ Custom ground tileset (192 16x16 tiles combining multiple packs)
+- ✅ Individual tile textures (grass, dirt, stone, water, sand, etc.)
 - ✅ Character animations (walking, running, idle, tool use)
-- ✅ Crop sprites (wheat, potato growth stages)
-- ✅ Building sprites (houses)
+- ✅ Crop sprites (wheat, potato, carrot, cabbage, pumpkin, sunflower, beetroot)
+- ✅ Building sprites (houses, towers, castles)
+- ✅ Resource sprites (trees, rocks)
 
+See [TILESET_GUIDE.md](TILESET_GUIDE.md) for details on the custom ground tileset.  
 See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
 See [ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md) for comprehensive status of what's loaded and what's still needed.
 
@@ -214,6 +224,7 @@ Comprehensive guides and references:
 
 - **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
 - **[ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
+- **[TILESET_GUIDE.md](TILESET_GUIDE.md)** - Guide to using the custom ground tileset
 - **[SPRITE_GUIDE.md](SPRITE_GUIDE.md)** - Guide to using Sunnyside World assets
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development guide and best practices
