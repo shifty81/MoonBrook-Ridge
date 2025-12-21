@@ -229,7 +229,7 @@ spriteBatch.DrawString(font, "Hello World", position, Color.White);
 
 ## Asset Source
 
-All sprite assets are from the **Sunnyside World** asset pack, located in the `/sprites` directory at the repository root. This directory contains:
+All sprite assets are from the **Sunnyside World** asset pack, located in the `/sprites` directory at the repository root (outside the `MoonBrookRidge` project folder). This directory contains:
 
 - 10,000+ PNG sprite files
 - Character parts (base, hair, tools)
@@ -238,6 +238,8 @@ All sprite assets are from the **Sunnyside World** asset pack, located in the `/
 - Crops with growth stages
 - Buildings and decorations
 - Particle effects
+
+**Note:** The `/sprites` folder is not tracked in the project's Content directory. To add new assets, copy the desired sprite files from `/sprites` to the appropriate subdirectory in `MoonBrookRidge/Content/Textures/`, then add them to `Content.mgcb` as described above.
 
 ## Best Practices
 

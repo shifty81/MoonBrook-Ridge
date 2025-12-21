@@ -65,7 +65,7 @@ public class WorldMap
                 for (int y = 0; y < _height; y++)
                 {
                     Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                    Texture2D texture = _tiles[x, y].Type == TileType.Grass ? _grassTexture : _plainsTexture ?? _grassTexture;
+                    Texture2D texture = GetTileTexture(_tiles[x, y].Type);
                     
                     // Draw a single tile from the texture
                     spriteBatch.Draw(texture, tileRect, new Rectangle(0, 0, 16, 16), Color.White);
@@ -87,6 +87,21 @@ public class WorldMap
                 }
             }
         }
+    }
+    
+    private Texture2D GetTileTexture(TileType type)
+    {
+        // Select texture based on tile type
+        return type switch
+        {
+            TileType.Grass => _grassTexture,
+            TileType.Dirt => _plainsTexture ?? _grassTexture,
+            TileType.Tilled => _plainsTexture ?? _grassTexture,
+            TileType.Stone => _plainsTexture ?? _grassTexture,
+            TileType.Water => _plainsTexture ?? _grassTexture,
+            TileType.Sand => _plainsTexture ?? _grassTexture,
+            _ => _grassTexture
+        };
     }
     
     public Tile GetTile(int x, int y)
