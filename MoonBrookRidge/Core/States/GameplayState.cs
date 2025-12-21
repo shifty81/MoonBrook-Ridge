@@ -45,7 +45,15 @@ public class GameplayState : GameState
     public override void LoadContent()
     {
         base.LoadContent();
-        // Load content for player, map, etc.
+        
+        // Load player texture
+        Texture2D playerTexture = Game.Content.Load<Texture2D>("Textures/Characters/player");
+        _player.LoadContent(playerTexture);
+        
+        // Load world map content
+        Texture2D grassTexture = Game.Content.Load<Texture2D>("Textures/Tiles/grass");
+        Texture2D plainsTexture = Game.Content.Load<Texture2D>("Textures/Tiles/plains");
+        _worldMap.LoadContent(grassTexture, plainsTexture);
     }
 
     public override void Update(GameTime gameTime)
