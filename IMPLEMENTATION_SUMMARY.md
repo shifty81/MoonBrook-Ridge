@@ -305,8 +305,10 @@ Comprehensive documentation created:
 2. **ARCHITECTURE.md** - Technical architecture, design patterns, data flow
 3. **DEVELOPMENT.md** - Development guide, adding features, testing
 4. **SPRITE_GUIDE.md** - How to use the Sunnyside World assets
-5. **CONTROLS.md** - Complete control reference, mechanics, tips
-6. **.gitignore** - Excludes build artifacts
+5. **ASSET_LOADING_GUIDE.md** - Detailed guide on loading assets through Content Pipeline
+6. **ASSET_WORK_STATUS.md** - Comprehensive status of asset integration work
+7. **CONTROLS.md** - Complete control reference, mechanics, tips
+8. **.gitignore** - Excludes build artifacts
 
 ## 🔨 Build Status
 

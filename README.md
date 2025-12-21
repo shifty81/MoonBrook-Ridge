@@ -70,7 +70,8 @@ Assets are now integrated through MonoGame's Content Pipeline:
 - ✅ Crop sprites (wheat, potato growth stages)
 - ✅ Building sprites (houses)
 
-See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.
+See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
+See [ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md) for comprehensive status of what's loaded and what's still needed.
 
 ### Sprite Categories
 ```
@@ -204,6 +205,20 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Open Map | M |
 | Switch Toolbar | Tab |
 | Hotbar Slots | 1-9, 0, -, = |
+
+See [CONTROLS.md](CONTROLS.md) for complete control documentation.
+
+## 📚 Documentation
+
+Comprehensive guides and references:
+
+- **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
+- **[ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
+- **[SPRITE_GUIDE.md](SPRITE_GUIDE.md)** - Guide to using Sunnyside World assets
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design patterns
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development guide and best practices
+- **[CONTROLS.md](CONTROLS.md)** - Complete control reference
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Overall project status and features
 
 ## 🗺️ Roadmap
 
