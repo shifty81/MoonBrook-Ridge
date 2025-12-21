@@ -1,0 +1,226 @@
+Ground Tileset Index - MoonBrook Ridge
+==================================================
+
+Tile Size: 16x16 pixels
+Tileset Size: 256x192 pixels (16x12 tiles)
+Total Tiles: 192
+
+Tile Layout:
+--------------------------------------------------
+
+
+Row 0:
+  [  0] ( 0, 0): Grass variant 1
+  [  1] ( 1, 0): Grass variant 2
+  [  2] ( 2, 0): Grass variant 3
+  [  3] ( 3, 0): Grass variant 4
+  [  4] ( 4, 0): Grass variant 5
+  [  5] ( 5, 0): Grass variant 6
+  [  6] ( 6, 0): Grass variant 7
+  [  7] ( 7, 0): Grass variant 8
+  [  8] ( 8, 0): Grass variant 9
+  [  9] ( 9, 0): Grass variant 10
+  [ 10] (10, 0): Grass variant 11
+  [ 11] (11, 0): Grass variant 12
+  [ 12] (12, 0): Grass variant 13
+  [ 13] (13, 0): Grass variant 14
+  [ 14] (14, 0): Grass variant 15
+  [ 15] (15, 0): Grass variant 16
+
+Row 1:
+  [ 16] ( 0, 1): Dirt/Path 1
+  [ 17] ( 1, 1): Dirt/Path 2
+  [ 18] ( 2, 1): Dirt/Path 3
+  [ 19] ( 3, 1): Dirt/Path 4
+  [ 20] ( 4, 1): Dirt/Path 5
+  [ 21] ( 5, 1): Dirt/Path 6
+  [ 22] ( 6, 1): Dirt/Path 7
+  [ 23] ( 7, 1): Dirt/Path 8
+  [ 24] ( 8, 1): Dirt/Path 9
+  [ 25] ( 9, 1): Dirt/Path 10
+  [ 26] (10, 1): Dirt/Path 11
+  [ 27] (11, 1): Dirt/Path 12
+  [ 28] (12, 1): Dirt/Path 13
+  [ 29] (13, 1): Dirt/Path 14
+  [ 30] (14, 1): Dirt/Path 15
+  [ 31] (15, 1): Dirt/Path 16
+
+Row 2:
+  [ 32] ( 0, 2): Tilled soil 1
+  [ 33] ( 1, 2): Tilled soil 2
+  [ 34] ( 2, 2): Tilled soil 3
+  [ 35] ( 3, 2): Tilled soil 4
+  [ 36] ( 4, 2): Tilled soil 5
+  [ 37] ( 5, 2): Tilled soil 6
+  [ 38] ( 6, 2): Tilled soil 7
+  [ 39] ( 7, 2): Tilled soil 8
+  [ 40] ( 8, 2): Farmland 1
+  [ 41] ( 9, 2): Farmland 2
+  [ 42] (10, 2): Farmland 3
+  [ 43] (11, 2): Farmland 4
+  [ 44] (12, 2): Farmland 5
+  [ 45] (13, 2): Farmland 6
+  [ 46] (14, 2): Farmland 7
+  [ 47] (15, 2): Farmland 8
+
+Row 3:
+  [ 48] ( 0, 3): Stone/Rock 1
+  [ 49] ( 1, 3): Stone/Rock 2
+  [ 50] ( 2, 3): Stone/Rock 3
+  [ 51] ( 3, 3): Stone/Rock 4
+  [ 52] ( 4, 3): Stone/Rock 5
+  [ 53] ( 5, 3): Stone/Rock 6
+  [ 54] ( 6, 3): Stone/Rock 7
+  [ 55] ( 7, 3): Stone/Rock 8
+  [ 56] ( 8, 3): Stone/Rock 9
+  [ 57] ( 9, 3): Stone/Rock 10
+  [ 58] (10, 3): Stone/Rock 11
+  [ 59] (11, 3): Stone/Rock 12
+  [ 60] (12, 3): Stone/Rock 13
+  [ 61] (13, 3): Stone/Rock 14
+  [ 62] (14, 3): Stone/Rock 15
+  [ 63] (15, 3): Stone/Rock 16
+
+Row 4:
+  [ 64] ( 0, 4): Water 1
+  [ 65] ( 1, 4): Water 2
+  [ 66] ( 2, 4): Water 3
+  [ 67] ( 3, 4): Water 4
+  [ 68] ( 4, 4): Water 5
+  [ 69] ( 5, 4): Water 6
+  [ 70] ( 6, 4): Water 7
+  [ 71] ( 7, 4): Water 8
+  [ 72] ( 8, 4): Water 9
+  [ 73] ( 9, 4): Water 10
+  [ 74] (10, 4): Water 11
+  [ 75] (11, 4): Water 12
+  [ 76] (12, 4): Water 13
+  [ 77] (13, 4): Water 14
+  [ 78] (14, 4): Water 15
+  [ 79] (15, 4): Water 16
+
+Row 5:
+  [ 80] ( 0, 5): Sand 1
+  [ 81] ( 1, 5): Sand 2
+  [ 82] ( 2, 5): Sand 3
+  [ 83] ( 3, 5): Sand 4
+  [ 84] ( 4, 5): Sand 5
+  [ 85] ( 5, 5): Sand 6
+  [ 86] ( 6, 5): Sand 7
+  [ 87] ( 7, 5): Sand 8
+  [ 88] ( 8, 5): Sand 9
+  [ 89] ( 9, 5): Sand 10
+  [ 90] (10, 5): Sand 11
+  [ 91] (11, 5): Sand 12
+  [ 92] (12, 5): Sand 13
+  [ 93] (13, 5): Sand 14
+  [ 94] (14, 5): Sand 15
+  [ 95] (15, 5): Sand 16
+
+Row 6:
+  [ 96] ( 0, 6): Sunnyside tile [0,0]
+  [ 97] ( 1, 6): Sunnyside tile [1,0]
+  [ 98] ( 2, 6): Sunnyside tile [2,0]
+  [ 99] ( 3, 6): Sunnyside tile [3,0]
+  [100] ( 4, 6): Sunnyside tile [4,0]
+  [101] ( 5, 6): Sunnyside tile [5,0]
+  [102] ( 6, 6): Sunnyside tile [6,0]
+  [103] ( 7, 6): Sunnyside tile [7,0]
+  [104] ( 8, 6): Sunnyside tile [8,0]
+  [105] ( 9, 6): Sunnyside tile [9,0]
+  [106] (10, 6): Sunnyside tile [10,0]
+  [107] (11, 6): Sunnyside tile [11,0]
+  [108] (12, 6): Sunnyside tile [12,0]
+  [109] (13, 6): Sunnyside tile [13,0]
+  [110] (14, 6): Sunnyside tile [14,0]
+  [111] (15, 6): Sunnyside tile [15,0]
+
+Row 7:
+  [112] ( 0, 7): Sunnyside tile [0,1]
+  [113] ( 1, 7): Sunnyside tile [1,1]
+  [114] ( 2, 7): Sunnyside tile [2,1]
+  [115] ( 3, 7): Sunnyside tile [3,1]
+  [116] ( 4, 7): Sunnyside tile [4,1]
+  [117] ( 5, 7): Sunnyside tile [5,1]
+  [118] ( 6, 7): Sunnyside tile [6,1]
+  [119] ( 7, 7): Sunnyside tile [7,1]
+  [120] ( 8, 7): Sunnyside tile [8,1]
+  [121] ( 9, 7): Sunnyside tile [9,1]
+  [122] (10, 7): Sunnyside tile [10,1]
+  [123] (11, 7): Sunnyside tile [11,1]
+  [124] (12, 7): Sunnyside tile [12,1]
+  [125] (13, 7): Sunnyside tile [13,1]
+  [126] (14, 7): Sunnyside tile [14,1]
+  [127] (15, 7): Sunnyside tile [15,1]
+
+Row 8:
+  [128] ( 0, 8): Color2 tile [0,6]
+  [129] ( 1, 8): Color2 tile [1,6]
+  [130] ( 2, 8): Color2 tile [2,6]
+  [131] ( 3, 8): Color2 tile [3,6]
+  [132] ( 4, 8): Color2 tile [4,6]
+  [133] ( 5, 8): Color2 tile [5,6]
+  [134] ( 6, 8): Color2 tile [6,6]
+  [135] ( 7, 8): Color2 tile [7,6]
+  [136] ( 8, 8): Color2 tile [8,6]
+  [137] ( 9, 8): Color2 tile [9,6]
+  [138] (10, 8): Color2 tile [10,6]
+  [139] (11, 8): Color2 tile [11,6]
+  [140] (12, 8): Color2 tile [12,6]
+  [141] (13, 8): Color2 tile [13,6]
+  [142] (14, 8): Color2 tile [14,6]
+  [143] (15, 8): Color2 tile [15,6]
+
+Row 9:
+  [144] ( 0, 9): Color2 tile [0,7]
+  [145] ( 1, 9): Color2 tile [1,7]
+  [146] ( 2, 9): Color2 tile [2,7]
+  [147] ( 3, 9): Color2 tile [3,7]
+  [148] ( 4, 9): Color2 tile [4,7]
+  [149] ( 5, 9): Color2 tile [5,7]
+  [150] ( 6, 9): Color2 tile [6,7]
+  [151] ( 7, 9): Color2 tile [7,7]
+  [152] ( 8, 9): Color2 tile [8,7]
+  [153] ( 9, 9): Color2 tile [9,7]
+  [154] (10, 9): Color2 tile [10,7]
+  [155] (11, 9): Color2 tile [11,7]
+  [156] (12, 9): Color2 tile [12,7]
+  [157] (13, 9): Color2 tile [13,7]
+  [158] (14, 9): Color2 tile [14,7]
+  [159] (15, 9): Color2 tile [15,7]
+
+Row 10:
+  [160] ( 0,10): Sunnyside tile [0,2]
+  [161] ( 1,10): Sunnyside tile [1,2]
+  [162] ( 2,10): Sunnyside tile [2,2]
+  [163] ( 3,10): Sunnyside tile [3,2]
+  [164] ( 4,10): Sunnyside tile [4,2]
+  [165] ( 5,10): Sunnyside tile [5,2]
+  [166] ( 6,10): Sunnyside tile [6,2]
+  [167] ( 7,10): Sunnyside tile [7,2]
+  [168] ( 8,10): Sunnyside tile [8,2]
+  [169] ( 9,10): Sunnyside tile [9,2]
+  [170] (10,10): Sunnyside tile [10,2]
+  [171] (11,10): Sunnyside tile [11,2]
+  [172] (12,10): Sunnyside tile [12,2]
+  [173] (13,10): Sunnyside tile [13,2]
+  [174] (14,10): Sunnyside tile [14,2]
+  [175] (15,10): Sunnyside tile [15,2]
+
+Row 11:
+  [176] ( 0,11): Sunnyside tile [0,3]
+  [177] ( 1,11): Sunnyside tile [1,3]
+  [178] ( 2,11): Sunnyside tile [2,3]
+  [179] ( 3,11): Sunnyside tile [3,3]
+  [180] ( 4,11): Sunnyside tile [4,3]
+  [181] ( 5,11): Sunnyside tile [5,3]
+  [182] ( 6,11): Sunnyside tile [6,3]
+  [183] ( 7,11): Sunnyside tile [7,3]
+  [184] ( 8,11): Sunnyside tile [8,3]
+  [185] ( 9,11): Sunnyside tile [9,3]
+  [186] (10,11): Sunnyside tile [10,3]
+  [187] (11,11): Sunnyside tile [11,3]
+  [188] (12,11): Sunnyside tile [12,3]
+  [189] (13,11): Sunnyside tile [13,3]
+  [190] (14,11): Sunnyside tile [14,3]
+  [191] (15,11): Sunnyside tile [15,3]
