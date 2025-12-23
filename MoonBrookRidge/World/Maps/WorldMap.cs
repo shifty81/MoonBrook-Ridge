@@ -229,7 +229,8 @@ public class WorldMap
         {
             for (int y = 20; y < 25; y++)
             {
-                // Till the soil (alternate between dry and watered)
+                // Direct type assignment is used here for initial setup/testing
+                // In normal gameplay, use Tile methods like Water() instead
                 _tiles[x, y].Type = (x + y) % 2 == 0 ? TileType.TilledWatered : TileType.TilledDry;
                 
                 // Plant different crops in rows
