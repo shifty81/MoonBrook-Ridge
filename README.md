@@ -222,6 +222,7 @@ See [CONTROLS.md](CONTROLS.md) for complete control documentation.
 
 Comprehensive guides and references:
 
+### Game Development
 - **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
 - **[ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
 - **[TILESET_GUIDE.md](TILESET_GUIDE.md)** - Guide to using the custom ground tileset
@@ -230,6 +231,10 @@ Comprehensive guides and references:
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development guide and best practices
 - **[CONTROLS.md](CONTROLS.md)** - Complete control reference
 - **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Overall project status and features
+
+### Contributing & Maintenance
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guidelines for contributing to the project
+- **[COPILOT_ERROR_INVESTIGATION.md](COPILOT_ERROR_INVESTIGATION.md)** - Investigation of PR #7 Copilot errors and lessons learned
 
 ## 🗺️ Roadmap
 
@@ -286,9 +291,16 @@ Comprehensive guides and references:
 
 ## 🤝 Contributing
 
-This is a personal project, but suggestions and ideas are welcome! Feel free to:
+We welcome contributions to MoonBrook Ridge! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+- Pull request best practices
+- Code and asset contribution guidelines
+- How to handle large asset additions
+- Branch naming conventions
+- Commit message format
+
+Feel free to:
 - Open issues for bugs or feature requests
-- Submit pull requests for improvements
+- Submit pull requests for improvements (following our guidelines)
 - Share feedback on game mechanics
 
 ## 📝 License
