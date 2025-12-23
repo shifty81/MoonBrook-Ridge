@@ -7,6 +7,9 @@ using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.Core.Systems;
+using MoonBrookRidge.Farming.Tools;
+using MoonBrookRidge.Items;
+using MoonBrookRidge.Items.Inventory;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -21,6 +24,10 @@ public class GameplayState : GameState
     private TimeSystem _timeSystem;
     private Camera2D _camera;
     private InputManager _inputManager;
+    private ToolManager _toolManager;
+    private CollisionSystem _collisionSystem;
+    private InventorySystem _inventory;
+    private ConsumableManager _consumableManager;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -37,6 +44,26 @@ public class GameplayState : GameState
         // Initialize world and player
         _worldMap = new WorldMap();
         _player = new PlayerCharacter(new Vector2(400, 300));
+        
+        // Initialize collision system
+        _collisionSystem = new CollisionSystem(_worldMap);
+        
+        // Initialize inventory and give player starting items
+        _inventory = new InventorySystem(36);
+        _consumableManager = new ConsumableManager(_inventory, _player);
+        
+        // Add starting items to inventory
+        _inventory.AddItem(ConsumableManager.GetFood("Carrot"), 5);
+        _inventory.AddItem(ConsumableManager.GetFood("Apple"), 3);
+        _inventory.AddItem(ConsumableManager.GetFood("Wheat Bread"), 2);
+        _inventory.AddItem(ConsumableManager.GetDrink("Water"), 10);
+        _inventory.AddItem(ConsumableManager.GetDrink("Spring Water"), 3);
+        
+        // Initialize tool manager
+        _toolManager = new ToolManager(_worldMap, _player);
+        
+        // Give player starting tools
+        _toolManager.SetCurrentTool(new Hoe());
         
         // Initialize UI
         _hud = new HUDManager();
@@ -188,8 +215,17 @@ public class GameplayState : GameState
         // Update time system
         _timeSystem.Update(gameTime);
         
-        // Update player with input
-        _player.Update(gameTime, _inputManager);
+        // Update world map
+        _worldMap.Update(gameTime);
+        
+        // Handle tool usage input
+        HandleToolInput();
+        
+        // Handle consumable usage input
+        HandleConsumableInput();
+        
+        // Update player with input and collision
+        _player.Update(gameTime, _inputManager, _collisionSystem);
         
         // Update camera to follow player
         _camera.Follow(_player.Position);
@@ -202,6 +238,83 @@ public class GameplayState : GameState
         {
             ForceSleep();
         }
+    }
+    
+    private void HandleToolInput()
+    {
+        // Check for tool usage (C key)
+        if (_inputManager.IsUseToolPressed())
+        {
+            // Calculate tile position in front of player based on facing direction
+            Vector2 toolPosition = CalculateToolTargetPosition();
+            
+            // Use the tool at that position
+            _toolManager.UseTool(toolPosition, _player.Stats);
+        }
+        
+        // TODO: Add hotkey switching between tools (1-9 keys)
+        // For now, cycle tools with Tab key
+        if (_inputManager.IsSwitchToolbarPressed())
+        {
+            CycleTools();
+        }
+    }
+    
+    private Vector2 CalculateToolTargetPosition()
+    {
+        // Calculate position one tile away from player in facing direction
+        Vector2 offset = _player.Facing switch
+        {
+            Direction.Up => new Vector2(0, -GameConstants.TILE_SIZE),
+            Direction.Down => new Vector2(0, GameConstants.TILE_SIZE),
+            Direction.Left => new Vector2(-GameConstants.TILE_SIZE, 0),
+            Direction.Right => new Vector2(GameConstants.TILE_SIZE, 0),
+            _ => Vector2.Zero
+        };
+        
+        return _player.Position + offset;
+    }
+    
+    private void CycleTools()
+    {
+        // Cycle through basic tools
+        Tool currentTool = _toolManager.GetCurrentTool();
+        
+        if (currentTool is Hoe)
+        {
+            _toolManager.SetCurrentTool(new WateringCan());
+        }
+        else if (currentTool is WateringCan)
+        {
+            _toolManager.SetCurrentTool(new Scythe());
+        }
+        else if (currentTool is Scythe)
+        {
+            _toolManager.SetCurrentTool(new Pickaxe());
+        }
+        else if (currentTool is Pickaxe)
+        {
+            _toolManager.SetCurrentTool(new Axe());
+        }
+        else
+        {
+            _toolManager.SetCurrentTool(new Hoe());
+        }
+    }
+    
+    private void HandleConsumableInput()
+    {
+        // Check for hotbar key presses (1-9, 0, -, =)
+        int hotbarIndex = _inputManager.GetHotbarKeyPressed();
+        
+        if (hotbarIndex >= 0)
+        {
+            // Try to use the item in that hotbar slot
+            _consumableManager.UseConsumableBySlot(hotbarIndex);
+        }
+        
+        // TODO: Add visual/audio feedback for consumption
+        // TODO: Add "can't eat/drink when full" message
     }
     
     private void ForceSleep()

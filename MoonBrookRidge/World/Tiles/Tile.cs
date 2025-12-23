@@ -70,6 +70,11 @@ public class Tile
         }
     }
     
+    public void RemoveCrop()
+    {
+        _crop = null;
+    }
+    
     // Properties
     public TileType Type
     {

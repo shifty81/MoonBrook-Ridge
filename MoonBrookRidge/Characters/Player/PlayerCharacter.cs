@@ -107,10 +107,10 @@ public class PlayerCharacter
         _animationController.Play("idle");
     }
     
-    public void Update(GameTime gameTime, InputManager input)
+    public void Update(GameTime gameTime, InputManager input, CollisionSystem collision = null)
     {
         HandleInput(gameTime, input);
-        UpdatePosition(gameTime);
+        UpdatePosition(gameTime, collision);
         UpdateActivity();
         UpdateAnimations();
         
@@ -228,10 +228,20 @@ public class PlayerCharacter
         _velocity = movement * speed;
     }
     
-    private void UpdatePosition(GameTime gameTime)
+    private void UpdatePosition(GameTime gameTime, CollisionSystem collision)
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        _position += _velocity * deltaTime;
+        Vector2 desiredPosition = _position + (_velocity * deltaTime);
+        
+        // Apply collision detection if available
+        if (collision != null)
+        {
+            _position = collision.ResolveCollision(_position, desiredPosition);
+        }
+        else
+        {
+            _position = desiredPosition;
+        }
     }
     
     private void UpdateActivity()
