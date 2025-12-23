@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World.Maps;
+using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.Core.Systems;
 
@@ -135,10 +136,32 @@ public class GameplayState : GameState
             }
         };
         
+        // Load tile textures
+        var tileTextures = new Dictionary<TileType, Texture2D>
+        {
+            [TileType.Grass] = Game.Content.Load<Texture2D>("Textures/Tiles/grass"),
+            [TileType.Grass01] = Game.Content.Load<Texture2D>("Textures/Tiles/grass_01"),
+            [TileType.Grass02] = Game.Content.Load<Texture2D>("Textures/Tiles/grass_02"),
+            [TileType.Grass03] = Game.Content.Load<Texture2D>("Textures/Tiles/grass_03"),
+            [TileType.Dirt] = Game.Content.Load<Texture2D>("Textures/Tiles/plains"),
+            [TileType.Dirt01] = Game.Content.Load<Texture2D>("Textures/Tiles/dirt_01"),
+            [TileType.Dirt02] = Game.Content.Load<Texture2D>("Textures/Tiles/dirt_02"),
+            [TileType.Tilled] = Game.Content.Load<Texture2D>("Textures/Tiles/tilled_01"),
+            [TileType.TilledDry] = Game.Content.Load<Texture2D>("Textures/Tiles/tilled_soil_dry"),
+            [TileType.TilledWatered] = Game.Content.Load<Texture2D>("Textures/Tiles/tilled_soil_watered"),
+            [TileType.Stone] = Game.Content.Load<Texture2D>("Textures/Tiles/stone_01"),
+            [TileType.Stone01] = Game.Content.Load<Texture2D>("Textures/Tiles/stone_01"),
+            [TileType.Rock] = Game.Content.Load<Texture2D>("Textures/Tiles/rock"),
+            [TileType.Water] = Game.Content.Load<Texture2D>("Textures/Tiles/water_01"),
+            [TileType.Water01] = Game.Content.Load<Texture2D>("Textures/Tiles/water_01"),
+            [TileType.Sand] = Game.Content.Load<Texture2D>("Textures/Tiles/sand_01"),
+            [TileType.Sand01] = Game.Content.Load<Texture2D>("Textures/Tiles/sand_01"),
+            [TileType.WoodenFloor] = Game.Content.Load<Texture2D>("Textures/Tiles/wooden_floor"),
+            [TileType.Flooring] = Game.Content.Load<Texture2D>("Textures/Tiles/flooring")
+        };
+        
         // Load world map content
-        Texture2D grassTexture = Game.Content.Load<Texture2D>("Textures/Tiles/grass");
-        Texture2D plainsTexture = Game.Content.Load<Texture2D>("Textures/Tiles/plains");
-        _worldMap.LoadContent(grassTexture, plainsTexture, cropTextures);
+        _worldMap.LoadContent(tileTextures, cropTextures);
         
         // Plant some test crops to demonstrate the system
         _worldMap.PlantTestCrops();

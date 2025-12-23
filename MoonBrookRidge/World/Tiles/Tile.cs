@@ -35,19 +35,22 @@ public class Tile
     {
         return _type switch
         {
-            TileType.Grass => new Color(34, 139, 34),
-            TileType.Dirt => new Color(139, 90, 43),
-            TileType.Tilled => new Color(101, 67, 33),
-            TileType.Stone => Color.Gray,
-            TileType.Water => Color.Blue,
-            TileType.Sand => Color.SandyBrown,
+            TileType.Grass or TileType.Grass01 or TileType.Grass02 or TileType.Grass03 => new Color(34, 139, 34),
+            TileType.Dirt or TileType.Dirt01 or TileType.Dirt02 => new Color(139, 90, 43),
+            TileType.Tilled or TileType.TilledDry => new Color(101, 67, 33),
+            TileType.TilledWatered => new Color(70, 50, 30),
+            TileType.Stone or TileType.Stone01 or TileType.Rock => Color.Gray,
+            TileType.Water or TileType.Water01 => Color.Blue,
+            TileType.Sand or TileType.Sand01 => Color.SandyBrown,
+            TileType.WoodenFloor or TileType.Flooring => new Color(139, 90, 43),
             _ => Color.Green
         };
     }
     
     public bool CanPlant()
     {
-        return _type == TileType.Tilled && _crop == null;
+        return (_type == TileType.Tilled || _type == TileType.TilledDry || _type == TileType.TilledWatered) 
+               && _crop == null;
     }
     
     public void PlantCrop(Crop crop)
@@ -60,9 +63,10 @@ public class Tile
     
     public void Water()
     {
-        if (_type == TileType.Tilled)
+        if (_type == TileType.Tilled || _type == TileType.TilledDry)
         {
             _isWatered = true;
+            _type = TileType.TilledWatered;
         }
     }
     
@@ -81,11 +85,24 @@ public class Tile
 public enum TileType
 {
     Grass,
+    Grass01,
+    Grass02,
+    Grass03,
     Dirt,
+    Dirt01,
+    Dirt02,
     Tilled,
+    TilledDry,
+    TilledWatered,
     Stone,
+    Stone01,
+    Rock,
     Water,
-    Sand
+    Water01,
+    Sand,
+    Sand01,
+    WoodenFloor,
+    Flooring
 }
 
 /// <summary>

@@ -15,8 +15,9 @@ public class WorldMap
     private int _width;
     private int _height;
     private const int TILE_SIZE = 16;
-    private Texture2D _grassTexture;
-    private Texture2D _plainsTexture;
+    
+    // Tile textures
+    private Dictionary<TileType, Texture2D> _tileTextures;
     
     // Crop textures by type and growth stage
     private Dictionary<string, Texture2D[]> _cropTextures;
@@ -27,26 +28,68 @@ public class WorldMap
         _height = 50;
         _tiles = new Tile[_width, _height];
         _cropTextures = new Dictionary<string, Texture2D[]>();
+        _tileTextures = new Dictionary<TileType, Texture2D>();
         
         InitializeMap();
     }
     
     private void InitializeMap()
     {
-        // Create a simple grass map for now
+        // Create a varied map with different tile types
+        Random random = new Random(42); // Fixed seed for consistency
+        
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                _tiles[x, y] = new Tile(TileType.Grass, new Vector2(x, y));
+                // Create varied terrain
+                TileType tileType;
+                
+                // Add some variation to the grass
+                if (x < 5 || y < 5 || x >= _width - 5 || y >= _height - 5)
+                {
+                    // Border areas - mix of grass types
+                    int grassVariant = random.Next(4);
+                    tileType = grassVariant switch
+                    {
+                        0 => TileType.Grass,
+                        1 => TileType.Grass01,
+                        2 => TileType.Grass02,
+                        _ => TileType.Grass03
+                    };
+                }
+                else if (x >= 10 && x < 15 && y >= 10 && y < 15)
+                {
+                    // Small dirt patch
+                    tileType = random.Next(2) == 0 ? TileType.Dirt01 : TileType.Dirt02;
+                }
+                else if (x >= 35 && x < 40 && y >= 35 && y < 40)
+                {
+                    // Stone area
+                    tileType = random.Next(2) == 0 ? TileType.Stone : TileType.Stone01;
+                }
+                else if (x >= 40 && y >= 40)
+                {
+                    // Sand corner
+                    tileType = random.Next(2) == 0 ? TileType.Sand : TileType.Sand01;
+                }
+                else
+                {
+                    // Default grass with some variation
+                    int variant = random.Next(10);
+                    tileType = variant < 7 ? TileType.Grass : 
+                              variant < 8 ? TileType.Grass01 :
+                              variant < 9 ? TileType.Grass02 : TileType.Grass03;
+                }
+                
+                _tiles[x, y] = new Tile(tileType, new Vector2(x, y));
             }
         }
     }
     
-    public void LoadContent(Texture2D grassTexture, Texture2D plainsTexture, Dictionary<string, Texture2D[]> cropTextures = null)
+    public void LoadContent(Dictionary<TileType, Texture2D> tileTextures, Dictionary<string, Texture2D[]> cropTextures = null)
     {
-        _grassTexture = grassTexture;
-        _plainsTexture = plainsTexture;
+        _tileTextures = tileTextures;
         
         // Load crop textures if provided
         if (cropTextures != null)
@@ -70,7 +113,7 @@ public class WorldMap
     public void Draw(SpriteBatch spriteBatch)
     {
         // Use actual textures if available, otherwise fall back to colored squares
-        if (_grassTexture != null)
+        if (_tileTextures.Count > 0)
         {
             for (int x = 0; x < _width; x++)
             {
@@ -78,10 +121,21 @@ public class WorldMap
                 {
                     Tile tile = _tiles[x, y];
                     Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    
+                    // Get the texture for this tile type
                     Texture2D texture = GetTileTexture(tile.Type);
                     
-                    // Draw the tile
-                    spriteBatch.Draw(texture, tileRect, new Rectangle(0, 0, 16, 16), Color.White);
+                    if (texture != null)
+                    {
+                        // Draw the tile
+                        spriteBatch.Draw(texture, tileRect, new Rectangle(0, 0, 16, 16), Color.White);
+                    }
+                    else
+                    {
+                        // Fallback to colored square if texture not found
+                        Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
+                        spriteBatch.Draw(pixel, tileRect, tile.GetColor());
+                    }
                     
                     // Draw crop if present
                     if (tile.Crop != null)
@@ -130,16 +184,28 @@ public class WorldMap
     
     private Texture2D GetTileTexture(TileType type)
     {
-        // Select texture based on tile type
+        // Try to get texture from dictionary
+        if (_tileTextures.TryGetValue(type, out Texture2D texture))
+        {
+            return texture;
+        }
+        
+        // Fallback to base types
         return type switch
         {
-            TileType.Grass => _grassTexture,
-            TileType.Dirt => _plainsTexture ?? _grassTexture,
-            TileType.Tilled => _plainsTexture ?? _grassTexture,
-            TileType.Stone => _plainsTexture ?? _grassTexture,
-            TileType.Water => _plainsTexture ?? _grassTexture,
-            TileType.Sand => _plainsTexture ?? _grassTexture,
-            _ => _grassTexture
+            TileType.Grass01 or TileType.Grass02 or TileType.Grass03 
+                => _tileTextures.GetValueOrDefault(TileType.Grass),
+            TileType.Dirt01 or TileType.Dirt02 
+                => _tileTextures.GetValueOrDefault(TileType.Dirt),
+            TileType.TilledDry or TileType.TilledWatered 
+                => _tileTextures.GetValueOrDefault(TileType.Tilled),
+            TileType.Stone01 or TileType.Rock 
+                => _tileTextures.GetValueOrDefault(TileType.Stone),
+            TileType.Water01 
+                => _tileTextures.GetValueOrDefault(TileType.Water),
+            TileType.Sand01 
+                => _tileTextures.GetValueOrDefault(TileType.Sand),
+            _ => null
         };
     }
     
@@ -163,8 +229,8 @@ public class WorldMap
         {
             for (int y = 20; y < 25; y++)
             {
-                // Till the soil
-                _tiles[x, y].Type = TileType.Tilled;
+                // Till the soil (alternate between dry and watered)
+                _tiles[x, y].Type = (x + y) % 2 == 0 ? TileType.TilledWatered : TileType.TilledDry;
                 
                 // Plant different crops in rows
                 string cropType = (y - 20) switch
