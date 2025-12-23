@@ -120,9 +120,9 @@ The Copilot errors in PR #7 were caused by an exceptionally large changeset (12,
 
 **Action Items**:
 - [x] Document the issue and root cause
-- [ ] Add `.gitattributes` file to repository
-- [ ] Update contributing guidelines with PR size recommendations
-- [ ] Consider Git LFS for future asset additions
+- [x] Add `.gitattributes` file to repository
+- [x] Update contributing guidelines with PR size recommendations
+- [ ] Consider Git LFS for future asset additions (optional, for future consideration)
 
 ## References
 - PR #7: https://github.com/shifty81/MoonBrook-Ridge/pull/7

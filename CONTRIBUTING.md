@@ -15,9 +15,9 @@ To ensure efficient code review and automated tool processing (including GitHub 
 
 #### Exception: Asset-Only PRs
 Large PRs containing primarily binary assets (images, audio, etc.) should be:
-1. Clearly marked as asset additions in the title (e.g., "[Assets] Add character sprites")
-2. Separated from code changes
-3. Reviewed manually (automated tools may not process them effectively)
+- Clearly marked as asset additions in the title (e.g., "[Assets] Add character sprites")
+- Separated from code changes
+- Reviewed manually (automated tools may not process them effectively)
 
 ### Separating Code and Assets
 
