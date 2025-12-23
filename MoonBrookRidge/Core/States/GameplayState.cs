@@ -8,6 +8,8 @@ using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.Core.Systems;
 using MoonBrookRidge.Farming.Tools;
+using MoonBrookRidge.Items;
+using MoonBrookRidge.Items.Inventory;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -24,6 +26,8 @@ public class GameplayState : GameState
     private InputManager _inputManager;
     private ToolManager _toolManager;
     private CollisionSystem _collisionSystem;
+    private InventorySystem _inventory;
+    private ConsumableManager _consumableManager;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -43,6 +47,17 @@ public class GameplayState : GameState
         
         // Initialize collision system
         _collisionSystem = new CollisionSystem(_worldMap);
+        
+        // Initialize inventory and give player starting items
+        _inventory = new InventorySystem(36);
+        _consumableManager = new ConsumableManager(_inventory, _player);
+        
+        // Add starting items to inventory
+        _inventory.AddItem(ConsumableManager.GetFood("Carrot"), 5);
+        _inventory.AddItem(ConsumableManager.GetFood("Apple"), 3);
+        _inventory.AddItem(ConsumableManager.GetFood("Wheat Bread"), 2);
+        _inventory.AddItem(ConsumableManager.GetDrink("Water"), 10);
+        _inventory.AddItem(ConsumableManager.GetDrink("Spring Water"), 3);
         
         // Initialize tool manager
         _toolManager = new ToolManager(_worldMap, _player);
@@ -206,6 +221,9 @@ public class GameplayState : GameState
         // Handle tool usage input
         HandleToolInput();
         
+        // Handle consumable usage input
+        HandleConsumableInput();
+        
         // Update player with input and collision
         _player.Update(gameTime, _inputManager, _collisionSystem);
         
@@ -283,6 +301,21 @@ public class GameplayState : GameState
         {
             _toolManager.SetCurrentTool(new Hoe());
         }
+    }
+    
+    private void HandleConsumableInput()
+    {
+        // Check for hotbar key presses (1-9, 0, -, =)
+        int hotbarIndex = _inputManager.GetHotbarKeyPressed();
+        
+        if (hotbarIndex >= 0)
+        {
+            // Try to use the item in that hotbar slot
+            _consumableManager.UseConsumableBySlot(hotbarIndex);
+        }
+        
+        // TODO: Add visual/audio feedback for consumption
+        // TODO: Add "can't eat/drink when full" message
     }
     
     private void ForceSleep()
