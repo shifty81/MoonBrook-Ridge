@@ -199,6 +199,14 @@ public class PlayerStats
     public void ModifyHealth(float amount) => Health += amount;
     public void ModifyEnergy(float amount) => Energy += amount;
     public void ModifyMoney(int amount) => Money += amount;
+    
+    /// <summary>
+    /// Consume energy for tool usage or actions
+    /// </summary>
+    public void ConsumeEnergy(float amount)
+    {
+        Energy -= amount;
+    }
 }
 
 /// <summary>

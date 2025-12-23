@@ -7,6 +7,7 @@ using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.Core.Systems;
+using MoonBrookRidge.Farming.Tools;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -21,6 +22,7 @@ public class GameplayState : GameState
     private TimeSystem _timeSystem;
     private Camera2D _camera;
     private InputManager _inputManager;
+    private ToolManager _toolManager;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -37,6 +39,12 @@ public class GameplayState : GameState
         // Initialize world and player
         _worldMap = new WorldMap();
         _player = new PlayerCharacter(new Vector2(400, 300));
+        
+        // Initialize tool manager
+        _toolManager = new ToolManager(_worldMap, _player);
+        
+        // Give player starting tools
+        _toolManager.SetCurrentTool(new Hoe());
         
         // Initialize UI
         _hud = new HUDManager();
@@ -188,6 +196,12 @@ public class GameplayState : GameState
         // Update time system
         _timeSystem.Update(gameTime);
         
+        // Update world map
+        _worldMap.Update(gameTime);
+        
+        // Handle tool usage input
+        HandleToolInput();
+        
         // Update player with input
         _player.Update(gameTime, _inputManager);
         
@@ -201,6 +215,69 @@ public class GameplayState : GameState
         if (_timeSystem.TimeOfDay >= 26f && _player.Energy < 10f)
         {
             ForceSleep();
+        }
+    }
+    
+    private void HandleToolInput()
+    {
+        // Check for tool usage (C key)
+        if (_inputManager.IsUseToolPressed())
+        {
+            // Calculate tile position in front of player based on facing direction
+            Vector2 toolPosition = CalculateToolTargetPosition();
+            
+            // Use the tool at that position
+            _toolManager.UseTool(toolPosition, _player.Stats);
+        }
+        
+        // TODO: Add hotkey switching between tools (1-9 keys)
+        // For now, cycle tools with Tab key
+        if (_inputManager.IsSwitchToolbarPressed())
+        {
+            CycleTools();
+        }
+    }
+    
+    private Vector2 CalculateToolTargetPosition()
+    {
+        // Calculate position one tile away from player in facing direction
+        const int TILE_SIZE = 16;
+        Vector2 offset = _player.Facing switch
+        {
+            Direction.Up => new Vector2(0, -TILE_SIZE),
+            Direction.Down => new Vector2(0, TILE_SIZE),
+            Direction.Left => new Vector2(-TILE_SIZE, 0),
+            Direction.Right => new Vector2(TILE_SIZE, 0),
+            _ => Vector2.Zero
+        };
+        
+        return _player.Position + offset;
+    }
+    
+    private void CycleTools()
+    {
+        // Cycle through basic tools
+        Tool currentTool = _toolManager.GetCurrentTool();
+        
+        if (currentTool is Hoe)
+        {
+            _toolManager.SetCurrentTool(new WateringCan());
+        }
+        else if (currentTool is WateringCan)
+        {
+            _toolManager.SetCurrentTool(new Scythe());
+        }
+        else if (currentTool is Scythe)
+        {
+            _toolManager.SetCurrentTool(new Pickaxe());
+        }
+        else if (currentTool is Pickaxe)
+        {
+            _toolManager.SetCurrentTool(new Axe());
+        }
+        else
+        {
+            _toolManager.SetCurrentTool(new Hoe());
         }
     }
     
