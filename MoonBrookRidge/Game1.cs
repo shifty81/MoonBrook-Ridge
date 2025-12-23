@@ -44,8 +44,8 @@ public class Game1 : Game
         // Load default font
         _defaultFont = Content.Load<SpriteFont>("Fonts/Default");
         
-        // Start with gameplay state
-        _stateManager.ChangeState(new GameplayState(this));
+        // Start with menu state
+        _stateManager.ChangeState(new MenuState(this));
     }
 
     protected override void Update(GameTime gameTime)
@@ -72,4 +72,5 @@ public class Game1 : Game
     
     public SpriteBatch SpriteBatch => _spriteBatch;
     public SpriteFont DefaultFont => _defaultFont;
+    public StateManager StateManager => _stateManager;
 }
