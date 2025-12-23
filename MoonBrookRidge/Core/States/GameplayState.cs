@@ -42,7 +42,7 @@ public class GameplayState : GameState
         
         _isPaused = false;
     }
-
+    
     public override void LoadContent()
     {
         base.LoadContent();
@@ -85,10 +85,63 @@ public class GameplayState : GameState
         // Pass animations to player
         _player.LoadContent(animations, toolAnimations);
         
+        // Load crop textures
+        var cropTextures = new Dictionary<string, Texture2D[]>
+        {
+            ["wheat"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_05")
+            },
+            ["potato"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_05")
+            },
+            ["carrot"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_05")
+            },
+            ["cabbage"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_05")
+            },
+            ["beetroot"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_05")
+            }
+        };
+        
         // Load world map content
         Texture2D grassTexture = Game.Content.Load<Texture2D>("Textures/Tiles/grass");
         Texture2D plainsTexture = Game.Content.Load<Texture2D>("Textures/Tiles/plains");
-        _worldMap.LoadContent(grassTexture, plainsTexture);
+        _worldMap.LoadContent(grassTexture, plainsTexture, cropTextures);
+        
+        // Plant some test crops to demonstrate the system
+        _worldMap.PlantTestCrops();
     }
 
     public override void Update(GameTime gameTime)

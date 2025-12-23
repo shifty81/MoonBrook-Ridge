@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
@@ -16,11 +18,15 @@ public class WorldMap
     private Texture2D _grassTexture;
     private Texture2D _plainsTexture;
     
+    // Crop textures by type and growth stage
+    private Dictionary<string, Texture2D[]> _cropTextures;
+    
     public WorldMap()
     {
         _width = 50;
         _height = 50;
         _tiles = new Tile[_width, _height];
+        _cropTextures = new Dictionary<string, Texture2D[]>();
         
         InitializeMap();
     }
@@ -37,10 +43,16 @@ public class WorldMap
         }
     }
     
-    public void LoadContent(Texture2D grassTexture, Texture2D plainsTexture)
+    public void LoadContent(Texture2D grassTexture, Texture2D plainsTexture, Dictionary<string, Texture2D[]> cropTextures = null)
     {
         _grassTexture = grassTexture;
         _plainsTexture = plainsTexture;
+        
+        // Load crop textures if provided
+        if (cropTextures != null)
+        {
+            _cropTextures = cropTextures;
+        }
     }
     
     public void Update(GameTime gameTime)
@@ -64,11 +76,18 @@ public class WorldMap
             {
                 for (int y = 0; y < _height; y++)
                 {
+                    Tile tile = _tiles[x, y];
                     Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                    Texture2D texture = GetTileTexture(_tiles[x, y].Type);
+                    Texture2D texture = GetTileTexture(tile.Type);
                     
-                    // Draw a single tile from the texture
+                    // Draw the tile
                     spriteBatch.Draw(texture, tileRect, new Rectangle(0, 0, 16, 16), Color.White);
+                    
+                    // Draw crop if present
+                    if (tile.Crop != null)
+                    {
+                        DrawCrop(spriteBatch, tile, tileRect);
+                    }
                 }
             }
         }
@@ -85,6 +104,26 @@ public class WorldMap
                     Color tileColor = _tiles[x, y].GetColor();
                     spriteBatch.Draw(pixel, tileRect, tileColor);
                 }
+            }
+        }
+    }
+    
+    private void DrawCrop(SpriteBatch spriteBatch, Tile tile, Rectangle tileRect)
+    {
+        Crop crop = tile.Crop;
+        if (crop == null) return;
+        
+        // Get the crop texture array for this crop type
+        if (_cropTextures.TryGetValue(crop.CropType.ToLower(), out Texture2D[] stages))
+        {
+            // Clamp growth stage to available textures
+            int stage = Math.Clamp(crop.GrowthStage, 0, stages.Length - 1);
+            Texture2D cropTexture = stages[stage];
+            
+            if (cropTexture != null)
+            {
+                // Draw crop centered on tile, scaled to fit
+                spriteBatch.Draw(cropTexture, tileRect, Color.White);
             }
         }
     }
@@ -111,6 +150,47 @@ public class WorldMap
             return _tiles[x, y];
         }
         return null;
+    }
+    
+    /// <summary>
+    /// Plant some test crops for demonstration
+    /// </summary>
+    public void PlantTestCrops()
+    {
+        // Create a small farm area with different crops
+        // Plant in a 10x5 grid starting at (20, 20)
+        for (int x = 20; x < 30; x++)
+        {
+            for (int y = 20; y < 25; y++)
+            {
+                // Till the soil
+                _tiles[x, y].Type = TileType.Tilled;
+                
+                // Plant different crops in rows
+                string cropType = (y - 20) switch
+                {
+                    0 => "wheat",
+                    1 => "potato",
+                    2 => "carrot",
+                    3 => "cabbage",
+                    4 => "beetroot",
+                    _ => "wheat"
+                };
+                
+                // Plant crop with different growth stages for variety
+                int maxStages = 6;
+                float hoursPerStage = 4f;
+                Crop crop = new Crop(cropType, maxStages, hoursPerStage);
+                
+                // Give crops different growth stages for visual variety
+                for (int stage = 0; stage < (x - 20) / 2; stage++)
+                {
+                    crop.Update(new GameTime(TimeSpan.Zero, TimeSpan.FromHours(hoursPerStage)));
+                }
+                
+                _tiles[x, y].PlantCrop(crop);
+            }
+        }
     }
     
     private Texture2D CreatePixelTexture(GraphicsDevice graphicsDevice)
