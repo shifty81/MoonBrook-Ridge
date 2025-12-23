@@ -23,6 +23,7 @@ public class GameplayState : GameState
     private Camera2D _camera;
     private InputManager _inputManager;
     private ToolManager _toolManager;
+    private CollisionSystem _collisionSystem;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -39,6 +40,9 @@ public class GameplayState : GameState
         // Initialize world and player
         _worldMap = new WorldMap();
         _player = new PlayerCharacter(new Vector2(400, 300));
+        
+        // Initialize collision system
+        _collisionSystem = new CollisionSystem(_worldMap);
         
         // Initialize tool manager
         _toolManager = new ToolManager(_worldMap, _player);
@@ -202,8 +206,8 @@ public class GameplayState : GameState
         // Handle tool usage input
         HandleToolInput();
         
-        // Update player with input
-        _player.Update(gameTime, _inputManager);
+        // Update player with input and collision
+        _player.Update(gameTime, _inputManager, _collisionSystem);
         
         // Update camera to follow player
         _camera.Follow(_player.Position);
