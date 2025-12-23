@@ -10,7 +10,6 @@ namespace MoonBrookRidge.Core.Systems;
 public class CollisionSystem
 {
     private WorldMap _worldMap;
-    private const int TILE_SIZE = 16;
     
     public CollisionSystem(WorldMap worldMap)
     {
@@ -45,12 +44,10 @@ public class CollisionSystem
     /// </summary>
     public bool IsWithinWorldBounds(Vector2 position)
     {
-        const float PLAYER_RADIUS = 16f; // Half the player size
-        
-        float minX = PLAYER_RADIUS;
-        float maxX = (_worldMap.Width * TILE_SIZE) - PLAYER_RADIUS;
-        float minY = PLAYER_RADIUS;
-        float maxY = (_worldMap.Height * TILE_SIZE) - PLAYER_RADIUS;
+        float minX = GameConstants.PLAYER_RADIUS;
+        float maxX = (_worldMap.Width * GameConstants.TILE_SIZE) - GameConstants.PLAYER_RADIUS;
+        float minY = GameConstants.PLAYER_RADIUS;
+        float maxY = (_worldMap.Height * GameConstants.TILE_SIZE) - GameConstants.PLAYER_RADIUS;
         
         return position.X >= minX && position.X <= maxX &&
                position.Y >= minY && position.Y <= maxY;
@@ -77,12 +74,10 @@ public class CollisionSystem
     /// </summary>
     public Vector2 ClampToValid(Vector2 position)
     {
-        const float PLAYER_RADIUS = 16f;
-        
-        float minX = PLAYER_RADIUS;
-        float maxX = (_worldMap.Width * TILE_SIZE) - PLAYER_RADIUS;
-        float minY = PLAYER_RADIUS;
-        float maxY = (_worldMap.Height * TILE_SIZE) - PLAYER_RADIUS;
+        float minX = GameConstants.PLAYER_RADIUS;
+        float maxX = (_worldMap.Width * GameConstants.TILE_SIZE) - GameConstants.PLAYER_RADIUS;
+        float minY = GameConstants.PLAYER_RADIUS;
+        float maxY = (_worldMap.Height * GameConstants.TILE_SIZE) - GameConstants.PLAYER_RADIUS;
         
         return new Vector2(
             MathHelper.Clamp(position.X, minX, maxX),
@@ -125,8 +120,8 @@ public class CollisionSystem
     private Vector2 WorldToGridPosition(Vector2 worldPosition)
     {
         return new Vector2(
-            (int)(worldPosition.X / TILE_SIZE),
-            (int)(worldPosition.Y / TILE_SIZE)
+            (int)(worldPosition.X / GameConstants.TILE_SIZE),
+            (int)(worldPosition.Y / GameConstants.TILE_SIZE)
         );
     }
     

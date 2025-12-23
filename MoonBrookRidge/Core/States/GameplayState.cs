@@ -263,13 +263,12 @@ public class GameplayState : GameState
     private Vector2 CalculateToolTargetPosition()
     {
         // Calculate position one tile away from player in facing direction
-        const int TILE_SIZE = 16;
         Vector2 offset = _player.Facing switch
         {
-            Direction.Up => new Vector2(0, -TILE_SIZE),
-            Direction.Down => new Vector2(0, TILE_SIZE),
-            Direction.Left => new Vector2(-TILE_SIZE, 0),
-            Direction.Right => new Vector2(TILE_SIZE, 0),
+            Direction.Up => new Vector2(0, -GameConstants.TILE_SIZE),
+            Direction.Down => new Vector2(0, GameConstants.TILE_SIZE),
+            Direction.Left => new Vector2(-GameConstants.TILE_SIZE, 0),
+            Direction.Right => new Vector2(GameConstants.TILE_SIZE, 0),
             _ => Vector2.Zero
         };
         

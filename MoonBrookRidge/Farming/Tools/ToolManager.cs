@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.Core;
 
 namespace MoonBrookRidge.Farming.Tools;
 
@@ -154,10 +155,9 @@ public class ToolManager
     /// </summary>
     private Vector2 WorldToGridPosition(Vector2 worldPosition)
     {
-        const int TILE_SIZE = 16;
         return new Vector2(
-            (int)(worldPosition.X / TILE_SIZE),
-            (int)(worldPosition.Y / TILE_SIZE)
+            (int)(worldPosition.X / GameConstants.TILE_SIZE),
+            (int)(worldPosition.Y / GameConstants.TILE_SIZE)
         );
     }
 }

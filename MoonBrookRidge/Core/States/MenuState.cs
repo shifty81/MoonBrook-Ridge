@@ -15,6 +15,7 @@ public class MenuState : GameState
     private string[] _menuOptions;
     private Color _selectedColor = Color.Yellow;
     private Color _normalColor = Color.White;
+    private Texture2D _pixelTexture; // Cache pixel texture
     
     public MenuState(Game1 game) : base(game) 
     {
@@ -37,7 +38,8 @@ public class MenuState : GameState
     public override void LoadContent()
     {
         base.LoadContent();
-        // Load any menu-specific content here
+        // Create and cache pixel texture
+        _pixelTexture = CreatePixelTexture();
     }
     
     public override void Update(GameTime gameTime)
@@ -159,8 +161,6 @@ public class MenuState : GameState
     private void DrawSimpleMenu(SpriteBatch spriteBatch)
     {
         // Simple colored rectangles as menu items if font is not available
-        Texture2D pixel = CreatePixelTexture();
-        
         for (int i = 0; i < _menuOptions.Length; i++)
         {
             Color color = (i == _selectedOption) ? _selectedColor : _normalColor;
@@ -170,7 +170,7 @@ public class MenuState : GameState
                 200,
                 40
             );
-            spriteBatch.Draw(pixel, rect, color);
+            spriteBatch.Draw(_pixelTexture, rect, color);
         }
     }
     
