@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World.Maps;
+using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.Core.Systems;
 
@@ -41,19 +43,128 @@ public class GameplayState : GameState
         
         _isPaused = false;
     }
-
+    
     public override void LoadContent()
     {
         base.LoadContent();
         
-        // Load player texture
-        Texture2D playerTexture = Game.Content.Load<Texture2D>("Textures/Characters/player");
-        _player.LoadContent(playerTexture);
+        // Load character animation textures
+        var animations = new Dictionary<string, Texture2D>
+        {
+            ["walk"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_walk_strip8"),
+            ["run"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_run_strip8"),
+            ["idle"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_idle_strip9"),
+            ["waiting"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_waiting_strip9"),
+            ["dig"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_dig_strip13"),
+            ["mining"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_mining_strip10"),
+            ["axe"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_axe_strip10"),
+            ["watering"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_watering_strip5"),
+            ["casting"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_casting_strip15"),
+            ["reeling"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_reeling_strip13"),
+            ["caught"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_caught_strip10"),
+            ["attack"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_attack_strip10"),
+            ["hurt"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_hurt_strip8"),
+            ["death"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_death_strip13")
+        };
+        
+        // Load tool overlay animation textures
+        var toolAnimations = new Dictionary<string, Texture2D>
+        {
+            ["walk"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_walk_strip8"),
+            ["run"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_run_strip8"),
+            ["idle"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_idle_strip9"),
+            ["waiting"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_waiting_strip9"),
+            ["dig"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_dig_strip13"),
+            ["mining"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_mining_strip10"),
+            ["axe"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_axe_strip10"),
+            ["watering"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_watering_strip5"),
+            ["casting"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_casting_strip15"),
+            ["reeling"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_reeling_strip13"),
+            ["caught"] = Game.Content.Load<Texture2D>("Textures/Characters/Tools/tools_caught_strip10")
+        };
+        
+        // Pass animations to player
+        _player.LoadContent(animations, toolAnimations);
+        
+        // Load crop textures
+        var cropTextures = new Dictionary<string, Texture2D[]>
+        {
+            ["wheat"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/wheat_05")
+            },
+            ["potato"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/potato_05")
+            },
+            ["carrot"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/carrot_05")
+            },
+            ["cabbage"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/cabbage_05")
+            },
+            ["beetroot"] = new Texture2D[6]
+            {
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_00"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_01"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_02"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_03"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_04"),
+                Game.Content.Load<Texture2D>("Textures/Crops/beetroot_05")
+            }
+        };
+        
+        // Load tile textures
+        var tileTextures = new Dictionary<TileType, Texture2D>
+        {
+            [TileType.Grass] = Game.Content.Load<Texture2D>("Textures/Tiles/grass"),
+            [TileType.Grass01] = Game.Content.Load<Texture2D>("Textures/Tiles/grass_01"),
+            [TileType.Grass02] = Game.Content.Load<Texture2D>("Textures/Tiles/grass_02"),
+            [TileType.Grass03] = Game.Content.Load<Texture2D>("Textures/Tiles/grass_03"),
+            [TileType.Dirt] = Game.Content.Load<Texture2D>("Textures/Tiles/plains"),
+            [TileType.Dirt01] = Game.Content.Load<Texture2D>("Textures/Tiles/dirt_01"),
+            [TileType.Dirt02] = Game.Content.Load<Texture2D>("Textures/Tiles/dirt_02"),
+            [TileType.Tilled] = Game.Content.Load<Texture2D>("Textures/Tiles/tilled_01"),
+            [TileType.TilledDry] = Game.Content.Load<Texture2D>("Textures/Tiles/tilled_soil_dry"),
+            [TileType.TilledWatered] = Game.Content.Load<Texture2D>("Textures/Tiles/tilled_soil_watered"),
+            [TileType.Stone] = Game.Content.Load<Texture2D>("Textures/Tiles/stone_01"),
+            [TileType.Stone01] = Game.Content.Load<Texture2D>("Textures/Tiles/stone_01"),
+            [TileType.Rock] = Game.Content.Load<Texture2D>("Textures/Tiles/rock"),
+            [TileType.Water] = Game.Content.Load<Texture2D>("Textures/Tiles/water_01"),
+            [TileType.Water01] = Game.Content.Load<Texture2D>("Textures/Tiles/water_01"),
+            [TileType.Sand] = Game.Content.Load<Texture2D>("Textures/Tiles/sand_01"),
+            [TileType.Sand01] = Game.Content.Load<Texture2D>("Textures/Tiles/sand_01"),
+            [TileType.WoodenFloor] = Game.Content.Load<Texture2D>("Textures/Tiles/wooden_floor"),
+            [TileType.Flooring] = Game.Content.Load<Texture2D>("Textures/Tiles/flooring")
+        };
         
         // Load world map content
-        Texture2D grassTexture = Game.Content.Load<Texture2D>("Textures/Tiles/grass");
-        Texture2D plainsTexture = Game.Content.Load<Texture2D>("Textures/Tiles/plains");
-        _worldMap.LoadContent(grassTexture, plainsTexture);
+        _worldMap.LoadContent(tileTextures, cropTextures);
+        
+        // Plant some test crops to demonstrate the system
+        _worldMap.PlantTestCrops();
     }
 
     public override void Update(GameTime gameTime)
