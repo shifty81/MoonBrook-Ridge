@@ -358,9 +358,19 @@ public class PlayerCharacter
     public float Energy => _stats.Energy;
     public float MaxEnergy => _stats.MaxEnergy;
     public int Money => _stats.Money;
+    public float Hunger => _stats.Hunger;
+    public float Thirst => _stats.Thirst;
     
     public void ModifyHealth(float amount) => _stats.ModifyHealth(amount);
     public void ModifyEnergy(float amount) => _stats.ModifyEnergy(amount);
     public void ModifyMoney(int amount) => _stats.ModifyMoney(amount);
+    
+    // Setters for save/load
+    public void SetPosition(Vector2 position) => _position = position;
+    public void SetHealth(float health) => _stats.Health = health;
+    public void SetEnergy(float energy) => _stats.Energy = energy;
+    public void SetMoney(int money) => _stats.Money = money;
+    public void SetHunger(float hunger) => _stats.Hunger = hunger;
+    public void SetThirst(float thirst) => _stats.Thirst = thirst;
 }
 

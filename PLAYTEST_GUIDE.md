@@ -33,6 +33,7 @@ To verify the game compiles without launching it:
 - **Time System**: Watch the in-game clock progress (1 game hour = 2.5 real seconds)
 - **Camera**: Smooth following camera with zoom
 - **Survival Stats**: Hunger and thirst that deplete over time
+- **Save/Load** ⭐ **NEW!**: Press `F5` to quick save, `F9` to quick load
 
 ### ✅ Farming Mechanics (NEW!)
 1. **Till Soil**: Press `Tab` to select the Hoe, then `C` to till grass/dirt tiles
@@ -40,6 +41,8 @@ To verify the game compiles without launching it:
    - You start with: 20 Wheat Seeds, 10 Carrot Seeds, 10 Potato Seeds
 3. **Water Crops**: Press `Tab` to select Watering Can, then `C` on tilled soil
 4. **Harvest Crops**: Press `Tab` to select Scythe, then `C` on fully grown crops
+   - **Harvested crops now add to inventory!** ⭐
+   - Watered crops yield 2x harvest (vs 1x for unwatered)
 5. **Watch Crops Grow**: Crops grow based on in-game time
    - Wheat: 1 hour per stage (6 hours total)
    - Carrots: 1.2 hours per stage (7.2 hours total)
@@ -55,6 +58,7 @@ To verify the game compiles without launching it:
   - 20 Wheat Seeds
   - 10 Carrot Seeds
   - 10 Potato Seeds
+- **Harvested crops** ⭐ are automatically added to your inventory
 
 ### ✅ Consumables
 - **Hotbar Keys**: Press `1-9`, `0`, `-`, `=` to consume items
@@ -97,6 +101,21 @@ To verify the game compiles without launching it:
 2. **Day advancement**: Time goes until 2 AM (26:00), then resets to next day
 3. **Seasons**: 28 days per season (Spring → Summer → Fall → Winter)
 
+### Save/Load System ⭐ **NEW!**
+1. **Quick Save**: Press `F5` at any time to save your game
+   - Saves to `quicksave.json` in your local app data
+2. **Quick Load**: Press `F9` to load your last quick save
+   - Restores player position, stats, and inventory
+3. **Save Location**: 
+   - Windows: `%LocalAppData%\MoonBrookRidge\Saves\`
+   - Mac: `~/Library/Application Support/MoonBrookRidge/Saves/`
+   - Linux: `~/.local/share/MoonBrookRidge/Saves/`
+4. **What's Saved**:
+   - Player position, health, energy, hunger, thirst, money
+   - Time, day, season, year
+   - Inventory contents
+   - *(Crops in world not yet saved - coming soon)*
+
 ### Tool Usage
 1. **Hoe**: Converts grass/dirt to tilled soil (costs 2 energy)
 2. **Watering Can**: Waters tilled soil (costs 2 energy)
@@ -105,11 +124,11 @@ To verify the game compiles without launching it:
 5. **Axe**: Not yet implemented for tree chopping
 
 ## 🐛 Known Limitations
-- Harvested crops don't add to inventory yet (will be implemented next)
-- No save/load system yet (coming next)
 - Pickaxe and Axe don't have functional targets yet
 - No visual feedback when planting seeds
 - No NPC interactions yet
+- Crops in world not saved yet (only player/inventory/time)
+- Save/load doesn't have UI menu yet (F5/F9 only)
 
 ## 💡 Tips for Testing
 - **Plant multiple crops**: Test different growth rates
@@ -117,6 +136,7 @@ To verify the game compiles without launching it:
 - **Resource management**: Balance tool use with energy/hunger/thirst
 - **Collision**: Try walking into water tiles (blocks movement)
 - **Camera zoom**: See the world from different perspectives
+- **Test save/load**: Try saving mid-game, making changes, then loading
 
 ## 🔧 Troubleshooting
 

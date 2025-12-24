@@ -231,6 +231,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Open Map | M |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
+| **Quick Save** ⭐ | **F5** |
+| **Quick Load** ⭐ | **F9** |
 
 See [CONTROLS.md](CONTROLS.md) for complete control documentation.
 

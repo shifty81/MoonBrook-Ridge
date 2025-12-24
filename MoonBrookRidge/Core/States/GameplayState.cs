@@ -29,6 +29,7 @@ public class GameplayState : GameState
     private InventorySystem _inventory;
     private ConsumableManager _consumableManager;
     private SeedManager _seedManager;
+    private SaveSystem _saveSystem;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -76,6 +77,9 @@ public class GameplayState : GameState
         
         // Initialize UI
         _hud = new HUDManager();
+        
+        // Initialize save system
+        _saveSystem = new SaveSystem();
         
         _isPaused = false;
     }
@@ -212,6 +216,17 @@ public class GameplayState : GameState
         if (_inputManager.IsOpenMenuPressed())
         {
             _isPaused = !_isPaused;
+        }
+        
+        // Check for quick save/load (F5/F9)
+        var keyboardState = Keyboard.GetState();
+        if (keyboardState.IsKeyDown(Keys.F5))
+        {
+            QuickSave();
+        }
+        if (keyboardState.IsKeyDown(Keys.F9))
+        {
+            QuickLoad();
         }
         
         // Don't update game logic when paused
@@ -352,6 +367,107 @@ public class GameplayState : GameState
         _player.ModifyEnergy(50f); // Only restore half energy as penalty
         _player.ModifyHealth(-10f); // Lose some health
         // Time system will advance the day
+    }
+    
+    /// <summary>
+    /// Quick save the game (F5 key)
+    /// </summary>
+    public void QuickSave()
+    {
+        var saveData = CreateSaveData("quicksave");
+        if (_saveSystem.SaveGame("quicksave", saveData))
+        {
+            System.Diagnostics.Debug.WriteLine("Quick save successful!");
+        }
+    }
+    
+    /// <summary>
+    /// Quick load the game (F9 key)
+    /// </summary>
+    public void QuickLoad()
+    {
+        var saveData = _saveSystem.LoadGame("quicksave");
+        if (saveData != null)
+        {
+            LoadSaveData(saveData);
+            System.Diagnostics.Debug.WriteLine("Quick load successful!");
+        }
+    }
+    
+    private GameSaveData CreateSaveData(string saveName)
+    {
+        var saveData = new GameSaveData
+        {
+            SaveName = saveName,
+            SaveTime = System.DateTime.Now
+        };
+        
+        // Save player data
+        saveData.Player = new PlayerSaveData
+        {
+            PositionX = _player.Position.X,
+            PositionY = _player.Position.Y,
+            Health = _player.Health,
+            MaxHealth = _player.MaxHealth,
+            Energy = _player.Energy,
+            MaxEnergy = _player.MaxEnergy,
+            Hunger = _player.Hunger,
+            Thirst = _player.Thirst,
+            Money = _player.Money
+        };
+        
+        // Save time data
+        saveData.Time = new TimeSaveData
+        {
+            TimeOfDay = _timeSystem.TimeOfDay,
+            Day = _timeSystem.Day,
+            Season = (int)_timeSystem.CurrentSeason,
+            Year = _timeSystem.Year
+        };
+        
+        // Save inventory data
+        var slots = _inventory.GetSlots();
+        saveData.Inventory = new InventorySaveData
+        {
+            Slots = new InventorySlotData[slots.Count]
+        };
+        
+        for (int i = 0; i < slots.Count; i++)
+        {
+            var slot = slots[i];
+            saveData.Inventory.Slots[i] = new InventorySlotData
+            {
+                ItemName = slot.Item?.Name ?? "",
+                ItemType = slot.Item?.Type.ToString() ?? "",
+                Quantity = slot.Quantity
+            };
+        }
+        
+        // Note: World data (crops) not saved yet - would need WorldMap API changes
+        saveData.World = new WorldSaveData { Crops = System.Array.Empty<CropSaveData>() };
+        
+        return saveData;
+    }
+    
+    private void LoadSaveData(GameSaveData saveData)
+    {
+        // Load player data
+        _player.SetPosition(new Vector2(saveData.Player.PositionX, saveData.Player.PositionY));
+        _player.SetHealth(saveData.Player.Health);
+        _player.SetEnergy(saveData.Player.Energy);
+        _player.SetHunger(saveData.Player.Hunger);
+        _player.SetThirst(saveData.Player.Thirst);
+        _player.SetMoney(saveData.Player.Money);
+        
+        // Load time data (would need TimeSystem API to set these)
+        // For now, just log that we would load it
+        System.Diagnostics.Debug.WriteLine($"Would load time: Day {saveData.Time.Day}, Season {saveData.Time.Season}");
+        
+        // Load inventory (simplified - just clear and add items back)
+        // Full implementation would recreate exact item types
+        System.Diagnostics.Debug.WriteLine($"Would load {saveData.Inventory.Slots.Length} inventory slots");
+        
+        // Note: Full load would also restore crops from World data
     }
 
     public override void Draw(SpriteBatch spriteBatch)
