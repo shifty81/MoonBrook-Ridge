@@ -15,6 +15,7 @@ public class NPCCharacter
     private int _friendshipLevel;
     private NPCSchedule _schedule;
     private Dictionary<string, DialogueTree> _dialogueTrees;
+    private Texture2D _sprite;
     
     // NPC stats and preferences
     private List<string> _lovedGifts;
@@ -55,10 +56,42 @@ public class NPCCharacter
         // NPC behavior logic (walking to locations, performing actions, etc.)
     }
     
+    public void LoadSprite(Texture2D sprite)
+    {
+        _sprite = sprite;
+    }
+    
     public void Draw(SpriteBatch spriteBatch)
     {
-        // Draw NPC sprite
-        // Placeholder for now
+        if (_sprite != null)
+        {
+            // Draw NPC sprite at position
+            spriteBatch.Draw(
+                _sprite,
+                _position,
+                null,
+                Color.White,
+                0f,
+                new Vector2(_sprite.Width / 2, _sprite.Height / 2), // Center origin
+                2f, // Scale up 2x for visibility
+                SpriteEffects.None,
+                0f
+            );
+        }
+        else
+        {
+            // Fallback: Draw a simple colored rectangle representing the NPC
+            Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
+            Rectangle npcRect = new Rectangle((int)_position.X - 16, (int)_position.Y - 16, 32, 32);
+            spriteBatch.Draw(pixel, npcRect, Color.Green);
+        }
+    }
+    
+    private Texture2D CreatePixelTexture(GraphicsDevice graphicsDevice)
+    {
+        Texture2D texture = new Texture2D(graphicsDevice, 1, 1);
+        texture.SetData(new[] { Color.White });
+        return texture;
     }
     
     public void GiveGift(string itemName)
