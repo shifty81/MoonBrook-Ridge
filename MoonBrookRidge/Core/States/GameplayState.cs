@@ -65,8 +65,8 @@ public class GameplayState : GameState
         _inventory.AddItem(SeedFactory.GetSeed("carrot seeds"), 10);
         _inventory.AddItem(SeedFactory.GetSeed("potato seeds"), 10);
         
-        // Initialize tool manager
-        _toolManager = new ToolManager(_worldMap, _player);
+        // Initialize tool manager with inventory
+        _toolManager = new ToolManager(_worldMap, _player, _inventory);
         
         // Initialize seed manager
         _seedManager = new SeedManager(_inventory, _toolManager, _player);

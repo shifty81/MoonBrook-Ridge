@@ -3,6 +3,8 @@ using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.Core;
+using MoonBrookRidge.Items;
+using MoonBrookRidge.Items.Inventory;
 
 namespace MoonBrookRidge.Farming.Tools;
 
@@ -14,11 +16,13 @@ public class ToolManager
     private WorldMap _worldMap;
     private PlayerCharacter _player;
     private Tool _currentTool;
+    private InventorySystem _inventory;
     
-    public ToolManager(WorldMap worldMap, PlayerCharacter player)
+    public ToolManager(WorldMap worldMap, PlayerCharacter player, InventorySystem inventory = null)
     {
         _worldMap = worldMap;
         _player = player;
+        _inventory = inventory;
         _currentTool = null;
     }
     
@@ -124,8 +128,17 @@ public class ToolManager
             // Get the crop type to create harvest item
             string cropType = tile.Crop.CropType;
             
-            // TODO: Add harvested crop to inventory
-            // For now, just remove the crop
+            // Calculate harvest quantity (watered tiles give more)
+            int quantity = HarvestFactory.CalculateHarvestQuantity(tile.IsWatered, Quality.Normal);
+            
+            // Add harvested crop to inventory
+            if (_inventory != null)
+            {
+                HarvestItem harvest = HarvestFactory.GetHarvestItem(cropType, quantity);
+                _inventory.AddItem(harvest, quantity);
+            }
+            
+            // Remove the crop from the tile
             tile.RemoveCrop();
             return true;
         }
