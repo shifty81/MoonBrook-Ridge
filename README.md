@@ -70,7 +70,7 @@ The game combines assets from multiple high-quality pixel art packs for visual v
 Assets are now integrated through MonoGame's Content Pipeline:
 
 **Currently Loaded:**
-- ✅ DejaVu Sans font for UI text
+- ✅ Arial font for UI text
 - ✅ Player character sprites
 - ✅ Custom ground tileset (192 16x16 tiles combining multiple packs)
 - ✅ Individual tile textures (grass, dirt, stone, water, sand, etc.)
