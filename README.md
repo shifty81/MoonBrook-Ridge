@@ -253,6 +253,7 @@ Comprehensive guides and references:
 - **[CONTROLS.md](CONTROLS.md)** - Complete control reference
 
 ### Game Development
+- **[TILE_SIZE_GUIDE.md](TILE_SIZE_GUIDE.md)** ⭐ **NEW!** - Why 16×16 is the ideal tile size for the game
 - **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
 - **[ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
 - **[TILESET_GUIDE.md](TILESET_GUIDE.md)** - Guide to using the custom ground tileset
