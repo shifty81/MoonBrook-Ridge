@@ -19,7 +19,7 @@ This document tracks the status of sprite asset integration for MoonBrook Ridge.
 
 ### 1. Font System ✅
 **Status:** Fully implemented
-- DejaVu Sans font loaded for all UI text
+- Arial font loaded for all UI text (universally available on Windows)
 - Configured in `Content/Fonts/Default.spritefont`
 - Working in HUD, stats display, and warnings
 

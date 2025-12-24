@@ -13,7 +13,7 @@ The game uses MonoGame's Content Pipeline to process and load assets. All game a
 ```
 Content/
 ├── Fonts/
-│   └── Default.spritefont          # DejaVu Sans font for UI text
+│   └── Default.spritefont          # Arial font for UI text
 ├── Textures/
 │   ├── Characters/
 │   │   ├── player.png              # Static player sprite
@@ -203,7 +203,7 @@ Font files use `.spritefont` XML descriptor format:
 <?xml version="1.0" encoding="utf-8"?>
 <XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
   <Asset Type="Graphics:FontDescription">
-    <FontName>DejaVu Sans</FontName>  <!-- System font name -->
+    <FontName>Arial</FontName>  <!-- System font name - widely available on Windows -->
     <Size>14</Size>
     <Spacing>0</Spacing>
     <UseKerning>true</UseKerning>
@@ -296,8 +296,8 @@ Always use these settings for pixel art:
 
 **Solutions:**
 1. Use a system font available on the target platform
-2. On Linux, use: DejaVu Sans, Liberation Sans
-3. On Windows, use: Arial, Segoe UI
+2. On Windows, use: Arial (recommended for this project), Segoe UI, Tahoma
+3. On Linux, use: Liberation Sans (Arial substitute), DejaVu Sans
 4. Alternatively, include a TTF font file in the project
 
 ### Build Failures
@@ -316,11 +316,11 @@ Always use these settings for pixel art:
 
 Different platforms have different fonts available:
 
-- **Linux**: DejaVu Sans, Liberation Sans, FreeSans
-- **Windows**: Arial, Segoe UI, Tahoma
+- **Windows**: Arial (recommended for this project), Segoe UI, Tahoma
+- **Linux**: Liberation Sans (Arial substitute), DejaVu Sans, FreeSans
 - **macOS**: Arial, Helvetica, SF Pro
 
-Use fonts available on all target platforms or include custom TTF files.
+**Note**: This project uses Arial as it's universally available on Windows and macOS. On Linux, the font may automatically substitute to Liberation Sans (a metric-compatible alternative).
 
 ### File Paths
 

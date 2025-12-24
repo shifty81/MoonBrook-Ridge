@@ -328,10 +328,10 @@ Only warning: Font not loaded yet (expected)
 - Camera follows player smoothly
 - **Player sprite rendering with actual texture** ⭐
 - **World map rendered with grass/plains tiles** ⭐
-- **Text rendering with DejaVu Sans font** ⭐
+- **Text rendering with Arial font** ⭐
 
 **Assets Loaded (NEW):** ⭐
-- ✅ Default font (DejaVu Sans) for UI text
+- ✅ Default font (Arial) for UI text
 - ✅ Player character sprite
 - ✅ Tileset textures (grass, plains)
 - ✅ Character animations (walk, run, idle, digging, hammering)
