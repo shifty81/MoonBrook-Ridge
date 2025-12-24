@@ -118,31 +118,39 @@ public class Crop
     private string _cropType;
     private int _growthStage;
     private int _maxGrowthStage;
-    private float _growthTimer;
-    private float _growthTimePerStage; // In game hours
+    private float _hoursGrown;
+    private float _hoursPerStage; // In game hours
     
     public Crop(string cropType, int maxStages, float hoursPerStage)
     {
         _cropType = cropType;
         _maxGrowthStage = maxStages;
-        _growthTimePerStage = hoursPerStage;
+        _hoursPerStage = hoursPerStage;
         _growthStage = 0;
-        _growthTimer = 0;
+        _hoursGrown = 0;
+    }
+    
+    /// <summary>
+    /// Updates crop growth based on elapsed game hours
+    /// </summary>
+    public void UpdateGrowth(float gameHoursElapsed)
+    {
+        if (_growthStage < _maxGrowthStage)
+        {
+            _hoursGrown += gameHoursElapsed;
+            
+            // Check if ready to advance to next stage
+            while (_hoursGrown >= _hoursPerStage && _growthStage < _maxGrowthStage)
+            {
+                _growthStage++;
+                _hoursGrown -= _hoursPerStage;
+            }
+        }
     }
     
     public void Update(GameTime gameTime)
     {
-        if (_growthStage < _maxGrowthStage)
-        {
-            _growthTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            
-            // Simple growth logic (would integrate with TimeSystem in full implementation)
-            if (_growthTimer >= _growthTimePerStage * 3600) // Convert hours to seconds
-            {
-                _growthStage++;
-                _growthTimer = 0;
-            }
-        }
+        // Kept for compatibility, but growth should be driven by UpdateGrowth()
     }
     
     public bool IsFullyGrown => _growthStage >= _maxGrowthStage;

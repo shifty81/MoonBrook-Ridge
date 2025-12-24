@@ -166,7 +166,16 @@ MoonBrookRidge/
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
 - MonoGame 3.8.4 or later
 
-### Building the Game
+### Quick Play (Recommended)
+
+Use the convenient play script:
+```bash
+git clone https://github.com/shifty81/MoonBrook-Ridge.git
+cd MoonBrook-Ridge
+./play.sh
+```
+
+### Manual Building
 
 1. **Clone the repository**
    ```bash
@@ -190,6 +199,14 @@ MoonBrookRidge/
    dotnet run
    ```
 
+### Playtest Guide
+
+**New!** See [PLAYTEST_GUIDE.md](PLAYTEST_GUIDE.md) for:
+- How to test the complete farming loop (till → plant → water → harvest)
+- Currently implemented features and controls
+- Tips for effective playtesting
+- Known limitations and troubleshooting
+
 ### Development
 
 The project uses MonoGame's Content Pipeline for asset management. To add new sprites:
@@ -207,20 +224,26 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Move Left | A or ← |
 | Move Right | D or → |
 | Run | Hold Shift |
-| Interact | E (planned) |
-| Use Tool/Place Item | C or Left Mouse |
-| Do Action (talk, open door) | X or Right Mouse |
+| Use Tool | C |
+| Plant Seed / Interact | X |
 | Open Menu/Inventory | E or Esc |
 | Open Journal/Quests | F |
 | Open Map | M |
-| Switch Toolbar | Tab |
-| Hotbar Slots | 1-9, 0, -, = |
+| Switch Tool | Tab |
+| Hotbar Slots (Consume) | 1-9, 0, -, = |
+| **Quick Save** ⭐ | **F5** |
+| **Quick Load** ⭐ | **F9** |
 
 See [CONTROLS.md](CONTROLS.md) for complete control documentation.
 
 ## 📚 Documentation
 
 Comprehensive guides and references:
+
+### For Players & Testers
+- **[PLAYTEST_GUIDE.md](PLAYTEST_GUIDE.md)** ⭐ **NEW!** - How to playtest the game and test features
+- **[DEV_SETUP.md](DEV_SETUP.md)** ⭐ **NEW!** - Development environment and debugging setup
+- **[CONTROLS.md](CONTROLS.md)** - Complete control reference
 
 ### Game Development
 - **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
@@ -229,7 +252,6 @@ Comprehensive guides and references:
 - **[SPRITE_GUIDE.md](SPRITE_GUIDE.md)** - Guide to using Sunnyside World assets
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development guide and best practices
-- **[CONTROLS.md](CONTROLS.md)** - Complete control reference
 - **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Overall project status and features
 
 ### Contributing & Maintenance

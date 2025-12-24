@@ -192,8 +192,8 @@ public class PlayerStats
     public float MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public float Energy { get => _energy; set => _energy = MathHelper.Clamp(value, 0, _maxEnergy); }
     public float MaxEnergy { get => _maxEnergy; set => _maxEnergy = value; }
-    public float Hunger => _hunger;
-    public float Thirst => _thirst;
+    public float Hunger { get => _hunger; set => _hunger = MathHelper.Clamp(value, 0, 100f); }
+    public float Thirst { get => _thirst; set => _thirst = MathHelper.Clamp(value, 0, 100f); }
     public int Money { get => _money; set => _money = Math.Max(0, value); }
     
     public void ModifyHealth(float amount) => Health += amount;
