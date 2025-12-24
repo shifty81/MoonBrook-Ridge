@@ -1,0 +1,193 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using MoonBrookRidge.Core.Systems;
+using MoonBrookRidge.UI.Dialogue;
+
+namespace MoonBrookRidge.Characters.NPCs;
+
+/// <summary>
+/// Manages all NPCs in the game world
+/// </summary>
+public class NPCManager
+{
+    private List<NPCCharacter> _npcs;
+    private Dictionary<string, Texture2D> _npcSprites;
+    private ChatBubble _chatBubble;
+    private RadialDialogueWheel _dialogueWheel;
+    private NPCCharacter _interactingNPC;
+    
+    // Interaction settings
+    private const float INTERACTION_DISTANCE = 64f; // Distance at which player can interact with NPC
+    private const float CHAT_BUBBLE_DISTANCE = 80f; // Distance at which chat bubbles appear
+    
+    public NPCManager()
+    {
+        _npcs = new List<NPCCharacter>();
+        _npcSprites = new Dictionary<string, Texture2D>();
+        _chatBubble = new ChatBubble();
+        _dialogueWheel = new RadialDialogueWheel();
+        _interactingNPC = null;
+        
+        // Wire up dialogue wheel events
+        _dialogueWheel.OnOptionSelected += OnDialogueOptionSelected;
+    }
+    
+    public void LoadContent(Dictionary<string, Texture2D> npcSprites)
+    {
+        _npcSprites = npcSprites;
+    }
+    
+    /// <summary>
+    /// Add an NPC to the world
+    /// </summary>
+    public void AddNPC(NPCCharacter npc)
+    {
+        _npcs.Add(npc);
+    }
+    
+    /// <summary>
+    /// Remove an NPC from the world
+    /// </summary>
+    public void RemoveNPC(NPCCharacter npc)
+    {
+        _npcs.Remove(npc);
+    }
+    
+    /// <summary>
+    /// Get NPC by name
+    /// </summary>
+    public NPCCharacter GetNPC(string name)
+    {
+        return _npcs.Find(npc => npc.Name == name);
+    }
+    
+    public void Update(GameTime gameTime, TimeSystem timeSystem, Vector2 playerPosition, bool interactPressed)
+    {
+        // Update all NPCs
+        foreach (var npc in _npcs)
+        {
+            npc.Update(gameTime, timeSystem);
+            
+            // Check distance to player for chat bubble display
+            float distance = Vector2.Distance(npc.Position, playerPosition);
+            
+            // Show chat bubble if player is near
+            if (distance < CHAT_BUBBLE_DISTANCE && !_dialogueWheel.IsActive)
+            {
+                // Show a greeting or status message
+                if (!_chatBubble.IsVisible)
+                {
+                    _chatBubble.Show(npc.Position, GetGreetingText(npc));
+                }
+            }
+            
+            // Check for interaction
+            if (distance < INTERACTION_DISTANCE && interactPressed && !_dialogueWheel.IsActive)
+            {
+                StartInteraction(npc);
+            }
+        }
+        
+        // Update UI systems
+        _chatBubble.Update(gameTime);
+        _dialogueWheel.Update(gameTime);
+    }
+    
+    private string GetGreetingText(NPCCharacter npc)
+    {
+        // Get appropriate greeting based on time of day or friendship level
+        int heartLevel = npc.GetHeartLevel();
+        
+        if (heartLevel >= 8)
+        {
+            return $"Hey there, friend!";
+        }
+        else if (heartLevel >= 4)
+        {
+            return $"Hello!";
+        }
+        else
+        {
+            return $"Hi.";
+        }
+    }
+    
+    private void StartInteraction(NPCCharacter npc)
+    {
+        _interactingNPC = npc;
+        _chatBubble.Hide();
+        
+        // Get dialogue tree for this NPC
+        var dialogueTree = npc.GetDialogue("greeting");
+        if (dialogueTree != null)
+        {
+            var currentNode = dialogueTree.GetCurrentNode();
+            if (currentNode != null)
+            {
+                // Show dialogue wheel with options
+                var options = currentNode.Options;
+                _dialogueWheel.Show(npc.Position, options);
+            }
+        }
+    }
+    
+    private void OnDialogueOptionSelected(int optionIndex)
+    {
+        if (_interactingNPC != null)
+        {
+            var dialogueTree = _interactingNPC.GetDialogue("greeting");
+            if (dialogueTree != null)
+            {
+                var currentNode = dialogueTree.GetCurrentNode();
+                if (currentNode != null && optionIndex < currentNode.Options.Count)
+                {
+                    var selectedOption = currentNode.Options[optionIndex];
+                    
+                    // Progress dialogue tree
+                    dialogueTree.SelectOption(optionIndex);
+                    
+                    var nextNode = dialogueTree.GetCurrentNode();
+                    if (nextNode != null && nextNode.Options.Count > 0)
+                    {
+                        // Show next set of options
+                        _dialogueWheel.Show(_interactingNPC.Position, nextNode.Options);
+                    }
+                    else
+                    {
+                        // End of dialogue
+                        EndInteraction();
+                    }
+                }
+            }
+        }
+    }
+    
+    private void EndInteraction()
+    {
+        _dialogueWheel.Hide();
+        _interactingNPC = null;
+    }
+    
+    public void Draw(SpriteBatch spriteBatch, SpriteFont font)
+    {
+        // Draw all NPCs
+        foreach (var npc in _npcs)
+        {
+            npc.Draw(spriteBatch);
+        }
+        
+        // Draw chat bubble
+        _chatBubble.Draw(spriteBatch, font);
+    }
+    
+    public void DrawUI(SpriteBatch spriteBatch, SpriteFont font)
+    {
+        // Draw dialogue wheel (this should be drawn after world transform)
+        _dialogueWheel.Draw(spriteBatch, font);
+    }
+    
+    public bool IsDialogueActive => _dialogueWheel.IsActive;
+    
+    public int NPCCount => _npcs.Count;
+}

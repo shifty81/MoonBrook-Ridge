@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MoonBrookRidge.Characters.Player;
+using MoonBrookRidge.Characters.NPCs;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
@@ -30,6 +31,7 @@ public class GameplayState : GameState
     private ConsumableManager _consumableManager;
     private SeedManager _seedManager;
     private SaveSystem _saveSystem;
+    private NPCManager _npcManager;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -77,6 +79,9 @@ public class GameplayState : GameState
         
         // Initialize UI
         _hud = new HUDManager();
+        
+        // Initialize NPC manager
+        _npcManager = new NPCManager();
         
         // Initialize save system
         _saveSystem = new SaveSystem();
@@ -205,6 +210,16 @@ public class GameplayState : GameState
         
         // Plant some test crops to demonstrate the system
         _worldMap.PlantTestCrops();
+        
+        // Load NPC sprites (using player sprite as placeholder for now)
+        var npcSprites = new Dictionary<string, Texture2D>
+        {
+            ["farmer"] = animations["idle"] // Use idle animation sprite as NPC sprite
+        };
+        _npcManager.LoadContent(npcSprites);
+        
+        // Create a test NPC
+        CreateTestNPC();
     }
 
     public override void Update(GameTime gameTime)
@@ -256,6 +271,9 @@ public class GameplayState : GameState
         
         // Update player with input and collision
         _player.Update(gameTime, _inputManager, _collisionSystem);
+        
+        // Update NPCs
+        _npcManager.Update(gameTime, _timeSystem, _player.Position, _inputManager.IsDoActionPressed());
         
         // Update camera to follow player
         _camera.Follow(_player.Position);
@@ -478,12 +496,16 @@ public class GameplayState : GameState
         
         _worldMap.Draw(spriteBatch);
         _player.Draw(spriteBatch);
+        _npcManager.Draw(spriteBatch, Game.DefaultFont);
         
         spriteBatch.End();
         
         // Draw HUD (no camera transform)
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _hud.DrawPlayerStats(spriteBatch, Game.DefaultFont, _player, _timeSystem);
+        
+        // Draw NPC UI (dialogue wheel)
+        _npcManager.DrawUI(spriteBatch, Game.DefaultFont);
         
         // Draw pause indicator
         if (_isPaused)
@@ -521,5 +543,51 @@ public class GameplayState : GameState
         Texture2D texture = new Texture2D(Game.GraphicsDevice, 1, 1);
         texture.SetData(new[] { Color.White });
         return texture;
+    }
+    
+    private void CreateTestNPC()
+    {
+        // Create a test NPC named "Emma" the farmer
+        var emma = new NPCCharacter("Emma", new Vector2(600, 400));
+        
+        // Add a daily schedule for Emma
+        emma.Schedule.AddScheduleEntry(6.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(600, 400), 
+            LocationName = "Home",
+            Activity = "Waking up"
+        });
+        emma.Schedule.AddScheduleEntry(9.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(700, 300), 
+            LocationName = "Town Square",
+            Activity = "Shopping"
+        });
+        emma.Schedule.AddScheduleEntry(14.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(500, 500), 
+            LocationName = "Farm",
+            Activity = "Working"
+        });
+        emma.Schedule.AddScheduleEntry(18.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(600, 400), 
+            LocationName = "Home",
+            Activity = "Relaxing"
+        });
+        
+        // Create a simple greeting dialogue tree
+        var greetingNode = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
+        var option1Response = new DialogueNode("I'm Emma, I've been farming here for years. How can I help you?", "Emma");
+        var option2Response = new DialogueNode("The weather has been great for crops lately!", "Emma");
+        
+        greetingNode.AddOption("Who are you?", option1Response);
+        greetingNode.AddOption("How's the farm?", option2Response);
+        
+        var dialogueTree = new DialogueTree(greetingNode);
+        emma.AddDialogueTree("greeting", dialogueTree);
+        
+        // Add Emma to the NPC manager
+        _npcManager.AddNPC(emma);
     }
 }
