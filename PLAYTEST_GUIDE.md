@@ -167,10 +167,12 @@ When testing, note:
 4. Any error messages shown
 
 ## 🎯 Next Features Coming
-- [ ] Harvested crops add to inventory
-- [ ] Save/load game system
-- [ ] Pause menu with save/load options
+- [x] Harvested crops add to inventory ✅
+- [x] Save/load game system (F5/F9) ✅
+- [ ] Pause menu with save/load UI options
 - [ ] Visual feedback for seed planting
+- [ ] Time system integration with save/load (restore exact time)
+- [ ] World persistence (save/load crops in ground)
 - [ ] Mining with pickaxe
 - [ ] Tree chopping with axe
 - [ ] NPC interactions
