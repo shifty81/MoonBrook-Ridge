@@ -2,7 +2,7 @@
 
 ## Summary
 
-**The ideal tile size for ground world tiles in MoonBrook Ridge is 16x16 pixels.**
+**The ideal tile size for ground world tiles in MoonBrook Ridge is 16×16 pixels.**
 
 This decision is based on asset compatibility, performance considerations, visual aesthetics, and existing implementation.
 
@@ -10,7 +10,7 @@ This decision is based on asset compatibility, performance considerations, visua
 
 ## Current Implementation ✅
 
-The game already uses 16x16 pixels as the standard tile size:
+The game already uses 16×16 pixels as the standard tile size:
 
 ```csharp
 // GameConstants.cs
@@ -20,35 +20,35 @@ public const int TILE_SIZE = 16;
 private const int TILE_SIZE = 16;
 ```
 
-All rendering, collision detection, and world positioning systems are built around this 16x16 tile standard.
+All rendering, collision detection, and world positioning systems are built around this 16×16 tile standard.
 
 ---
 
-## Why 16x16 is Ideal
+## Why 16×16 is Ideal
 
 ### 1. Asset Pack Compatibility 🎨
 
 #### Ground Tileset
-The custom `ground_tileset.png` is specifically designed with 16x16 tiles:
-- **Dimensions**: 256x192 pixels (16 columns × 12 rows)
-- **Total Tiles**: 192 individual 16x16 tiles
+The custom `ground_tileset.png` is specifically designed with 16×16 tiles:
+- **Dimensions**: 256×192 pixels (16 columns × 12 rows)
+- **Total Tiles**: 192 individual 16×16 tiles
 - **Categories**: Grass, dirt, stone, water, sand, tilled soil, etc.
 
 #### Tilemap Assets
-The 16x16 tilemap collection provides perfect compatibility:
-- `Tilemap_color1.png` through `Tilemap_color5.png`: 576x384 pixels
-- Each tilemap contains 36×24 = 864 tiles at 16x16 pixels
-- Designed specifically for 16x16 tile-based games
+The 16×16 tilemap collection provides perfect compatibility:
+- `Tilemap_color1.png` through `Tilemap_color5.png`: 576×384 pixels
+- Each tilemap contains 36×24 = 864 tiles at 16×16 pixels
+- Designed specifically for 16×16 tile-based games
 
 #### Sunnyside World Tilesets
-Sunnyside World includes 16x16 compatible tilesets:
-- Main tileset: 1280x1280 pixels (80×80 tiles at 16x16)
-- Individual tile sprites: 16x16 pixels
+Sunnyside World includes 16×16 compatible tilesets:
+- Main tileset: 1280×1280 pixels (80×80 tiles at 16×16)
+- Individual tile sprites: 16×16 pixels
 - All terrain tiles match this standard
 
 ### 2. Character Sprite Compatibility 👤
 
-Character sprites scale appropriately with 16x16 tiles:
+Character sprites scale appropriately with 16×16 tiles:
 
 **Animation Strip Dimensions:**
 - Walk animation: 768×64 pixels (8 frames, each ~96×64 pixels)
@@ -67,7 +67,7 @@ This creates excellent visual proportions:
 
 ### 3. Performance Optimization ⚡
 
-16x16 tiles offer excellent performance characteristics:
+16×16 tiles offer excellent performance characteristics:
 
 **Memory Efficiency:**
 - Small texture size per tile (16×16 = 256 pixels per tile)
@@ -88,7 +88,7 @@ This creates excellent visual proportions:
 
 ### 4. Visual Aesthetics 🖼️
 
-16x16 provides the perfect pixel art style:
+16×16 provides the perfect pixel art style:
 
 **Classic Pixel Art Look:**
 - Matches the aesthetic of beloved farming games
@@ -109,7 +109,7 @@ This creates excellent visual proportions:
 
 ### 5. Gameplay Considerations 🎮
 
-16x16 tiles support excellent gameplay mechanics:
+16×16 tiles support excellent gameplay mechanics:
 
 **Farming System:**
 - Each tile can hold one crop
@@ -136,9 +136,9 @@ This creates excellent visual proportions:
 
 ### 6. Industry Standard 📊
 
-16x16 tiles are an established standard in pixel art games:
+16×16 tiles are an established standard in pixel art games:
 
-**Successful Games Using 16x16 (or similar):**
+**Successful Games Using 16×16 (or similar):**
 - **Stardew Valley**: Uses 16×16 for tiles (characters are larger)
 - **Terraria**: 16×16 tiles (though world is larger)
 - **Celeste**: 8×8 tiles (but MoonBrook Ridge has more detail)
