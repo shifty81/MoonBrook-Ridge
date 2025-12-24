@@ -550,9 +550,31 @@ public class GameplayState : GameState
         // Create a test NPC named "Emma" the farmer
         var emma = new NPCCharacter("Emma", new Vector2(600, 400));
         
-        // Load sprite for Emma
-        var npcSprites = new Dictionary<string, Texture2D>(); 
-        // Note: We'll use the idle animation sprite loaded earlier
+        // Add a daily schedule for Emma
+        emma.Schedule.AddScheduleEntry(6.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(600, 400), 
+            LocationName = "Home",
+            Activity = "Waking up"
+        });
+        emma.Schedule.AddScheduleEntry(9.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(700, 300), 
+            LocationName = "Town Square",
+            Activity = "Shopping"
+        });
+        emma.Schedule.AddScheduleEntry(14.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(500, 500), 
+            LocationName = "Farm",
+            Activity = "Working"
+        });
+        emma.Schedule.AddScheduleEntry(18.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(600, 400), 
+            LocationName = "Home",
+            Activity = "Relaxing"
+        });
         
         // Create a simple greeting dialogue tree
         var greetingNode = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
