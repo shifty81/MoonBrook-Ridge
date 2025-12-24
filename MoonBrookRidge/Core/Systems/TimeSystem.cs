@@ -13,6 +13,7 @@ public class TimeSystem
     private int _day;
     private Season _season;
     private int _year;
+    private float _lastGameHoursElapsed;
     
     private const float MINUTES_PER_GAME_HOUR = 2.5f; // Real seconds per game hour
     private const int DAYS_PER_SEASON = 28;
@@ -31,6 +32,7 @@ public class TimeSystem
         float gameHoursElapsed = realSecondsElapsed / (MINUTES_PER_GAME_HOUR * 60f);
         
         _timeOfDay += gameHoursElapsed;
+        _lastGameHoursElapsed = gameHoursElapsed; // Track for crop growth
         
         // Advance day at 2 AM (time to sleep)
         if (_timeOfDay >= 26f) // 2 AM next day
@@ -72,6 +74,7 @@ public class TimeSystem
     public int Day => _day;
     public Season CurrentSeason => _season;
     public int Year => _year;
+    public float LastGameHoursElapsed => _lastGameHoursElapsed;
     
     public string GetFormattedTime()
     {

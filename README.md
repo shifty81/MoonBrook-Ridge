@@ -166,7 +166,16 @@ MoonBrookRidge/
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
 - MonoGame 3.8.4 or later
 
-### Building the Game
+### Quick Play (Recommended)
+
+Use the convenient play script:
+```bash
+git clone https://github.com/shifty81/MoonBrook-Ridge.git
+cd MoonBrook-Ridge
+./play.sh
+```
+
+### Manual Building
 
 1. **Clone the repository**
    ```bash
@@ -189,6 +198,14 @@ MoonBrookRidge/
    ```bash
    dotnet run
    ```
+
+### Playtest Guide
+
+**New!** See [PLAYTEST_GUIDE.md](PLAYTEST_GUIDE.md) for:
+- How to test the complete farming loop (till → plant → water → harvest)
+- Currently implemented features and controls
+- Tips for effective playtesting
+- Known limitations and troubleshooting
 
 ### Development
 

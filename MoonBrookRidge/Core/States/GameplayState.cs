@@ -28,6 +28,7 @@ public class GameplayState : GameState
     private CollisionSystem _collisionSystem;
     private InventorySystem _inventory;
     private ConsumableManager _consumableManager;
+    private SeedManager _seedManager;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -59,8 +60,16 @@ public class GameplayState : GameState
         _inventory.AddItem(ConsumableManager.GetDrink("Water"), 10);
         _inventory.AddItem(ConsumableManager.GetDrink("Spring Water"), 3);
         
+        // Add starting seeds
+        _inventory.AddItem(SeedFactory.GetSeed("wheat seeds"), 20);
+        _inventory.AddItem(SeedFactory.GetSeed("carrot seeds"), 10);
+        _inventory.AddItem(SeedFactory.GetSeed("potato seeds"), 10);
+        
         // Initialize tool manager
         _toolManager = new ToolManager(_worldMap, _player);
+        
+        // Initialize seed manager
+        _seedManager = new SeedManager(_inventory, _toolManager, _player);
         
         // Give player starting tools
         _toolManager.SetCurrentTool(new Hoe());
@@ -215,11 +224,17 @@ public class GameplayState : GameState
         // Update time system
         _timeSystem.Update(gameTime);
         
+        // Update crop growth based on game time
+        _worldMap.UpdateCropGrowth(_timeSystem.LastGameHoursElapsed);
+        
         // Update world map
         _worldMap.Update(gameTime);
         
         // Handle tool usage input
         HandleToolInput();
+        
+        // Handle seed planting input
+        HandleSeedPlantingInput();
         
         // Handle consumable usage input
         HandleConsumableInput();
@@ -299,6 +314,19 @@ public class GameplayState : GameState
         else
         {
             _toolManager.SetCurrentTool(new Hoe());
+        }
+    }
+    
+    private void HandleSeedPlantingInput()
+    {
+        // Check for interact key (X key) to plant seeds
+        if (_inputManager.IsDoActionPressed())
+        {
+            // Calculate position in front of player
+            Vector2 plantPosition = CalculateToolTargetPosition();
+            
+            // Try to plant a seed
+            _seedManager.TryPlantSeed(plantPosition);
         }
     }
     

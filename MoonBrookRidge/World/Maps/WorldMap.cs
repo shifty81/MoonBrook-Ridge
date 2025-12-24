@@ -110,6 +110,24 @@ public class WorldMap
         }
     }
     
+    /// <summary>
+    /// Updates all crops with elapsed game hours
+    /// </summary>
+    public void UpdateCropGrowth(float gameHoursElapsed)
+    {
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var crop = _tiles[x, y].Crop;
+                if (crop != null)
+                {
+                    crop.UpdateGrowth(gameHoursElapsed);
+                }
+            }
+        }
+    }
+    
     public void Draw(SpriteBatch spriteBatch)
     {
         // Use actual textures if available, otherwise fall back to colored squares

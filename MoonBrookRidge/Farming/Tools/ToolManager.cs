@@ -121,6 +121,9 @@ public class ToolManager
         // Can only harvest fully grown crops
         if (tile.Crop != null && tile.Crop.IsFullyGrown)
         {
+            // Get the crop type to create harvest item
+            string cropType = tile.Crop.CropType;
+            
             // TODO: Add harvested crop to inventory
             // For now, just remove the crop
             tile.RemoveCrop();
