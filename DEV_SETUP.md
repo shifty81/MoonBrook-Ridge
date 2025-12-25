@@ -10,34 +10,9 @@ This document provides setup instructions for developers and testers working on 
 - MonoGame 3.8.4 or later (installed automatically via NuGet)
 
 ### Required Fonts
-The game requires the **Liberation Sans** font for text rendering.
+The game now **bundles the Liberation Sans font** directly in the project - no installation required!
 
-**Windows**: Download and install Liberation Fonts
-1. Visit [Liberation Fonts Releases](https://github.com/liberationfonts/liberation-fonts/releases)
-2. Download the latest `liberation-fonts-ttf-X.X.X.tar.gz`
-3. Extract and install the `.ttf` files (Right-click → Install)
-4. Restart your IDE if it was open
-
-**Linux**: Install Liberation fonts (usually pre-installed)
-```bash
-# Ubuntu/Debian
-sudo apt-get update
-sudo apt-get install fonts-liberation
-
-# Fedora/RHEL
-sudo dnf install liberation-fonts
-
-# Arch
-sudo pacman -S ttf-liberation
-
-# Refresh font cache
-sudo fc-cache -f -v
-```
-
-**macOS**: Install via Homebrew
-```bash
-brew install --cask font-liberation
-```
+The font file (`LiberationSans-Regular.ttf`) is included in `MoonBrookRidge/Content/Fonts/` and will be automatically built into the game by the MonoGame Content Pipeline.
 
 ## 🎮 Playtest Scripts
 
