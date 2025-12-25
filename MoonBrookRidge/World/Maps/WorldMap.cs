@@ -389,7 +389,6 @@ public class WorldMap
         // Top border - dense tree line
         for (int x = 0; x < _width; x += 2)
         {
-            if (x < 2 || x >= _width - 2) continue; // Skip corners to avoid overlap
             string treeKey = treeKeys[random.Next(treeKeys.Length)];
             if (trees.ContainsKey(treeKey))
             {
@@ -400,7 +399,6 @@ public class WorldMap
         // Bottom border - dense tree line
         for (int x = 0; x < _width; x += 2)
         {
-            if (x < 2 || x >= _width - 2) continue; // Skip corners to avoid overlap
             string treeKey = treeKeys[random.Next(treeKeys.Length)];
             if (trees.ContainsKey(treeKey))
             {
