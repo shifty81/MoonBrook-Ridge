@@ -19,6 +19,10 @@ public class WorldMap
     // Tile textures
     private Dictionary<TileType, Texture2D> _tileTextures;
     
+    // Sunnyside World tileset support
+    private SunnysideTilesetHelper _sunnysideTileset;
+    private Dictionary<TileType, int> _sunnysideTileMapping;
+    
     // Crop textures by type and growth stage
     private Dictionary<string, Texture2D[]> _cropTextures;
     
@@ -29,6 +33,7 @@ public class WorldMap
         _tiles = new Tile[_width, _height];
         _cropTextures = new Dictionary<string, Texture2D[]>();
         _tileTextures = new Dictionary<TileType, Texture2D>();
+        _sunnysideTileMapping = new Dictionary<TileType, int>();
         
         InitializeMap();
     }
@@ -102,6 +107,55 @@ public class WorldMap
         }
     }
     
+    /// <summary>
+    /// Load and initialize the Sunnyside World tileset
+    /// </summary>
+    public void LoadSunnysideTileset(Texture2D sunnysideTilesetTexture)
+    {
+        _sunnysideTileset = new SunnysideTilesetHelper(sunnysideTilesetTexture);
+        InitializeSunnysideTileMapping();
+    }
+    
+    /// <summary>
+    /// Initialize the mapping from TileType to Sunnyside tile IDs
+    /// Uses random selection from available tiles for variety
+    /// </summary>
+    private void InitializeSunnysideTileMapping()
+    {
+        Random random = new Random(42); // Fixed seed for consistency
+        
+        // Map each TileType to a specific tile ID from the Sunnyside tileset
+        _sunnysideTileMapping = new Dictionary<TileType, int>
+        {
+            // Grass variants
+            [TileType.Grass] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Basic, random),
+            [TileType.Grass01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Light, random),
+            [TileType.Grass02] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Medium, random),
+            [TileType.Grass03] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Dark, random),
+            
+            // Dirt variants
+            [TileType.Dirt] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Basic, random),
+            [TileType.Dirt01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Basic, random),
+            [TileType.Dirt02] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Path, random),
+            [TileType.Tilled] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Tilled, random),
+            [TileType.TilledDry] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Tilled, random),
+            [TileType.TilledWatered] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Tilled, random),
+            
+            // Stone variants
+            [TileType.Stone] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Stone.Floor, random),
+            [TileType.Stone01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Stone.Wall, random),
+            [TileType.Rock] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Stone.Wall, random),
+            
+            // Water variants
+            [TileType.Water] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Water.Basic, random),
+            [TileType.Water01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Water.Shallow, random),
+            
+            // Sand variants
+            [TileType.Sand] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Sand.Basic, random),
+            [TileType.Sand01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Sand.Light, random)
+        };
+    }
+    
     public void Update(GameTime gameTime)
     {
         // Update tiles (crop growth, etc.)
@@ -134,7 +188,7 @@ public class WorldMap
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        // Use individual textures or colored squares
+        // Use Sunnyside tileset if available, otherwise fall back to individual textures or colored squares
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
@@ -142,8 +196,13 @@ public class WorldMap
                 Tile tile = _tiles[x, y];
                 Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 
-                // Try to draw using individual textures
-                if (_tileTextures.Count > 0)
+                // Try to draw using Sunnyside tileset first
+                if (_sunnysideTileset != null && _sunnysideTileMapping.TryGetValue(tile.Type, out int tileId))
+                {
+                    _sunnysideTileset.DrawTile(spriteBatch, tileId, tileRect);
+                }
+                // Fall back to individual textures
+                else if (_tileTextures.Count > 0)
                 {
                     Texture2D texture = GetTileTexture(tile.Type);
                     
