@@ -210,9 +210,8 @@ public class WorldMap
                 Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 
                 // Try to draw using Slates tileset first
-                if (_slatesTileset != null && _slatesTileMapping.ContainsKey(tile.Type))
+                if (_slatesTileset != null && _slatesTileMapping.TryGetValue(tile.Type, out int tileId))
                 {
-                    int tileId = _slatesTileMapping[tile.Type];
                     _slatesTileset.DrawTile(spriteBatch, tileId, tileRect);
                 }
                 // Fall back to individual textures
