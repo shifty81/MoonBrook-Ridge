@@ -2037,7 +2037,7 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Tiles/sand_01.png
 
-#begin Textures/Tiles/Slates_32x32_v2.png
+#begin Textures/Tiles/sunnyside_tileset.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -2047,4 +2047,4 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/Tiles/Slates_32x32_v2.png
+/build:Textures/Tiles/sunnyside_tileset.png

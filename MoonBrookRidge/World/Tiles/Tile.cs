@@ -84,7 +84,7 @@ public class Tile
     
     public bool CanPlant()
     {
-        return (_type == TileType.Tilled || _type == TileType.TilledDry || _type == TileType.TilledWatered || _type == TileType.SlatesDirtTilled) 
+        return (_type == TileType.Tilled || _type == TileType.TilledDry || _type == TileType.TilledWatered) 
                && _crop == null;
     }
     

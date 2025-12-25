@@ -208,9 +208,9 @@ public class GameplayState : GameState
         // Load world map content with legacy textures (as fallback)
         _worldMap.LoadContent(tileTextures, cropTextures);
         
-        // Load the Slates tileset as the primary tileset
-        Texture2D slatesTileset = Game.Content.Load<Texture2D>("Textures/Tiles/Slates_32x32_v2");
-        _worldMap.LoadSlatesTileset(slatesTileset);
+        // Load the Sunnyside World tileset as the primary tileset
+        Texture2D sunnysideTileset = Game.Content.Load<Texture2D>("Textures/Tiles/sunnyside_tileset");
+        _worldMap.LoadSunnysideTileset(sunnysideTileset);
         
         // Plant some test crops to demonstrate the system
         _worldMap.PlantTestCrops();

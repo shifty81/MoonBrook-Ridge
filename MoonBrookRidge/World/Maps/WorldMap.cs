@@ -19,9 +19,9 @@ public class WorldMap
     // Tile textures
     private Dictionary<TileType, Texture2D> _tileTextures;
     
-    // Slates tileset support
-    private SlatesTilesetHelper _slatesTileset;
-    private Dictionary<TileType, int> _slatesTileMapping;
+    // Sunnyside World tileset support
+    private SunnysideTilesetHelper _sunnysideTileset;
+    private Dictionary<TileType, int> _sunnysideTileMapping;
     
     // Crop textures by type and growth stage
     private Dictionary<string, Texture2D[]> _cropTextures;
@@ -33,64 +33,62 @@ public class WorldMap
         _tiles = new Tile[_width, _height];
         _cropTextures = new Dictionary<string, Texture2D[]>();
         _tileTextures = new Dictionary<TileType, Texture2D>();
-        _slatesTileMapping = new Dictionary<TileType, int>();
+        _sunnysideTileMapping = new Dictionary<TileType, int>();
         
         InitializeMap();
     }
     
     private void InitializeMap()
     {
-        // Create a varied map with Slates tileset
+        // Create a varied map with legacy tiles
         Random random = new Random(42); // Fixed seed for consistency
         
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                // Create varied terrain using Slates tiles
+                // Create varied terrain
                 TileType tileType;
                 
                 // Border areas - mix of grass types
                 if (x < 5 || y < 5 || x >= _width - 5 || y >= _height - 5)
                 {
-                    int grassVariant = random.Next(5);
+                    int grassVariant = random.Next(4);
                     tileType = grassVariant switch
                     {
-                        0 => TileType.SlatesGrassBasic,
-                        1 => TileType.SlatesGrassLight,
-                        2 => TileType.SlatesGrassMedium,
-                        3 => TileType.SlatesGrassDark,
-                        _ => TileType.SlatesGrassFlowers
+                        0 => TileType.Grass,
+                        1 => TileType.Grass01,
+                        2 => TileType.Grass02,
+                        _ => TileType.Grass03
                     };
                 }
                 // Small dirt path area
                 else if (x >= 10 && x < 15 && y >= 10 && y < 15)
                 {
-                    tileType = random.Next(2) == 0 ? TileType.SlatesDirtBasic : TileType.SlatesDirtPath;
+                    tileType = random.Next(2) == 0 ? TileType.Dirt : TileType.Dirt01;
                 }
                 // Stone area
                 else if (x >= 35 && x < 40 && y >= 35 && y < 40)
                 {
-                    tileType = random.Next(2) == 0 ? TileType.SlatesStoneFloor : TileType.SlatesStoneCobble;
+                    tileType = random.Next(2) == 0 ? TileType.Stone : TileType.Stone01;
                 }
                 // Water area (small pond)
                 else if (x >= 15 && x < 20 && y >= 30 && y < 35)
                 {
-                    tileType = random.Next(2) == 0 ? TileType.SlatesWaterStill : TileType.SlatesWaterShallow;
+                    tileType = TileType.Water;
                 }
                 // Sand corner
                 else if (x >= 40 && y >= 40)
                 {
-                    tileType = random.Next(2) == 0 ? TileType.SlatesSandBasic : TileType.SlatesSandLight;
+                    tileType = TileType.Sand;
                 }
                 // Default grass with variation
                 else
                 {
                     int variant = random.Next(10);
-                    tileType = variant < 5 ? TileType.SlatesGrassBasic : 
-                              variant < 7 ? TileType.SlatesGrassLight :
-                              variant < 8 ? TileType.SlatesGrassMedium :
-                              variant < 9 ? TileType.SlatesGrassDark : TileType.SlatesGrassFlowers;
+                    tileType = variant < 5 ? TileType.Grass : 
+                              variant < 7 ? TileType.Grass01 :
+                              variant < 8 ? TileType.Grass02 : TileType.Grass03;
                 }
                 
                 _tiles[x, y] = new Tile(tileType, new Vector2(x, y));
@@ -110,62 +108,51 @@ public class WorldMap
     }
     
     /// <summary>
-    /// Load and initialize the Slates tileset
+    /// Load and initialize the Sunnyside World tileset
     /// </summary>
-    public void LoadSlatesTileset(Texture2D slatesTilesetTexture)
+    public void LoadSunnysideTileset(Texture2D sunnysideTilesetTexture)
     {
-        _slatesTileset = new SlatesTilesetHelper(slatesTilesetTexture);
-        InitializeSlatesTileMapping();
+        _sunnysideTileset = new SunnysideTilesetHelper(sunnysideTilesetTexture);
+        InitializeSunnysideTileMapping();
     }
     
     /// <summary>
-    /// Initialize the mapping from TileType to Slates tile IDs
+    /// Initialize the mapping from TileType to Sunnyside tile IDs
     /// Uses random selection from available tiles for variety
     /// </summary>
-    private void InitializeSlatesTileMapping()
+    private void InitializeSunnysideTileMapping()
     {
         Random random = new Random(42); // Fixed seed for consistency
         
-        // Map each Slates TileType to a specific tile ID from the Slates tileset
-        _slatesTileMapping = new Dictionary<TileType, int>
+        // Map each TileType to a specific tile ID from the Sunnyside tileset
+        _sunnysideTileMapping = new Dictionary<TileType, int>
         {
             // Grass variants
-            [TileType.SlatesGrassBasic] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Basic, random),
-            [TileType.SlatesGrassLight] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Light, random),
-            [TileType.SlatesGrassMedium] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Medium, random),
-            [TileType.SlatesGrassDark] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Dark, random),
-            [TileType.SlatesGrassFlowers] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.WithFlowers, random),
+            [TileType.Grass] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Basic, random),
+            [TileType.Grass01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Light, random),
+            [TileType.Grass02] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Medium, random),
+            [TileType.Grass03] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Grass.Dark, random),
             
             // Dirt variants
-            [TileType.SlatesDirtBasic] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Dirt.Basic, random),
-            [TileType.SlatesDirtPath] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Dirt.Path, random),
-            [TileType.SlatesDirtTilled] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Dirt.Tilled, random),
+            [TileType.Dirt] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Basic, random),
+            [TileType.Dirt01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Basic, random),
+            [TileType.Dirt02] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Path, random),
+            [TileType.Tilled] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Tilled, random),
+            [TileType.TilledDry] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Tilled, random),
+            [TileType.TilledWatered] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Dirt.Tilled, random),
             
             // Stone variants
-            [TileType.SlatesStoneFloor] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Floor, random),
-            [TileType.SlatesStoneWall] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Wall, random),
-            [TileType.SlatesStoneCobble] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Cobblestone, random),
-            [TileType.SlatesStoneBrick] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Brick, random),
+            [TileType.Stone] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Stone.Floor, random),
+            [TileType.Stone01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Stone.Wall, random),
+            [TileType.Rock] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Stone.Wall, random),
             
             // Water variants
-            [TileType.SlatesWaterStill] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Still, random),
-            [TileType.SlatesWaterAnimated] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Animated, random),
-            [TileType.SlatesWaterDeep] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Deep, random),
-            [TileType.SlatesWaterShallow] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Shallow, random),
+            [TileType.Water] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Water.Basic, random),
+            [TileType.Water01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Water.Shallow, random),
             
             // Sand variants
-            [TileType.SlatesSandBasic] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Sand.Basic, random),
-            [TileType.SlatesSandLight] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Sand.Light, random),
-            [TileType.SlatesSandStones] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Sand.WithStones, random),
-            
-            // Indoor variants
-            [TileType.SlatesIndoorWood] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Indoor.WoodFloor, random),
-            [TileType.SlatesIndoorStone] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Indoor.StoneFloor, random),
-            [TileType.SlatesIndoorTile] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Indoor.TileFloor, random),
-            
-            // Special terrain
-            [TileType.SlatesSnow] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Special.Snow, random),
-            [TileType.SlatesIce] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Special.Ice, random)
+            [TileType.Sand] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Sand.Basic, random),
+            [TileType.Sand01] = SunnysideTileMapping.GetRandomTile(SunnysideTileMapping.Sand.Light, random)
         };
     }
     
@@ -201,7 +188,7 @@ public class WorldMap
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        // Use Slates tileset if available, otherwise fall back to individual textures or colored squares
+        // Use Sunnyside tileset if available, otherwise fall back to individual textures or colored squares
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
@@ -209,10 +196,10 @@ public class WorldMap
                 Tile tile = _tiles[x, y];
                 Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 
-                // Try to draw using Slates tileset first
-                if (_slatesTileset != null && _slatesTileMapping.TryGetValue(tile.Type, out int tileId))
+                // Try to draw using Sunnyside tileset first
+                if (_sunnysideTileset != null && _sunnysideTileMapping.TryGetValue(tile.Type, out int tileId))
                 {
-                    _slatesTileset.DrawTile(spriteBatch, tileId, tileRect);
+                    _sunnysideTileset.DrawTile(spriteBatch, tileId, tileRect);
                 }
                 // Fall back to individual textures
                 else if (_tileTextures.Count > 0)
@@ -314,8 +301,8 @@ public class WorldMap
         {
             for (int y = 20; y < 25; y++)
             {
-                // Use Slates tilled dirt for the farm area
-                _tiles[x, y].Type = TileType.SlatesDirtTilled;
+                // Use legacy tilled dirt for the farm area
+                _tiles[x, y].Type = TileType.Tilled;
                 
                 // Plant different crops in rows
                 string cropType = (y - 20) switch
