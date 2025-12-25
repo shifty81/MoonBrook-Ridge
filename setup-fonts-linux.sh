@@ -29,17 +29,34 @@ sudo mkdir -p /usr/share/fonts/truetype/msttcorefonts
 cd "$LIBERATION_DIR"
 
 # Create symlinks with proper naming for MonoGame
-sudo ln -sf "$(pwd)/LiberationSans-Regular.ttf" /usr/share/fonts/truetype/msttcorefonts/arial.ttf
-sudo ln -sf "$(pwd)/LiberationSans-Bold.ttf" /usr/share/fonts/truetype/msttcorefonts/arialbd.ttf
-sudo ln -sf "$(pwd)/LiberationSans-Italic.ttf" /usr/share/fonts/truetype/msttcorefonts/ariali.ttf
-sudo ln -sf "$(pwd)/LiberationSans-BoldItalic.ttf" /usr/share/fonts/truetype/msttcorefonts/arialbi.ttf
+# Verify font files exist before creating symlinks
+FONT_FILES=(
+    "LiberationSans-Regular.ttf:arial.ttf"
+    "LiberationSans-Bold.ttf:arialbd.ttf"
+    "LiberationSans-Italic.ttf:ariali.ttf"
+    "LiberationSans-BoldItalic.ttf:arialbi.ttf"
+)
+
+for font_pair in "${FONT_FILES[@]}"; do
+    source_font="${font_pair%%:*}"
+    target_name="${font_pair##*:}"
+    
+    if [ ! -f "$source_font" ]; then
+        echo "Warning: Font file $source_font not found, skipping..."
+        continue
+    fi
+    
+    sudo ln -sf "$(pwd)/$source_font" "/usr/share/fonts/truetype/msttcorefonts/$target_name"
+done
 
 # Refresh font cache
 echo "Refreshing font cache..."
-if ! sudo fc-cache -f -v > /tmp/fc-cache.log 2>&1; then
-    echo "Warning: fc-cache encountered issues. Check /tmp/fc-cache.log for details."
+LOG_FILE="/tmp/fc-cache-$$.log"
+if ! sudo fc-cache -f -v > "$LOG_FILE" 2>&1; then
+    echo "Warning: fc-cache encountered issues. Check $LOG_FILE for details."
 else
     echo "Font cache refreshed successfully."
+    rm -f "$LOG_FILE"
 fi
 
 echo ""
