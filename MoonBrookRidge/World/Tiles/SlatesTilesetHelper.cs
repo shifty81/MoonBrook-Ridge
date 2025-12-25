@@ -85,6 +85,8 @@ public class SlatesTilesetHelper
     /// <summary>
     /// Extracts a single tile from the tileset as a new texture
     /// Useful for converting 32x32 tiles to the game's 16x16 format
+    /// NOTE: This is a relatively expensive operation and should be done during
+    /// initialization/loading, not during the render loop. Consider caching results.
     /// </summary>
     /// <param name="graphicsDevice">GraphicsDevice to use</param>
     /// <param name="tileId">Tile ID to extract</param>
