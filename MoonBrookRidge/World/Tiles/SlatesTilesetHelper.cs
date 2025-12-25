@@ -108,15 +108,17 @@ public class SlatesTilesetHelper
         graphicsDevice.SetRenderTarget(renderTarget);
         graphicsDevice.Clear(Color.Transparent);
 
-        SpriteBatch batch = new SpriteBatch(graphicsDevice);
-        batch.Begin(samplerState: SamplerState.PointClamp);
-        batch.Draw(
-            _tilesetTexture,
-            new Rectangle(0, 0, targetSize, targetSize),
-            sourceRect,
-            Color.White
-        );
-        batch.End();
+        using (SpriteBatch batch = new SpriteBatch(graphicsDevice))
+        {
+            batch.Begin(samplerState: SamplerState.PointClamp);
+            batch.Draw(
+                _tilesetTexture,
+                new Rectangle(0, 0, targetSize, targetSize),
+                sourceRect,
+                Color.White
+            );
+            batch.End();
+        }
 
         graphicsDevice.SetRenderTarget(null);
 
