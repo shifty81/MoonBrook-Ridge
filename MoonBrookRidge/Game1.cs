@@ -62,7 +62,8 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(new Color(34, 139, 34)); // Grass green background
+        // Use a bright, vibrant green background matching Sunnyside style
+        GraphicsDevice.Clear(new Color(120, 195, 85)); // Bright grass green
 
         // Draw current game state
         _stateManager?.Draw(_spriteBatch);

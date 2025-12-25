@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
@@ -26,6 +27,9 @@ public class WorldMap
     // Crop textures by type and growth stage
     private Dictionary<string, Texture2D[]> _cropTextures;
     
+    // World objects (buildings, trees, rocks, decorations)
+    private List<WorldObject> _worldObjects;
+    
     public WorldMap()
     {
         _width = 50;
@@ -34,6 +38,7 @@ public class WorldMap
         _cropTextures = new Dictionary<string, Texture2D[]>();
         _tileTextures = new Dictionary<TileType, Texture2D>();
         _sunnysideTileMapping = new Dictionary<TileType, int>();
+        _worldObjects = new List<WorldObject>();
         
         InitializeMap();
     }
@@ -232,6 +237,14 @@ public class WorldMap
                 }
             }
         }
+        
+        // Draw world objects (buildings, trees, rocks, etc.)
+        // Sort by Y position for proper depth
+        var sortedObjects = _worldObjects.OrderBy(obj => obj.Position.Y).ToList();
+        foreach (var obj in sortedObjects)
+        {
+            obj.Draw(spriteBatch);
+        }
     }
     
     private void DrawCrop(SpriteBatch spriteBatch, Tile tile, Rectangle tileRect)
@@ -327,6 +340,122 @@ public class WorldMap
                 }
                 
                 _tiles[x, y].PlantCrop(crop);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Add a decorative world object (building, tree, rock, etc.)
+    /// </summary>
+    public void AddWorldObject(WorldObject obj)
+    {
+        _worldObjects.Add(obj);
+    }
+    
+    /// <summary>
+    /// Clear all world objects
+    /// </summary>
+    public void ClearWorldObjects()
+    {
+        _worldObjects.Clear();
+    }
+    
+    /// <summary>
+    /// Populate the world with decorative objects to match Sunnyside style
+    /// </summary>
+    public void PopulateSunnysideWorldObjects(
+        Dictionary<string, Texture2D> buildings,
+        Dictionary<string, Texture2D> trees,
+        Dictionary<string, Texture2D> rocks)
+    {
+        Random random = new Random(42); // Fixed seed for consistency
+        
+        // Add colorful buildings in various locations (like the reference image)
+        if (buildings.ContainsKey("House1"))
+        {
+            AddWorldObject(new WorldObject("House1", new Vector2(5 * TILE_SIZE, 8 * TILE_SIZE), buildings["House1"]));
+        }
+        
+        if (buildings.ContainsKey("House2"))
+        {
+            AddWorldObject(new WorldObject("House2", new Vector2(15 * TILE_SIZE, 5 * TILE_SIZE), buildings["House2"]));
+        }
+        
+        if (buildings.ContainsKey("House3_Yellow"))
+        {
+            AddWorldObject(new WorldObject("House3_Yellow", new Vector2(28 * TILE_SIZE, 10 * TILE_SIZE), buildings["House3_Yellow"]));
+        }
+        
+        // Add towers for visual interest
+        if (buildings.ContainsKey("Tower_Blue"))
+        {
+            AddWorldObject(new WorldObject("Tower_Blue", new Vector2(38 * TILE_SIZE, 12 * TILE_SIZE), buildings["Tower_Blue"]));
+        }
+        
+        if (buildings.ContainsKey("Tower_Red"))
+        {
+            AddWorldObject(new WorldObject("Tower_Red", new Vector2(42 * TILE_SIZE, 8 * TILE_SIZE), buildings["Tower_Red"]));
+        }
+        
+        // Add castles for grand structures
+        if (buildings.ContainsKey("Castle_Blue"))
+        {
+            AddWorldObject(new WorldObject("Castle_Blue", new Vector2(35 * TILE_SIZE, 25 * TILE_SIZE), buildings["Castle_Blue"]));
+        }
+        
+        // Add some smaller buildings
+        if (buildings.ContainsKey("Barracks_Red"))
+        {
+            AddWorldObject(new WorldObject("Barracks_Red", new Vector2(10 * TILE_SIZE, 30 * TILE_SIZE), buildings["Barracks_Red"]));
+        }
+        
+        if (buildings.ContainsKey("Monastery_Yellow"))
+        {
+            AddWorldObject(new WorldObject("Monastery_Yellow", new Vector2(25 * TILE_SIZE, 35 * TILE_SIZE), buildings["Monastery_Yellow"]));
+        }
+        
+        // Add trees around the map for decoration
+        string[] treeKeys = { "Tree1", "Tree2", "Tree3", "Tree4" };
+        List<Vector2> treePositions = new List<Vector2>
+        {
+            new Vector2(8 * TILE_SIZE, 15 * TILE_SIZE),
+            new Vector2(12 * TILE_SIZE, 18 * TILE_SIZE),
+            new Vector2(18 * TILE_SIZE, 12 * TILE_SIZE),
+            new Vector2(22 * TILE_SIZE, 8 * TILE_SIZE),
+            new Vector2(32 * TILE_SIZE, 6 * TILE_SIZE),
+            new Vector2(40 * TILE_SIZE, 20 * TILE_SIZE),
+            new Vector2(5 * TILE_SIZE, 40 * TILE_SIZE),
+            new Vector2(15 * TILE_SIZE, 42 * TILE_SIZE),
+            new Vector2(30 * TILE_SIZE, 45 * TILE_SIZE),
+            new Vector2(45 * TILE_SIZE, 35 * TILE_SIZE)
+        };
+        
+        foreach (var pos in treePositions)
+        {
+            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            if (trees.ContainsKey(treeKey))
+            {
+                AddWorldObject(new WorldObject(treeKey, pos, trees[treeKey]));
+            }
+        }
+        
+        // Add rocks for terrain detail
+        string[] rockKeys = { "Rock1", "Rock2", "Rock3" };
+        List<Vector2> rockPositions = new List<Vector2>
+        {
+            new Vector2(36 * TILE_SIZE, 36 * TILE_SIZE),
+            new Vector2(38 * TILE_SIZE, 38 * TILE_SIZE),
+            new Vector2(37 * TILE_SIZE, 39 * TILE_SIZE),
+            new Vector2(3 * TILE_SIZE, 10 * TILE_SIZE),
+            new Vector2(24 * TILE_SIZE, 6 * TILE_SIZE)
+        };
+        
+        foreach (var pos in rockPositions)
+        {
+            string rockKey = rockKeys[random.Next(rockKeys.Length)];
+            if (rocks.ContainsKey(rockKey))
+            {
+                AddWorldObject(new WorldObject(rockKey, pos, rocks[rockKey]));
             }
         }
     }
