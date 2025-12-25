@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,6 +21,9 @@ public class WorldObject
     
     public WorldObject(string name, Vector2 position, Texture2D texture)
     {
+        if (texture == null)
+            throw new ArgumentNullException(nameof(texture), "Texture cannot be null");
+            
         Name = name;
         Position = position;
         Texture = texture;
