@@ -53,13 +53,12 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 The game combines assets from multiple high-quality pixel art packs for visual variety:
 
 ### Primary Asset Packs
-1. **Slates Tileset v.2** ⭐ **MAIN TILESET** - 32x32px orthogonal tileset by Ivan Voirol (1,288 tiles)
-2. **Sunnyside World** - Main asset pack for characters, buildings, and large objects
-3. **16x16 Tilemap Collection** - Ground tiles and terrain (legacy/fallback)
-4. **Custom Generated Tileset** - Combined ground tileset (legacy/fallback)
+1. **Sunnyside World** ⭐ **MAIN TILESET** - 16x16px tileset and asset pack for characters, buildings, and terrain (4,096 tiles)
+2. **16x16 Tilemap Collection** - Ground tiles and terrain (legacy/fallback)
+3. **Custom Generated Tileset** - Combined ground tileset (legacy/fallback)
 
 ### Asset Categories
-- **Terrain**: Slates tileset with grass, dirt, stone, water, sand, and special tiles
+- **Terrain**: Sunnyside World tileset with grass, dirt, stone, water, sand, and varied tiles
 - **Characters**: Sunnyside World sprites with multiple hairstyles and animations
 - **Buildings**: Detailed structures from Sunnyside World
 - **Crops**: Farming items with growth stages
@@ -67,12 +66,12 @@ The game combines assets from multiple high-quality pixel art packs for visual v
 - **Particle Effects**: Visual feedback and animations
 - **UI Elements**: Icons, buttons, and interface graphics
 
-### Asset Integration ⭐ SLATES FULLY INTEGRATED
+### Asset Integration ⭐ SUNNYSIDE WORLD ACTIVE
 
 Assets are now extensively integrated through MonoGame's Content Pipeline:
 
-**Currently Loaded (~200+ files, 2% of available):**
-- ✅ **Slates Tileset (1,288 tiles)** - Primary tileset for world generation ⭐ **NEW!**
+**Currently Loaded (~200+ files):**
+- ✅ **Sunnyside World Tileset (4,096 tiles)** - Primary tileset for world generation ⭐ **ACTIVE**
 - ✅ Arial font for UI text
 - ✅ **ALL 20 character animation sprites** (walk, run, idle, dig, mine, axe, fish, water, attack, etc.)
 - ✅ **ALL 20 tool overlay sprites** (for layered rendering showing tools in use)
@@ -86,15 +85,16 @@ Assets are now extensively integrated through MonoGame's Content Pipeline:
 - ✅ **20+ building sprites** (houses, towers, castles, barracks, monasteries, archery ranges)
 - ✅ **Resource sprites** (4 tree types, 3 rock types)
 
-**Slates Integration Status:**
+**Sunnyside World Integration Status:**
 - ✅ Tileset loaded and rendering system integrated
-- ✅ World generation using Slates tiles by default
-- ✅ 50+ tile types mapped from Slates atlas
-- ✅ Automatic scaling from 32x32 to 16x16 game grid
-- ✅ Extensible system ready for "World Below" expansion
+- ✅ World generation using Sunnyside World tiles by default
+- ✅ Legacy tile types mapped to Sunnyside tile IDs
+- ✅ 16x16 tile size matches game grid perfectly
+- ✅ Extensible system ready for future expansion
 
-See [SLATES_IMPLEMENTATION_STATUS.md](SLATES_IMPLEMENTATION_STATUS.md) for complete Slates integration details.  
-See [WORLD_BELOW_DESIGN.md](WORLD_BELOW_DESIGN.md) for future underground expansion plans.  
+**Archived Assets:**
+- Slates Tileset v.2 integration has been archived. See [archived/README.md](archived/README.md) for details.
+
 See [ASSET_STATUS_SUMMARY.md](ASSET_STATUS_SUMMARY.md) for complete current status.  
 See [TILESET_GUIDE.md](TILESET_GUIDE.md) for details on the custom ground tileset.  
 See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
