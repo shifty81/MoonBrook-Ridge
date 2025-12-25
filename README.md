@@ -173,10 +173,7 @@ MoonBrookRidge/
 ### Prerequisites
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
 - MonoGame 3.8.4 or later
-- **Fonts**: Liberation Sans font is required for text rendering
-  - **Linux**: Install via `sudo apt-get install fonts-liberation` (usually pre-installed)
-  - **Windows**: Download and install from [Liberation Fonts Releases](https://github.com/liberationfonts/liberation-fonts/releases)
-  - **macOS**: Install via `brew install --cask font-liberation` or download from releases above
+- **Fonts**: The Liberation Sans font is now bundled with the project - no installation required!
 
 ### Quick Play (Recommended)
 
