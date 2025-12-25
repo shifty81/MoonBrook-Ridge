@@ -2,15 +2,16 @@
 
 ## Overview
 
-This document describes the custom ground tileset generated for MoonBrook Ridge. The tileset combines elements from multiple asset packs to create a cohesive visual style.
+This document describes the tilesets available for MoonBrook Ridge. The project uses a combination of custom-generated tilesets and community assets to create a cohesive visual style.
 
 ## Asset Pack Sources
 
-The project combines assets from three sources:
+The project combines assets from multiple sources:
 
 1. **Sunnyside World** - Larger varied-size assets for characters, buildings, and objects
 2. **16x16 Tilemap Assets** (in sprites/tilesets/) - Ground tiles, terrain
 3. **Custom Generated Tileset** - `ground_tileset.png` - Combines best tiles from all sources
+4. **Slates Tileset v.2** ⭐ **NEW!** - 32x32px comprehensive orthogonal tileset by Ivan Voirol (1,288 tiles)
 
 ## Generated Tileset
 
@@ -222,3 +223,76 @@ Potential additions to the tileset:
 **Generated**: December 2024  
 **Version**: 1.0  
 **Project**: MoonBrook Ridge
+
+## Slates Tileset (32x32px) ⭐ NEW!
+
+### Overview
+
+The Slates v.2 tileset by Ivan Voirol is a comprehensive 32x32px orthogonal tileset that has been added to the project. It provides 1,288 tiles including terrain, structures, natural elements, and objects.
+
+### File Information
+- **Location**: `Content/Textures/Tiles/Slates_32x32_v2.png`
+- **Dimensions**: 1792x736 pixels
+- **Tile Size**: 32x32 pixels
+- **Grid Layout**: 56 columns × 23 rows
+- **Total Tiles**: 1,288 tiles
+- **Format**: PNG with RGBA
+
+### Tileset Contents
+
+The Slates tileset includes:
+- **Terrain**: Grass, dirt, stone, sand, water, snow, ice, lava
+- **Structures**: Walls, floors, roofs, doors, windows, stairs, fences, bridges
+- **Natural Elements**: Trees, bushes, rocks, flowers, plants, cliffs
+- **Objects**: Signs, columns, chests, containers, decorative elements
+- **Animated Support**: Water, lava, and other animated tile sequences
+
+### Integration Notes
+
+**Important**: The Slates tileset uses **32x32 pixel tiles**, while MoonBrook Ridge currently uses **16x16 pixel tiles**.
+
+**Integration Options:**
+1. **Scale Down**: Extract and scale tiles to 16x16 for compatibility
+2. **Use as Atlas**: Load entire tileset and render with source rectangles
+3. **Update Game**: Change game tile size to 32x32 (requires code changes)
+4. **Large Objects**: Use for buildings and structures that span multiple grid cells
+
+See the comprehensive integration guide: `SLATES_INTEGRATION_GUIDE.md`
+
+### License and Attribution
+
+**License**: CC-BY 4.0 (Creative Commons Attribution 4.0)  
+**Artist**: Ivan Voirol  
+**Source**: [OpenGameArt.org](https://opengameart.org/content/slates-32x32px-orthogonal-tileset-by-ivan-voirol)
+
+**Attribution Required**: When using tiles from this set, credit must be given to Ivan Voirol.
+
+### Resources
+
+- **Detailed README**: `sprites/tilesets/Slates/README.md`
+- **Integration Guide**: `SLATES_INTEGRATION_GUIDE.md`
+- **Tileset File**: `MoonBrookRidge/Content/Textures/Tiles/Slates_32x32_v2.png`
+- **Source Repository**: https://github.com/shionn/whisp
+
+### Quick Start Example
+
+To test the Slates tileset in your code:
+
+```csharp
+// Load the tileset
+Texture2D slatesTileset = Content.Load<Texture2D>("Textures/Tiles/Slates_32x32_v2");
+
+// Draw a specific tile (e.g., tile ID 0)
+int tileId = 0;
+int columns = 56;
+int x = (tileId % columns) * 32;
+int y = (tileId / columns) * 32;
+
+spriteBatch.Draw(
+    slatesTileset,
+    new Rectangle(100, 100, 32, 32),  // Destination
+    new Rectangle(x, y, 32, 32),      // Source tile
+    Color.White
+);
+```
+
