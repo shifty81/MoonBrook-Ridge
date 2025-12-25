@@ -45,33 +45,35 @@ public class WorldMap
     
     private void InitializeMap()
     {
-        // Create a varied, colorful map matching Sunnyside World style
+        // Create a natural farm scene with forests and water
         Random random = new Random(42); // Fixed seed for consistency
         
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                // Create varied terrain with multiple biomes
+                // Create varied terrain with natural biomes
                 TileType tileType;
                 
-                // Water features (rivers and ponds) - more prominent like in Sunnyside
-                if ((x >= 12 && x < 18 && y >= 28 && y < 38) || // Vertical river
-                    (x >= 30 && x < 42 && y >= 5 && y < 10))    // Horizontal pond
+                // Central farm clearing (where player spawns) - open grass area
+                bool isFarmArea = (x >= 20 && x < 35 && y >= 20 && y < 35);
+                
+                // Water features - natural pond/stream in the upper right
+                if ((x >= 35 && x < 45 && y >= 5 && y < 15))  // Pond
                 {
                     tileType = TileType.Water;
                 }
                 // Sandy beach areas near water
-                else if ((x >= 10 && x < 12 && y >= 28 && y < 38) ||
-                         (x >= 18 && x < 20 && y >= 28 && y < 38) ||
-                         (x >= 30 && x < 42 && y >= 10 && y < 12))
+                else if ((x >= 33 && x < 35 && y >= 5 && y < 15) ||
+                         (x >= 45 && x < 47 && y >= 5 && y < 15) ||
+                         (x >= 35 && x < 45 && y >= 3 && y < 5) ||
+                         (x >= 35 && x < 45 && y >= 15 && y < 17))
                 {
                     tileType = random.Next(2) == 0 ? TileType.Sand : TileType.Sand01;
                 }
-                // Dirt paths connecting areas (brown paths like in Sunnyside)
-                else if ((x >= 8 && x < 10 && y >= 10 && y < 40) ||  // Vertical path
-                         (x >= 8 && x < 35 && y >= 20 && y < 22) ||  // Horizontal path
-                         (x >= 25 && x < 27 && y >= 8 && y < 30))    // Another vertical path
+                // Small dirt path from farm area to edges
+                else if ((x >= 27 && x < 29 && y >= 15 && y < 20) ||  // North path
+                         (x >= 27 && x < 29 && y >= 35 && y < 40))    // South path
                 {
                     tileType = random.Next(3) switch
                     {
@@ -80,19 +82,18 @@ public class WorldMap
                         _ => TileType.Dirt02
                     };
                 }
-                // Border areas - varied grass for natural look
-                else if (x < 3 || y < 3 || x >= _width - 3 || y >= _height - 3)
+                // Farm area - mostly clear grass for farming
+                else if (isFarmArea)
                 {
-                    int grassVariant = random.Next(4);
-                    tileType = grassVariant switch
-                    {
-                        0 => TileType.Grass,
-                        1 => TileType.Grass01,
-                        2 => TileType.Grass02,
-                        _ => TileType.Grass03
-                    };
+                    int variant = random.Next(10);
+                    if (variant < 5)
+                        tileType = TileType.Grass;      // 50% base grass
+                    else if (variant < 8)
+                        tileType = TileType.Grass01;   // 30% light grass
+                    else
+                        tileType = TileType.Grass02;   // 20% medium grass
                 }
-                // Default grass with high variation for vibrant look
+                // Default to grass with variation
                 else
                 {
                     int variant = random.Next(20);
@@ -371,7 +372,7 @@ public class WorldMap
     }
     
     /// <summary>
-    /// Populate the world with decorative objects to match Sunnyside style
+    /// Populate the world with natural elements - forests at borders and scattered throughout
     /// </summary>
     public void PopulateSunnysideWorldObjects(
         Dictionary<string, Texture2D> buildings,
@@ -380,132 +381,96 @@ public class WorldMap
     {
         Random random = new Random(42); // Fixed seed for consistency
         
-        // Add colorful buildings scattered throughout the map (matching dense Sunnyside style)
-        // Houses in various locations
-        if (buildings.ContainsKey("House1"))
-        {
-            AddWorldObject(new WorldObject("House1", new Vector2(5 * TILE_SIZE, 8 * TILE_SIZE), buildings["House1"]));
-        }
+        // NO BUILDINGS - focusing on natural scene generation
         
-        if (buildings.ContainsKey("House2"))
-        {
-            AddWorldObject(new WorldObject("House2", new Vector2(15 * TILE_SIZE, 5 * TILE_SIZE), buildings["House2"]));
-        }
-        
-        if (buildings.ContainsKey("House3_Yellow"))
-        {
-            AddWorldObject(new WorldObject("House3_Yellow", new Vector2(28 * TILE_SIZE, 10 * TILE_SIZE), buildings["House3_Yellow"]));
-        }
-        
-        // Add more colorful towers throughout the map
-        if (buildings.ContainsKey("Tower_Blue"))
-        {
-            AddWorldObject(new WorldObject("Tower_Blue", new Vector2(38 * TILE_SIZE, 12 * TILE_SIZE), buildings["Tower_Blue"]));
-        }
-        
-        if (buildings.ContainsKey("Tower_Red"))
-        {
-            AddWorldObject(new WorldObject("Tower_Red", new Vector2(42 * TILE_SIZE, 8 * TILE_SIZE), buildings["Tower_Red"]));
-        }
-        
-        if (buildings.ContainsKey("Tower_Yellow"))
-        {
-            AddWorldObject(new WorldObject("Tower_Yellow", new Vector2(18 * TILE_SIZE, 25 * TILE_SIZE), buildings["Tower_Yellow"]));
-        }
-        
-        if (buildings.ContainsKey("Tower_Purple"))
-        {
-            AddWorldObject(new WorldObject("Tower_Purple", new Vector2(8 * TILE_SIZE, 38 * TILE_SIZE), buildings["Tower_Purple"]));
-        }
-        
-        // Add impressive castles as focal points
-        if (buildings.ContainsKey("Castle_Blue"))
-        {
-            AddWorldObject(new WorldObject("Castle_Blue", new Vector2(35 * TILE_SIZE, 25 * TILE_SIZE), buildings["Castle_Blue"]));
-        }
-        
-        if (buildings.ContainsKey("Castle_Red"))
-        {
-            AddWorldObject(new WorldObject("Castle_Red", new Vector2(22 * TILE_SIZE, 38 * TILE_SIZE), buildings["Castle_Red"]));
-        }
-        
-        if (buildings.ContainsKey("Castle_Yellow"))
-        {
-            AddWorldObject(new WorldObject("Castle_Yellow", new Vector2(40 * TILE_SIZE, 35 * TILE_SIZE), buildings["Castle_Yellow"]));
-        }
-        
-        // Add colorful barracks buildings
-        if (buildings.ContainsKey("Barracks_Red"))
-        {
-            AddWorldObject(new WorldObject("Barracks_Red", new Vector2(10 * TILE_SIZE, 30 * TILE_SIZE), buildings["Barracks_Red"]));
-        }
-        
-        if (buildings.ContainsKey("Barracks_Blue"))
-        {
-            AddWorldObject(new WorldObject("Barracks_Blue", new Vector2(32 * TILE_SIZE, 15 * TILE_SIZE), buildings["Barracks_Blue"]));
-        }
-        
-        if (buildings.ContainsKey("Barracks_Yellow"))
-        {
-            AddWorldObject(new WorldObject("Barracks_Yellow", new Vector2(12 * TILE_SIZE, 12 * TILE_SIZE), buildings["Barracks_Yellow"]));
-        }
-        
-        // Add monastery buildings
-        if (buildings.ContainsKey("Monastery_Yellow"))
-        {
-            AddWorldObject(new WorldObject("Monastery_Yellow", new Vector2(25 * TILE_SIZE, 35 * TILE_SIZE), buildings["Monastery_Yellow"]));
-        }
-        
-        if (buildings.ContainsKey("Monastery_Blue"))
-        {
-            AddWorldObject(new WorldObject("Monastery_Blue", new Vector2(45 * TILE_SIZE, 5 * TILE_SIZE), buildings["Monastery_Blue"]));
-        }
-        
-        if (buildings.ContainsKey("Monastery_Red"))
-        {
-            AddWorldObject(new WorldObject("Monastery_Red", new Vector2(5 * TILE_SIZE, 25 * TILE_SIZE), buildings["Monastery_Red"]));
-        }
-        
-        // Add archery ranges
-        if (buildings.ContainsKey("Archery_Blue"))
-        {
-            AddWorldObject(new WorldObject("Archery_Blue", new Vector2(28 * TILE_SIZE, 28 * TILE_SIZE), buildings["Archery_Blue"]));
-        }
-        
-        if (buildings.ContainsKey("Archery_Red"))
-        {
-            AddWorldObject(new WorldObject("Archery_Red", new Vector2(18 * TILE_SIZE, 42 * TILE_SIZE), buildings["Archery_Red"]));
-        }
-        
-        // Add trees densely around the map for lush decoration (Sunnyside style is very green!)
+        // Create dense tree borders along all edges of the map
         string[] treeKeys = { "Tree1", "Tree2", "Tree3", "Tree4" };
-        List<Vector2> treePositions = new List<Vector2>
+        
+        // Top border - dense tree line
+        for (int x = 0; x < _width; x += 2)
         {
-            // Scattered throughout for organic feel
-            new Vector2(8 * TILE_SIZE, 15 * TILE_SIZE),
-            new Vector2(12 * TILE_SIZE, 18 * TILE_SIZE),
-            new Vector2(18 * TILE_SIZE, 12 * TILE_SIZE),
-            new Vector2(22 * TILE_SIZE, 8 * TILE_SIZE),
-            new Vector2(32 * TILE_SIZE, 6 * TILE_SIZE),
-            new Vector2(40 * TILE_SIZE, 20 * TILE_SIZE),
-            new Vector2(5 * TILE_SIZE, 40 * TILE_SIZE),
-            new Vector2(15 * TILE_SIZE, 42 * TILE_SIZE),
-            new Vector2(30 * TILE_SIZE, 45 * TILE_SIZE),
-            new Vector2(45 * TILE_SIZE, 35 * TILE_SIZE),
-            // Additional trees for density
-            new Vector2(3 * TILE_SIZE, 15 * TILE_SIZE),
-            new Vector2(7 * TILE_SIZE, 22 * TILE_SIZE),
-            new Vector2(13 * TILE_SIZE, 8 * TILE_SIZE),
-            new Vector2(25 * TILE_SIZE, 12 * TILE_SIZE),
-            new Vector2(33 * TILE_SIZE, 18 * TILE_SIZE),
-            new Vector2(38 * TILE_SIZE, 28 * TILE_SIZE),
+            if (x < 2 || x >= _width - 2) continue; // Skip corners to avoid overlap
+            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            if (trees.ContainsKey(treeKey))
+            {
+                AddWorldObject(new WorldObject(treeKey, new Vector2(x * TILE_SIZE, 1 * TILE_SIZE), trees[treeKey]));
+            }
+        }
+        
+        // Bottom border - dense tree line
+        for (int x = 0; x < _width; x += 2)
+        {
+            if (x < 2 || x >= _width - 2) continue; // Skip corners to avoid overlap
+            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            if (trees.ContainsKey(treeKey))
+            {
+                AddWorldObject(new WorldObject(treeKey, new Vector2(x * TILE_SIZE, (_height - 2) * TILE_SIZE), trees[treeKey]));
+            }
+        }
+        
+        // Left border - dense tree line
+        for (int y = 0; y < _height; y += 2)
+        {
+            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            if (trees.ContainsKey(treeKey))
+            {
+                AddWorldObject(new WorldObject(treeKey, new Vector2(1 * TILE_SIZE, y * TILE_SIZE), trees[treeKey]));
+            }
+        }
+        
+        // Right border - dense tree line
+        for (int y = 0; y < _height; y += 2)
+        {
+            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            if (trees.ContainsKey(treeKey))
+            {
+                AddWorldObject(new WorldObject(treeKey, new Vector2((_width - 2) * TILE_SIZE, y * TILE_SIZE), trees[treeKey]));
+            }
+        }
+        
+        // Add forest clusters in non-farm areas for natural feel
+        List<Vector2> forestPositions = new List<Vector2>
+        {
+            // Northwest forest cluster
+            new Vector2(5 * TILE_SIZE, 5 * TILE_SIZE),
+            new Vector2(7 * TILE_SIZE, 6 * TILE_SIZE),
+            new Vector2(6 * TILE_SIZE, 8 * TILE_SIZE),
+            new Vector2(8 * TILE_SIZE, 7 * TILE_SIZE),
+            new Vector2(10 * TILE_SIZE, 5 * TILE_SIZE),
+            new Vector2(11 * TILE_SIZE, 8 * TILE_SIZE),
+            
+            // Northeast forest cluster (around pond)
+            new Vector2(32 * TILE_SIZE, 8 * TILE_SIZE),
+            new Vector2(33 * TILE_SIZE, 11 * TILE_SIZE),
+            new Vector2(47 * TILE_SIZE, 10 * TILE_SIZE),
+            new Vector2(46 * TILE_SIZE, 13 * TILE_SIZE),
+            
+            // Southwest forest cluster
+            new Vector2(6 * TILE_SIZE, 40 * TILE_SIZE),
+            new Vector2(8 * TILE_SIZE, 42 * TILE_SIZE),
+            new Vector2(10 * TILE_SIZE, 41 * TILE_SIZE),
+            new Vector2(7 * TILE_SIZE, 44 * TILE_SIZE),
+            new Vector2(11 * TILE_SIZE, 45 * TILE_SIZE),
+            
+            // Southeast forest cluster
+            new Vector2(40 * TILE_SIZE, 40 * TILE_SIZE),
             new Vector2(42 * TILE_SIZE, 42 * TILE_SIZE),
-            new Vector2(28 * TILE_SIZE, 48 * TILE_SIZE),
-            new Vector2(16 * TILE_SIZE, 35 * TILE_SIZE),
-            new Vector2(48 * TILE_SIZE, 28 * TILE_SIZE)
+            new Vector2(44 * TILE_SIZE, 41 * TILE_SIZE),
+            new Vector2(43 * TILE_SIZE, 44 * TILE_SIZE),
+            new Vector2(45 * TILE_SIZE, 45 * TILE_SIZE),
+            
+            // Scattered trees for organic feel (avoiding farm area)
+            new Vector2(15 * TILE_SIZE, 10 * TILE_SIZE),
+            new Vector2(17 * TILE_SIZE, 13 * TILE_SIZE),
+            new Vector2(12 * TILE_SIZE, 15 * TILE_SIZE),
+            new Vector2(38 * TILE_SIZE, 20 * TILE_SIZE),
+            new Vector2(40 * TILE_SIZE, 25 * TILE_SIZE),
+            new Vector2(15 * TILE_SIZE, 38 * TILE_SIZE),
+            new Vector2(18 * TILE_SIZE, 40 * TILE_SIZE),
+            new Vector2(36 * TILE_SIZE, 35 * TILE_SIZE)
         };
         
-        foreach (var pos in treePositions)
+        foreach (var pos in forestPositions)
         {
             string treeKey = treeKeys[random.Next(treeKeys.Length)];
             if (trees.ContainsKey(treeKey))
@@ -514,20 +479,22 @@ public class WorldMap
             }
         }
         
-        // Add rocks for terrain detail and mining areas
+        // Add scattered rocks for natural terrain detail (fewer than before)
         string[] rockKeys = { "Rock1", "Rock2", "Rock3" };
         List<Vector2> rockPositions = new List<Vector2>
         {
-            new Vector2(36 * TILE_SIZE, 36 * TILE_SIZE),
-            new Vector2(38 * TILE_SIZE, 38 * TILE_SIZE),
-            new Vector2(37 * TILE_SIZE, 39 * TILE_SIZE),
-            new Vector2(3 * TILE_SIZE, 10 * TILE_SIZE),
-            new Vector2(24 * TILE_SIZE, 6 * TILE_SIZE),
-            // More rocks for visual interest
-            new Vector2(14 * TILE_SIZE, 28 * TILE_SIZE),
-            new Vector2(27 * TILE_SIZE, 22 * TILE_SIZE),
-            new Vector2(45 * TILE_SIZE, 15 * TILE_SIZE),
-            new Vector2(8 * TILE_SIZE, 45 * TILE_SIZE)
+            // Near pond
+            new Vector2(32 * TILE_SIZE, 16 * TILE_SIZE),
+            new Vector2(47 * TILE_SIZE, 7 * TILE_SIZE),
+            
+            // Forest areas
+            new Vector2(8 * TILE_SIZE, 10 * TILE_SIZE),
+            new Vector2(13 * TILE_SIZE, 43 * TILE_SIZE),
+            new Vector2(42 * TILE_SIZE, 38 * TILE_SIZE),
+            
+            // Scattered
+            new Vector2(18 * TILE_SIZE, 15 * TILE_SIZE),
+            new Vector2(37 * TILE_SIZE, 28 * TILE_SIZE)
         };
         
         foreach (var pos in rockPositions)
