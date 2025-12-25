@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.World;
 
@@ -28,6 +29,21 @@ public class WorldObject
         Position = position;
         Texture = texture;
         SourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
+        Origin = Vector2.Zero;
+    }
+    
+    /// <summary>
+    /// Constructor for creating a world object from extracted sprite info
+    /// </summary>
+    public WorldObject(string name, Vector2 position, SpriteInfo spriteInfo)
+    {
+        if (spriteInfo?.Texture == null)
+            throw new ArgumentNullException(nameof(spriteInfo), "SpriteInfo and its Texture cannot be null");
+            
+        Name = name;
+        Position = position;
+        Texture = spriteInfo.Texture;
+        SourceRectangle = spriteInfo.SourceRectangle;
         Origin = Vector2.Zero;
     }
     
