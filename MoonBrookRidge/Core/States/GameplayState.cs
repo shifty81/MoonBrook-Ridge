@@ -47,7 +47,10 @@ public class GameplayState : GameState
         
         // Initialize world and player
         _worldMap = new WorldMap();
-        _player = new PlayerCharacter(new Vector2(400, 300));
+        // Spawn player in the center of the farm area
+        // Farm area is defined in WorldMap.InitializeMap() as tiles 20-35 x 20-35
+        // Center is at tile (27.5, 27.5)
+        _player = new PlayerCharacter(new Vector2(27.5f * GameConstants.TILE_SIZE, 27.5f * GameConstants.TILE_SIZE));
         
         // Initialize collision system
         _collisionSystem = new CollisionSystem(_worldMap);
