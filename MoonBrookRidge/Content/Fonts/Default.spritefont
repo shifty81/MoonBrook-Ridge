@@ -10,6 +10,8 @@ with.
 
     <!--
     Modify this string to change the font that will be imported.
+    Note: Uses Liberation Sans for cross-platform compatibility.
+    Windows users: Install Liberation fonts from https://github.com/liberationfonts/liberation-fonts/releases
     -->
     <FontName>Liberation Sans</FontName>
 
