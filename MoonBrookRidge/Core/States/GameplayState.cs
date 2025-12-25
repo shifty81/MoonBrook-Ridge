@@ -212,6 +212,52 @@ public class GameplayState : GameState
         Texture2D sunnysideTileset = Game.Content.Load<Texture2D>("Textures/Tiles/sunnyside_tileset");
         _worldMap.LoadSunnysideTileset(sunnysideTileset);
         
+        // Load building textures
+        var buildings = new Dictionary<string, Texture2D>
+        {
+            ["House1"] = Game.Content.Load<Texture2D>("Textures/Buildings/House1"),
+            ["House2"] = Game.Content.Load<Texture2D>("Textures/Buildings/House2"),
+            ["House3_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/House3_Yellow"),
+            ["Tower_Blue"] = Game.Content.Load<Texture2D>("Textures/Buildings/Tower_Blue"),
+            ["Tower_Red"] = Game.Content.Load<Texture2D>("Textures/Buildings/Tower_Red"),
+            ["Tower_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/Tower_Yellow"),
+            ["Tower_Purple"] = Game.Content.Load<Texture2D>("Textures/Buildings/Tower_Purple"),
+            ["Castle_Blue"] = Game.Content.Load<Texture2D>("Textures/Buildings/Castle_Blue"),
+            ["Castle_Red"] = Game.Content.Load<Texture2D>("Textures/Buildings/Castle_Red"),
+            ["Castle_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/Castle_Yellow"),
+            ["Castle_Black"] = Game.Content.Load<Texture2D>("Textures/Buildings/Castle_Black"),
+            ["Barracks_Red"] = Game.Content.Load<Texture2D>("Textures/Buildings/Barracks_Red"),
+            ["Barracks_Blue"] = Game.Content.Load<Texture2D>("Textures/Buildings/Barracks_Blue"),
+            ["Barracks_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/Barracks_Yellow"),
+            ["Barracks_Purple"] = Game.Content.Load<Texture2D>("Textures/Buildings/Barracks_Purple"),
+            ["Monastery_Blue"] = Game.Content.Load<Texture2D>("Textures/Buildings/Monastery_Blue"),
+            ["Monastery_Red"] = Game.Content.Load<Texture2D>("Textures/Buildings/Monastery_Red"),
+            ["Monastery_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/Monastery_Yellow"),
+            ["Archery_Blue"] = Game.Content.Load<Texture2D>("Textures/Buildings/Archery_Blue"),
+            ["Archery_Red"] = Game.Content.Load<Texture2D>("Textures/Buildings/Archery_Red"),
+            ["Archery_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/Archery_Yellow")
+        };
+        
+        // Load tree textures
+        var trees = new Dictionary<string, Texture2D>
+        {
+            ["Tree1"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree1"),
+            ["Tree2"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree2"),
+            ["Tree3"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree3"),
+            ["Tree4"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree4")
+        };
+        
+        // Load rock textures
+        var rocks = new Dictionary<string, Texture2D>
+        {
+            ["Rock1"] = Game.Content.Load<Texture2D>("Textures/Resources/Rock1"),
+            ["Rock2"] = Game.Content.Load<Texture2D>("Textures/Resources/Rock2"),
+            ["Rock3"] = Game.Content.Load<Texture2D>("Textures/Resources/Rock3")
+        };
+        
+        // Populate world with Sunnyside-style objects
+        _worldMap.PopulateSunnysideWorldObjects(buildings, trees, rocks);
+        
         // Plant some test crops to demonstrate the system
         _worldMap.PlantTestCrops();
         

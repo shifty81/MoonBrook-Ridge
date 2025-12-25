@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
@@ -26,6 +27,9 @@ public class WorldMap
     // Crop textures by type and growth stage
     private Dictionary<string, Texture2D[]> _cropTextures;
     
+    // World objects (buildings, trees, rocks, decorations)
+    private List<WorldObject> _worldObjects;
+    
     public WorldMap()
     {
         _width = 50;
@@ -34,24 +38,50 @@ public class WorldMap
         _cropTextures = new Dictionary<string, Texture2D[]>();
         _tileTextures = new Dictionary<TileType, Texture2D>();
         _sunnysideTileMapping = new Dictionary<TileType, int>();
+        _worldObjects = new List<WorldObject>();
         
         InitializeMap();
     }
     
     private void InitializeMap()
     {
-        // Create a varied map with legacy tiles
+        // Create a varied, colorful map matching Sunnyside World style
         Random random = new Random(42); // Fixed seed for consistency
         
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                // Create varied terrain
+                // Create varied terrain with multiple biomes
                 TileType tileType;
                 
-                // Border areas - mix of grass types
-                if (x < 5 || y < 5 || x >= _width - 5 || y >= _height - 5)
+                // Water features (rivers and ponds) - more prominent like in Sunnyside
+                if ((x >= 12 && x < 18 && y >= 28 && y < 38) || // Vertical river
+                    (x >= 30 && x < 42 && y >= 5 && y < 10))    // Horizontal pond
+                {
+                    tileType = TileType.Water;
+                }
+                // Sandy beach areas near water
+                else if ((x >= 10 && x < 12 && y >= 28 && y < 38) ||
+                         (x >= 18 && x < 20 && y >= 28 && y < 38) ||
+                         (x >= 30 && x < 42 && y >= 10 && y < 12))
+                {
+                    tileType = random.Next(2) == 0 ? TileType.Sand : TileType.Sand01;
+                }
+                // Dirt paths connecting areas (brown paths like in Sunnyside)
+                else if ((x >= 8 && x < 10 && y >= 10 && y < 40) ||  // Vertical path
+                         (x >= 8 && x < 35 && y >= 20 && y < 22) ||  // Horizontal path
+                         (x >= 25 && x < 27 && y >= 8 && y < 30))    // Another vertical path
+                {
+                    tileType = random.Next(3) switch
+                    {
+                        0 => TileType.Dirt,
+                        1 => TileType.Dirt01,
+                        _ => TileType.Dirt02
+                    };
+                }
+                // Border areas - varied grass for natural look
+                else if (x < 3 || y < 3 || x >= _width - 3 || y >= _height - 3)
                 {
                     int grassVariant = random.Next(4);
                     tileType = grassVariant switch
@@ -62,33 +92,18 @@ public class WorldMap
                         _ => TileType.Grass03
                     };
                 }
-                // Small dirt path area
-                else if (x >= 10 && x < 15 && y >= 10 && y < 15)
-                {
-                    tileType = random.Next(2) == 0 ? TileType.Dirt : TileType.Dirt01;
-                }
-                // Stone area
-                else if (x >= 35 && x < 40 && y >= 35 && y < 40)
-                {
-                    tileType = random.Next(2) == 0 ? TileType.Stone : TileType.Stone01;
-                }
-                // Water area (small pond)
-                else if (x >= 15 && x < 20 && y >= 30 && y < 35)
-                {
-                    tileType = TileType.Water;
-                }
-                // Sand corner
-                else if (x >= 40 && y >= 40)
-                {
-                    tileType = TileType.Sand;
-                }
-                // Default grass with variation
+                // Default grass with high variation for vibrant look
                 else
                 {
-                    int variant = random.Next(10);
-                    tileType = variant < 5 ? TileType.Grass : 
-                              variant < 7 ? TileType.Grass01 :
-                              variant < 8 ? TileType.Grass02 : TileType.Grass03;
+                    int variant = random.Next(20);
+                    if (variant < 8)
+                        tileType = TileType.Grass;      // 40% base grass
+                    else if (variant < 13)
+                        tileType = TileType.Grass01;   // 25% light grass
+                    else if (variant < 17)
+                        tileType = TileType.Grass02;   // 20% medium grass
+                    else
+                        tileType = TileType.Grass03;   // 15% dark grass
                 }
                 
                 _tiles[x, y] = new Tile(tileType, new Vector2(x, y));
@@ -232,6 +247,14 @@ public class WorldMap
                 }
             }
         }
+        
+        // Draw world objects (buildings, trees, rocks, etc.)
+        // Sort by Y position for proper depth
+        var sortedObjects = _worldObjects.OrderBy(obj => obj.Position.Y).ToList();
+        foreach (var obj in sortedObjects)
+        {
+            obj.Draw(spriteBatch);
+        }
     }
     
     private void DrawCrop(SpriteBatch spriteBatch, Tile tile, Rectangle tileRect)
@@ -327,6 +350,192 @@ public class WorldMap
                 }
                 
                 _tiles[x, y].PlantCrop(crop);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Add a decorative world object (building, tree, rock, etc.)
+    /// </summary>
+    public void AddWorldObject(WorldObject obj)
+    {
+        _worldObjects.Add(obj);
+    }
+    
+    /// <summary>
+    /// Clear all world objects
+    /// </summary>
+    public void ClearWorldObjects()
+    {
+        _worldObjects.Clear();
+    }
+    
+    /// <summary>
+    /// Populate the world with decorative objects to match Sunnyside style
+    /// </summary>
+    public void PopulateSunnysideWorldObjects(
+        Dictionary<string, Texture2D> buildings,
+        Dictionary<string, Texture2D> trees,
+        Dictionary<string, Texture2D> rocks)
+    {
+        Random random = new Random(42); // Fixed seed for consistency
+        
+        // Add colorful buildings scattered throughout the map (matching dense Sunnyside style)
+        // Houses in various locations
+        if (buildings.ContainsKey("House1"))
+        {
+            AddWorldObject(new WorldObject("House1", new Vector2(5 * TILE_SIZE, 8 * TILE_SIZE), buildings["House1"]));
+        }
+        
+        if (buildings.ContainsKey("House2"))
+        {
+            AddWorldObject(new WorldObject("House2", new Vector2(15 * TILE_SIZE, 5 * TILE_SIZE), buildings["House2"]));
+        }
+        
+        if (buildings.ContainsKey("House3_Yellow"))
+        {
+            AddWorldObject(new WorldObject("House3_Yellow", new Vector2(28 * TILE_SIZE, 10 * TILE_SIZE), buildings["House3_Yellow"]));
+        }
+        
+        // Add more colorful towers throughout the map
+        if (buildings.ContainsKey("Tower_Blue"))
+        {
+            AddWorldObject(new WorldObject("Tower_Blue", new Vector2(38 * TILE_SIZE, 12 * TILE_SIZE), buildings["Tower_Blue"]));
+        }
+        
+        if (buildings.ContainsKey("Tower_Red"))
+        {
+            AddWorldObject(new WorldObject("Tower_Red", new Vector2(42 * TILE_SIZE, 8 * TILE_SIZE), buildings["Tower_Red"]));
+        }
+        
+        if (buildings.ContainsKey("Tower_Yellow"))
+        {
+            AddWorldObject(new WorldObject("Tower_Yellow", new Vector2(18 * TILE_SIZE, 25 * TILE_SIZE), buildings["Tower_Yellow"]));
+        }
+        
+        if (buildings.ContainsKey("Tower_Purple"))
+        {
+            AddWorldObject(new WorldObject("Tower_Purple", new Vector2(8 * TILE_SIZE, 38 * TILE_SIZE), buildings["Tower_Purple"]));
+        }
+        
+        // Add impressive castles as focal points
+        if (buildings.ContainsKey("Castle_Blue"))
+        {
+            AddWorldObject(new WorldObject("Castle_Blue", new Vector2(35 * TILE_SIZE, 25 * TILE_SIZE), buildings["Castle_Blue"]));
+        }
+        
+        if (buildings.ContainsKey("Castle_Red"))
+        {
+            AddWorldObject(new WorldObject("Castle_Red", new Vector2(22 * TILE_SIZE, 38 * TILE_SIZE), buildings["Castle_Red"]));
+        }
+        
+        if (buildings.ContainsKey("Castle_Yellow"))
+        {
+            AddWorldObject(new WorldObject("Castle_Yellow", new Vector2(40 * TILE_SIZE, 35 * TILE_SIZE), buildings["Castle_Yellow"]));
+        }
+        
+        // Add colorful barracks buildings
+        if (buildings.ContainsKey("Barracks_Red"))
+        {
+            AddWorldObject(new WorldObject("Barracks_Red", new Vector2(10 * TILE_SIZE, 30 * TILE_SIZE), buildings["Barracks_Red"]));
+        }
+        
+        if (buildings.ContainsKey("Barracks_Blue"))
+        {
+            AddWorldObject(new WorldObject("Barracks_Blue", new Vector2(32 * TILE_SIZE, 15 * TILE_SIZE), buildings["Barracks_Blue"]));
+        }
+        
+        if (buildings.ContainsKey("Barracks_Yellow"))
+        {
+            AddWorldObject(new WorldObject("Barracks_Yellow", new Vector2(12 * TILE_SIZE, 12 * TILE_SIZE), buildings["Barracks_Yellow"]));
+        }
+        
+        // Add monastery buildings
+        if (buildings.ContainsKey("Monastery_Yellow"))
+        {
+            AddWorldObject(new WorldObject("Monastery_Yellow", new Vector2(25 * TILE_SIZE, 35 * TILE_SIZE), buildings["Monastery_Yellow"]));
+        }
+        
+        if (buildings.ContainsKey("Monastery_Blue"))
+        {
+            AddWorldObject(new WorldObject("Monastery_Blue", new Vector2(45 * TILE_SIZE, 5 * TILE_SIZE), buildings["Monastery_Blue"]));
+        }
+        
+        if (buildings.ContainsKey("Monastery_Red"))
+        {
+            AddWorldObject(new WorldObject("Monastery_Red", new Vector2(5 * TILE_SIZE, 25 * TILE_SIZE), buildings["Monastery_Red"]));
+        }
+        
+        // Add archery ranges
+        if (buildings.ContainsKey("Archery_Blue"))
+        {
+            AddWorldObject(new WorldObject("Archery_Blue", new Vector2(28 * TILE_SIZE, 28 * TILE_SIZE), buildings["Archery_Blue"]));
+        }
+        
+        if (buildings.ContainsKey("Archery_Red"))
+        {
+            AddWorldObject(new WorldObject("Archery_Red", new Vector2(18 * TILE_SIZE, 42 * TILE_SIZE), buildings["Archery_Red"]));
+        }
+        
+        // Add trees densely around the map for lush decoration (Sunnyside style is very green!)
+        string[] treeKeys = { "Tree1", "Tree2", "Tree3", "Tree4" };
+        List<Vector2> treePositions = new List<Vector2>
+        {
+            // Scattered throughout for organic feel
+            new Vector2(8 * TILE_SIZE, 15 * TILE_SIZE),
+            new Vector2(12 * TILE_SIZE, 18 * TILE_SIZE),
+            new Vector2(18 * TILE_SIZE, 12 * TILE_SIZE),
+            new Vector2(22 * TILE_SIZE, 8 * TILE_SIZE),
+            new Vector2(32 * TILE_SIZE, 6 * TILE_SIZE),
+            new Vector2(40 * TILE_SIZE, 20 * TILE_SIZE),
+            new Vector2(5 * TILE_SIZE, 40 * TILE_SIZE),
+            new Vector2(15 * TILE_SIZE, 42 * TILE_SIZE),
+            new Vector2(30 * TILE_SIZE, 45 * TILE_SIZE),
+            new Vector2(45 * TILE_SIZE, 35 * TILE_SIZE),
+            // Additional trees for density
+            new Vector2(3 * TILE_SIZE, 15 * TILE_SIZE),
+            new Vector2(7 * TILE_SIZE, 22 * TILE_SIZE),
+            new Vector2(13 * TILE_SIZE, 8 * TILE_SIZE),
+            new Vector2(25 * TILE_SIZE, 12 * TILE_SIZE),
+            new Vector2(33 * TILE_SIZE, 18 * TILE_SIZE),
+            new Vector2(38 * TILE_SIZE, 28 * TILE_SIZE),
+            new Vector2(42 * TILE_SIZE, 42 * TILE_SIZE),
+            new Vector2(28 * TILE_SIZE, 48 * TILE_SIZE),
+            new Vector2(16 * TILE_SIZE, 35 * TILE_SIZE),
+            new Vector2(48 * TILE_SIZE, 28 * TILE_SIZE)
+        };
+        
+        foreach (var pos in treePositions)
+        {
+            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            if (trees.ContainsKey(treeKey))
+            {
+                AddWorldObject(new WorldObject(treeKey, pos, trees[treeKey]));
+            }
+        }
+        
+        // Add rocks for terrain detail and mining areas
+        string[] rockKeys = { "Rock1", "Rock2", "Rock3" };
+        List<Vector2> rockPositions = new List<Vector2>
+        {
+            new Vector2(36 * TILE_SIZE, 36 * TILE_SIZE),
+            new Vector2(38 * TILE_SIZE, 38 * TILE_SIZE),
+            new Vector2(37 * TILE_SIZE, 39 * TILE_SIZE),
+            new Vector2(3 * TILE_SIZE, 10 * TILE_SIZE),
+            new Vector2(24 * TILE_SIZE, 6 * TILE_SIZE),
+            // More rocks for visual interest
+            new Vector2(14 * TILE_SIZE, 28 * TILE_SIZE),
+            new Vector2(27 * TILE_SIZE, 22 * TILE_SIZE),
+            new Vector2(45 * TILE_SIZE, 15 * TILE_SIZE),
+            new Vector2(8 * TILE_SIZE, 45 * TILE_SIZE)
+        };
+        
+        foreach (var pos in rockPositions)
+        {
+            string rockKey = rockKeys[random.Next(rockKeys.Length)];
+            if (rocks.ContainsKey(rockKey))
+            {
+                AddWorldObject(new WorldObject(rockKey, pos, rocks[rockKey]));
             }
         }
     }
