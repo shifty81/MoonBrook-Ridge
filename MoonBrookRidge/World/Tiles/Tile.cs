@@ -35,6 +35,7 @@ public class Tile
     {
         return _type switch
         {
+            // Legacy tiles
             TileType.Grass or TileType.Grass01 or TileType.Grass02 or TileType.Grass03 => new Color(34, 139, 34),
             TileType.Dirt or TileType.Dirt01 or TileType.Dirt02 => new Color(139, 90, 43),
             TileType.Tilled or TileType.TilledDry => new Color(101, 67, 33),
@@ -43,13 +44,47 @@ public class Tile
             TileType.Water or TileType.Water01 => Color.Blue,
             TileType.Sand or TileType.Sand01 => Color.SandyBrown,
             TileType.WoodenFloor or TileType.Flooring => new Color(139, 90, 43),
+            
+            // Slates grass variants
+            TileType.SlatesGrassBasic or TileType.SlatesGrassMedium => new Color(34, 139, 34),
+            TileType.SlatesGrassLight => new Color(80, 170, 80),
+            TileType.SlatesGrassDark => new Color(20, 100, 20),
+            TileType.SlatesGrassFlowers => new Color(50, 150, 50),
+            
+            // Slates dirt variants
+            TileType.SlatesDirtBasic or TileType.SlatesDirtPath => new Color(139, 90, 43),
+            TileType.SlatesDirtTilled => new Color(101, 67, 33),
+            
+            // Slates stone variants
+            TileType.SlatesStoneFloor or TileType.SlatesStoneCobble => Color.Gray,
+            TileType.SlatesStoneWall => new Color(100, 100, 100),
+            TileType.SlatesStoneBrick => new Color(120, 100, 90),
+            
+            // Slates water variants
+            TileType.SlatesWaterStill or TileType.SlatesWaterShallow => Color.Blue,
+            TileType.SlatesWaterDeep => new Color(0, 50, 150),
+            TileType.SlatesWaterAnimated => new Color(30, 100, 200),
+            
+            // Slates sand variants
+            TileType.SlatesSandBasic or TileType.SlatesSandLight => Color.SandyBrown,
+            TileType.SlatesSandStones => new Color(200, 180, 140),
+            
+            // Slates indoor variants
+            TileType.SlatesIndoorWood => new Color(139, 90, 43),
+            TileType.SlatesIndoorStone => Color.LightGray,
+            TileType.SlatesIndoorTile => new Color(200, 200, 180),
+            
+            // Slates special terrain
+            TileType.SlatesSnow => Color.White,
+            TileType.SlatesIce => new Color(200, 230, 255),
+            
             _ => Color.Green
         };
     }
     
     public bool CanPlant()
     {
-        return (_type == TileType.Tilled || _type == TileType.TilledDry || _type == TileType.TilledWatered) 
+        return (_type == TileType.Tilled || _type == TileType.TilledDry || _type == TileType.TilledWatered || _type == TileType.SlatesDirtTilled) 
                && _crop == null;
     }
     
@@ -89,6 +124,7 @@ public class Tile
 
 public enum TileType
 {
+    // Legacy tile types (kept for compatibility)
     Grass,
     Grass01,
     Grass02,
@@ -107,7 +143,45 @@ public enum TileType
     Sand,
     Sand01,
     WoodenFloor,
-    Flooring
+    Flooring,
+    
+    // Slates tileset types - Grass variants
+    SlatesGrassBasic,
+    SlatesGrassLight,
+    SlatesGrassMedium,
+    SlatesGrassDark,
+    SlatesGrassFlowers,
+    
+    // Slates tileset types - Dirt variants
+    SlatesDirtBasic,
+    SlatesDirtPath,
+    SlatesDirtTilled,
+    
+    // Slates tileset types - Stone variants
+    SlatesStoneFloor,
+    SlatesStoneWall,
+    SlatesStoneCobble,
+    SlatesStoneBrick,
+    
+    // Slates tileset types - Water variants
+    SlatesWaterStill,
+    SlatesWaterAnimated,
+    SlatesWaterDeep,
+    SlatesWaterShallow,
+    
+    // Slates tileset types - Sand variants
+    SlatesSandBasic,
+    SlatesSandLight,
+    SlatesSandStones,
+    
+    // Slates tileset types - Indoor variants
+    SlatesIndoorWood,
+    SlatesIndoorStone,
+    SlatesIndoorTile,
+    
+    // Slates tileset types - Special terrain
+    SlatesSnow,
+    SlatesIce
 }
 
 /// <summary>

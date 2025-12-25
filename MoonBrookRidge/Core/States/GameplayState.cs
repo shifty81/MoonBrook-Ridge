@@ -205,8 +205,12 @@ public class GameplayState : GameState
             [TileType.Flooring] = Game.Content.Load<Texture2D>("Textures/Tiles/flooring")
         };
         
-        // Load world map content
+        // Load world map content with legacy textures (as fallback)
         _worldMap.LoadContent(tileTextures, cropTextures);
+        
+        // Load the Slates tileset as the primary tileset
+        Texture2D slatesTileset = Game.Content.Load<Texture2D>("Textures/Tiles/Slates_32x32_v2");
+        _worldMap.LoadSlatesTileset(slatesTileset);
         
         // Plant some test crops to demonstrate the system
         _worldMap.PlantTestCrops();

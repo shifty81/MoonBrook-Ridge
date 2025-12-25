@@ -19,6 +19,10 @@ public class WorldMap
     // Tile textures
     private Dictionary<TileType, Texture2D> _tileTextures;
     
+    // Slates tileset support
+    private SlatesTilesetHelper _slatesTileset;
+    private Dictionary<TileType, int> _slatesTileMapping;
+    
     // Crop textures by type and growth stage
     private Dictionary<string, Texture2D[]> _cropTextures;
     
@@ -29,57 +33,64 @@ public class WorldMap
         _tiles = new Tile[_width, _height];
         _cropTextures = new Dictionary<string, Texture2D[]>();
         _tileTextures = new Dictionary<TileType, Texture2D>();
+        _slatesTileMapping = new Dictionary<TileType, int>();
         
         InitializeMap();
     }
     
     private void InitializeMap()
     {
-        // Create a varied map with different tile types
+        // Create a varied map with Slates tileset
         Random random = new Random(42); // Fixed seed for consistency
         
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                // Create varied terrain
+                // Create varied terrain using Slates tiles
                 TileType tileType;
                 
-                // Add some variation to the grass
+                // Border areas - mix of grass types
                 if (x < 5 || y < 5 || x >= _width - 5 || y >= _height - 5)
                 {
-                    // Border areas - mix of grass types
-                    int grassVariant = random.Next(4);
+                    int grassVariant = random.Next(5);
                     tileType = grassVariant switch
                     {
-                        0 => TileType.Grass,
-                        1 => TileType.Grass01,
-                        2 => TileType.Grass02,
-                        _ => TileType.Grass03
+                        0 => TileType.SlatesGrassBasic,
+                        1 => TileType.SlatesGrassLight,
+                        2 => TileType.SlatesGrassMedium,
+                        3 => TileType.SlatesGrassDark,
+                        _ => TileType.SlatesGrassFlowers
                     };
                 }
+                // Small dirt path area
                 else if (x >= 10 && x < 15 && y >= 10 && y < 15)
                 {
-                    // Small dirt patch
-                    tileType = random.Next(2) == 0 ? TileType.Dirt01 : TileType.Dirt02;
+                    tileType = random.Next(2) == 0 ? TileType.SlatesDirtBasic : TileType.SlatesDirtPath;
                 }
+                // Stone area
                 else if (x >= 35 && x < 40 && y >= 35 && y < 40)
                 {
-                    // Stone area
-                    tileType = random.Next(2) == 0 ? TileType.Stone : TileType.Stone01;
+                    tileType = random.Next(2) == 0 ? TileType.SlatesStoneFloor : TileType.SlatesStoneCobble;
                 }
+                // Water area (small pond)
+                else if (x >= 15 && x < 20 && y >= 30 && y < 35)
+                {
+                    tileType = random.Next(2) == 0 ? TileType.SlatesWaterStill : TileType.SlatesWaterShallow;
+                }
+                // Sand corner
                 else if (x >= 40 && y >= 40)
                 {
-                    // Sand corner
-                    tileType = random.Next(2) == 0 ? TileType.Sand : TileType.Sand01;
+                    tileType = random.Next(2) == 0 ? TileType.SlatesSandBasic : TileType.SlatesSandLight;
                 }
+                // Default grass with variation
                 else
                 {
-                    // Default grass with some variation
                     int variant = random.Next(10);
-                    tileType = variant < 7 ? TileType.Grass : 
-                              variant < 8 ? TileType.Grass01 :
-                              variant < 9 ? TileType.Grass02 : TileType.Grass03;
+                    tileType = variant < 5 ? TileType.SlatesGrassBasic : 
+                              variant < 7 ? TileType.SlatesGrassLight :
+                              variant < 8 ? TileType.SlatesGrassMedium :
+                              variant < 9 ? TileType.SlatesGrassDark : TileType.SlatesGrassFlowers;
                 }
                 
                 _tiles[x, y] = new Tile(tileType, new Vector2(x, y));
@@ -96,6 +107,66 @@ public class WorldMap
         {
             _cropTextures = cropTextures;
         }
+    }
+    
+    /// <summary>
+    /// Load and initialize the Slates tileset
+    /// </summary>
+    public void LoadSlatesTileset(Texture2D slatesTilesetTexture)
+    {
+        _slatesTileset = new SlatesTilesetHelper(slatesTilesetTexture);
+        InitializeSlatesTileMapping();
+    }
+    
+    /// <summary>
+    /// Initialize the mapping from TileType to Slates tile IDs
+    /// Uses random selection from available tiles for variety
+    /// </summary>
+    private void InitializeSlatesTileMapping()
+    {
+        Random random = new Random(42); // Fixed seed for consistency
+        
+        // Map each Slates TileType to a specific tile ID from the Slates tileset
+        _slatesTileMapping = new Dictionary<TileType, int>
+        {
+            // Grass variants
+            [TileType.SlatesGrassBasic] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Basic, random),
+            [TileType.SlatesGrassLight] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Light, random),
+            [TileType.SlatesGrassMedium] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Medium, random),
+            [TileType.SlatesGrassDark] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.Dark, random),
+            [TileType.SlatesGrassFlowers] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Grass.WithFlowers, random),
+            
+            // Dirt variants
+            [TileType.SlatesDirtBasic] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Dirt.Basic, random),
+            [TileType.SlatesDirtPath] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Dirt.Path, random),
+            [TileType.SlatesDirtTilled] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Dirt.Tilled, random),
+            
+            // Stone variants
+            [TileType.SlatesStoneFloor] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Floor, random),
+            [TileType.SlatesStoneWall] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Wall, random),
+            [TileType.SlatesStoneCobble] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Cobblestone, random),
+            [TileType.SlatesStoneBrick] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Stone.Brick, random),
+            
+            // Water variants
+            [TileType.SlatesWaterStill] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Still, random),
+            [TileType.SlatesWaterAnimated] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Animated, random),
+            [TileType.SlatesWaterDeep] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Deep, random),
+            [TileType.SlatesWaterShallow] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Water.Shallow, random),
+            
+            // Sand variants
+            [TileType.SlatesSandBasic] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Sand.Basic, random),
+            [TileType.SlatesSandLight] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Sand.Light, random),
+            [TileType.SlatesSandStones] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Sand.WithStones, random),
+            
+            // Indoor variants
+            [TileType.SlatesIndoorWood] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Indoor.WoodFloor, random),
+            [TileType.SlatesIndoorStone] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Indoor.StoneFloor, random),
+            [TileType.SlatesIndoorTile] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Indoor.TileFloor, random),
+            
+            // Special terrain
+            [TileType.SlatesSnow] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Special.Snow, random),
+            [TileType.SlatesIce] = SlatesTileMapping.GetRandomTile(SlatesTileMapping.Special.Ice, random)
+        };
     }
     
     public void Update(GameTime gameTime)
@@ -130,17 +201,23 @@ public class WorldMap
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        // Use actual textures if available, otherwise fall back to colored squares
-        if (_tileTextures.Count > 0)
+        // Use Slates tileset if available, otherwise fall back to individual textures or colored squares
+        for (int x = 0; x < _width; x++)
         {
-            for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++)
             {
-                for (int y = 0; y < _height; y++)
+                Tile tile = _tiles[x, y];
+                Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                
+                // Try to draw using Slates tileset first
+                if (_slatesTileset != null && _slatesTileMapping.ContainsKey(tile.Type))
                 {
-                    Tile tile = _tiles[x, y];
-                    Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                    
-                    // Get the texture for this tile type
+                    int tileId = _slatesTileMapping[tile.Type];
+                    _slatesTileset.DrawTile(spriteBatch, tileId, tileRect);
+                }
+                // Fall back to individual textures
+                else if (_tileTextures.Count > 0)
+                {
                     Texture2D texture = GetTileTexture(tile.Type);
                     
                     if (texture != null)
@@ -154,27 +231,18 @@ public class WorldMap
                         Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
                         spriteBatch.Draw(pixel, tileRect, tile.GetColor());
                     }
-                    
-                    // Draw crop if present
-                    if (tile.Crop != null)
-                    {
-                        DrawCrop(spriteBatch, tile, tileRect);
-                    }
                 }
-            }
-        }
-        else
-        {
-            // Fallback: colored squares
-            Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
-            
-            for (int x = 0; x < _width; x++)
-            {
-                for (int y = 0; y < _height; y++)
+                else
                 {
-                    Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                    Color tileColor = _tiles[x, y].GetColor();
-                    spriteBatch.Draw(pixel, tileRect, tileColor);
+                    // Final fallback: colored squares
+                    Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
+                    spriteBatch.Draw(pixel, tileRect, tile.GetColor());
+                }
+                
+                // Draw crop if present
+                if (tile.Crop != null)
+                {
+                    DrawCrop(spriteBatch, tile, tileRect);
                 }
             }
         }
@@ -247,9 +315,8 @@ public class WorldMap
         {
             for (int y = 20; y < 25; y++)
             {
-                // Direct type assignment is used here for initial setup/testing
-                // In normal gameplay, use Tile methods like Water() instead
-                _tiles[x, y].Type = (x + y) % 2 == 0 ? TileType.TilledWatered : TileType.TilledDry;
+                // Use Slates tilled dirt for the farm area
+                _tiles[x, y].Type = TileType.SlatesDirtTilled;
                 
                 // Plant different crops in rows
                 string cropType = (y - 20) switch
