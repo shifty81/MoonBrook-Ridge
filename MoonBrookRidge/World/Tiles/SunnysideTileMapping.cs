@@ -13,9 +13,13 @@ public static class SunnysideTileMapping
     // Sunnyside tileset is 64 columns × 64 rows (4,096 tiles total)
     // Tile ID = (row * 64) + column
     
-    // Note: These are approximate mappings. The actual tile positions
-    // in the Sunnyside World tileset may vary. These should be adjusted
-    // based on visual inspection of the tileset.
+    // ⚠️ IMPORTANT: These are approximate mappings based on common tileset layouts.
+    // The actual tile positions in the Sunnyside World tileset should be verified
+    // by visual inspection and updated accordingly. To verify:
+    // 1. Run the game and observe which tiles are rendered
+    // 2. Open sunnyside_tileset.png in an image editor
+    // 3. Count grid positions (64 tiles per row, 16px per tile)
+    // 4. Update these arrays with correct tile IDs
 
     /// <summary>
     /// Grass terrain tiles
