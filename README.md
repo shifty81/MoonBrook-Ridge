@@ -53,28 +53,30 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 The game combines assets from multiple high-quality pixel art packs for visual variety:
 
 ### Primary Asset Packs
-1. **Sunnyside World** - Main asset pack for characters, buildings, and large objects
-2. **16x16 Tilemap Collection** - Ground tiles and terrain (Tiny Farm RPG / Mystic Woods inspired)
-3. **Custom Generated Tileset** - Combined ground tileset merging best tiles from all sources
+1. **Slates Tileset v.2** ⭐ **MAIN TILESET** - 32x32px orthogonal tileset by Ivan Voirol (1,288 tiles)
+2. **Sunnyside World** - Main asset pack for characters, buildings, and large objects
+3. **16x16 Tilemap Collection** - Ground tiles and terrain (legacy/fallback)
+4. **Custom Generated Tileset** - Combined ground tileset (legacy/fallback)
 
 ### Asset Categories
+- **Terrain**: Slates tileset with grass, dirt, stone, water, sand, and special tiles
 - **Characters**: Sunnyside World sprites with multiple hairstyles and animations
 - **Buildings**: Detailed structures from Sunnyside World
 - **Crops**: Farming items with growth stages
-- **Terrain**: Custom 16x16 ground tileset (192 tiles)
 - **Resources**: Trees, rocks, and harvestable objects
 - **Particle Effects**: Visual feedback and animations
 - **UI Elements**: Icons, buttons, and interface graphics
 
-### Asset Integration ⭐ SIGNIFICANTLY COMPLETE
+### Asset Integration ⭐ SLATES FULLY INTEGRATED
 
 Assets are now extensively integrated through MonoGame's Content Pipeline:
 
 **Currently Loaded (~200+ files, 2% of available):**
+- ✅ **Slates Tileset (1,288 tiles)** - Primary tileset for world generation ⭐ **NEW!**
 - ✅ Arial font for UI text
 - ✅ **ALL 20 character animation sprites** (walk, run, idle, dig, mine, axe, fish, water, attack, etc.)
 - ✅ **ALL 20 tool overlay sprites** (for layered rendering showing tools in use)
-- ✅ **Custom ground tileset (192 16x16 tiles)** combining multiple packs:
+- ✅ **Custom ground tileset (192 16x16 tiles)** combining multiple packs (fallback):
   - 16 grass variants, 16 dirt/path variants, 16 tilled soil variants
   - 16 stone/rock variants, 16 water variants, 16 sand/beach variants
   - 96 additional terrain variants
@@ -84,8 +86,15 @@ Assets are now extensively integrated through MonoGame's Content Pipeline:
 - ✅ **20+ building sprites** (houses, towers, castles, barracks, monasteries, archery ranges)
 - ✅ **Resource sprites** (4 tree types, 3 rock types)
 
-**Next Focus:** Code integration to connect these assets to gameplay systems
+**Slates Integration Status:**
+- ✅ Tileset loaded and rendering system integrated
+- ✅ World generation using Slates tiles by default
+- ✅ 50+ tile types mapped from Slates atlas
+- ✅ Automatic scaling from 32x32 to 16x16 game grid
+- ✅ Extensible system ready for "World Below" expansion
 
+See [SLATES_IMPLEMENTATION_STATUS.md](SLATES_IMPLEMENTATION_STATUS.md) for complete Slates integration details.  
+See [WORLD_BELOW_DESIGN.md](WORLD_BELOW_DESIGN.md) for future underground expansion plans.  
 See [ASSET_STATUS_SUMMARY.md](ASSET_STATUS_SUMMARY.md) for complete current status.  
 See [TILESET_GUIDE.md](TILESET_GUIDE.md) for details on the custom ground tileset.  
 See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
@@ -340,13 +349,29 @@ Feel free to:
 
 This project is for educational and personal use. 
 
-**Sprite Assets**: The Sunnyside World asset pack has its own license. Please ensure you have proper rights to use these assets.
+**Sprite Assets**: 
+- The Sunnyside World asset pack has its own license
+- The Slates tileset is licensed under CC-BY 4.0 (attribution required)
+
+Please ensure you have proper rights to use these assets.
 
 ## 🙏 Credits
 
+### Game Framework & Tools
 - **Game Framework**: [MonoGame](https://www.monogame.net/)
-- **Art Assets**: Sunnyside World sprite collection
-- **Inspired By**: Stardew Valley, The Sims 4, Harvest Moon
+- **Development**: C# with .NET 9.0
+
+### Art Assets
+- **Slates Tileset v.2**: [Ivan Voirol](https://opengameart.org/users/ivan-voirol) (CC-BY 4.0)
+  - 32x32px orthogonal tileset (1,288 tiles)
+  - Source: [OpenGameArt.org](https://opengameart.org/content/slates-32x32px-orthogonal-tileset-by-ivan-voirol)
+- **Sunnyside World**: Sprite collection for characters and objects
+- **Custom Tilesets**: Combined and enhanced terrain tiles
+
+### Inspiration
+- **Stardew Valley**: Core farming and life simulation mechanics
+- **The Sims 4**: Enhanced NPC interaction systems
+- **Harvest Moon**: Classic farming game inspiration
 
 ## 📧 Contact
 
