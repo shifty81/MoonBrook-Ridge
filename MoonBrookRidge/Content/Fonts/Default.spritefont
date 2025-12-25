@@ -10,10 +10,10 @@ with.
 
     <!--
     Modify this string to change the font that will be imported.
-    Note: Uses Liberation Sans for cross-platform compatibility.
-    Windows users: Install Liberation fonts from https://github.com/liberationfonts/liberation-fonts/releases
+    Note: Uses bundled Liberation Sans font file for cross-platform compatibility.
+    The font file is included in the project, no installation required.
     -->
-    <FontName>Liberation Sans</FontName>
+    <FontName>LiberationSans-Regular.ttf</FontName>
 
     <!--
     Size is a float value, measured in points. Modify this value to change

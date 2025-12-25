@@ -1,11 +1,31 @@
 #!/bin/bash
 # Setup fonts for building MoonBrook Ridge on Linux
-# This script ensures Liberation Sans fonts are properly installed
+# NOTE: As of December 2024, the Liberation Sans font is now BUNDLED with the project.
+# This script is no longer required for building the game, but can still be useful
+# if you want to install Liberation fonts system-wide for other applications.
 # Note: This script is designed for Debian/Ubuntu systems
 
 set -e  # Exit on error
 
-echo "Setting up fonts for MoonBrook Ridge on Linux..."
+echo "=========================================="
+echo "IMPORTANT NOTE:"
+echo "Liberation Sans font is now bundled with MoonBrook Ridge!"
+echo "This script is NO LONGER REQUIRED to build the game."
+echo "=========================================="
+echo ""
+echo "However, if you want to install Liberation fonts system-wide"
+echo "for other applications, this script can still do that for you."
+echo ""
+read -p "Continue with system font installation? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Skipping system font installation."
+    echo "You can build the game directly with: cd MoonBrookRidge && dotnet build"
+    exit 0
+fi
+
+echo ""
+echo "Setting up Liberation fonts system-wide on Linux..."
 
 # Check if Liberation fonts are installed
 if ! dpkg -l | grep -q fonts-liberation; then
@@ -59,8 +79,10 @@ else
 fi
 
 echo ""
-echo "✓ Font setup complete! Liberation Sans is properly configured."
-echo "  You can now build the project with: cd MoonBrookRidge && dotnet build"
+echo "✓ System font setup complete! Liberation Sans is installed system-wide."
+echo ""
+echo "Note: The game uses its bundled font, not the system font."
+echo "You can now build the project with: cd MoonBrookRidge && dotnet build"
 echo ""
 echo "Note: This script is designed for Debian/Ubuntu systems."
 echo "For Fedora/RHEL/Arch, please install fonts-liberation via your package manager."
