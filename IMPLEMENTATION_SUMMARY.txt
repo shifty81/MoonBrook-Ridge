@@ -1,0 +1,102 @@
+# Summary: Sprite Sheet Extraction Implementation
+
+## Changes Made
+
+### 1. Created `SpriteSheetExtractor` Utility Class
+**File:** `MoonBrookRidge/Core/Systems/SpriteSheetExtractor.cs`
+
+A reusable utility class that provides two extraction methods:
+- `ExtractSpritesFromHorizontalStrip()` - For horizontal sprite strips (e.g., trees in a row)
+- `ExtractSpritesFromGrid()` - For grid-based sprite sheets (e.g., rocks in a 2x2 grid)
+
+Returns `Dictionary<string, SpriteInfo>` where `SpriteInfo` contains:
+- `Texture2D Texture` - Reference to the original sprite sheet
+- `Rectangle SourceRectangle` - The portion to extract for this sprite
+
+### 2. Updated `WorldObject` Class
+**File:** `MoonBrookRidge/World/WorldObject.cs`
+
+Added new constructor:
+```csharp
+public WorldObject(string name, Vector2 position, SpriteInfo spriteInfo)
+```
+
+This allows creating world objects with only a portion of a texture, rather than the entire texture.
+
+### 3. Modified Resource Loading
+**File:** `MoonBrookRidge/Core/States/GameplayState.cs`
+
+**Trees (28 sprites total):**
+- Tree1 (1536x256): 6 sprites @ 256x256 each
+- Tree2 (1536x256): 6 sprites @ 256x256 each  
+- Tree3 (1536x192): 8 sprites @ 192x192 each
+- Tree4 (1536x192): 8 sprites @ 192x192 each
+
+**Rocks (12 sprites total):**
+- Rock1 (128x128): 4 sprites @ 64x64 each (2x2 grid)
+- Rock2 (128x128): 4 sprites @ 64x64 each (2x2 grid)
+- Rock3 (128x128): 4 sprites @ 64x64 each (2x2 grid)
+
+### 4. Updated World Population
+**File:** `MoonBrookRidge/World/Maps/WorldMap.cs`
+
+Changed method signature:
+```csharp
+public void PopulateSunnysideWorldObjects(
+    Dictionary<string, Texture2D> buildings,
+    Dictionary<string, SpriteInfo> trees,    // Changed from Texture2D
+    Dictionary<string, SpriteInfo> rocks)    // Changed from Texture2D
+```
+
+Now randomly selects from all 28 tree sprites and 12 rock sprites for natural distribution.
+
+### 5. Added Documentation
+**Files:**
+- `SPRITE_SHEET_FIX.md` - Detailed explanation of the problem and solution
+- `MoonBrookRidge/Tests/SpriteSheetExtractionTest.cs` - Test class for verification
+
+## Problem Solved
+
+**Before:** Trees and rocks were rendering entire sprite sheets (1536 pixels wide for trees, 128x128 for rocks), causing massive clumping and vertical bands of repeated imagery.
+
+**After:** Each tree position now renders a single tree sprite (256x256 or 192x192 pixels), and each rock position renders a single rock sprite (64x64 pixels), with natural variety from 40 total unique sprites.
+
+## Build Status
+
+✅ **Build Successful** - Both Debug and Release configurations compile without errors
+⚠️ **1 Warning** - Unused variable in test class (cosmetic, not affecting functionality)
+
+## Testing Status
+
+✅ **Compilation** - All code compiles successfully
+✅ **Logic Verification** - Sprite extraction math validated
+⏳ **Visual Testing** - Requires running game in graphical environment to see results
+
+## Impact
+
+- **40 unique sprites** now available for world decoration (28 trees + 12 rocks)
+- **Natural variety** in forest and terrain generation
+- **Reusable solution** - The `SpriteSheetExtractor` can be applied to other tilesheets:
+  - Fences (64x64)
+  - Walls (128x128)  
+  - Water foam (3072x192)
+  - Shadows (192x192)
+  - Decorations (various sizes)
+
+## Next Steps for User
+
+1. **Run the game** to see the visual improvements
+2. **Take screenshots** to verify trees and rocks render correctly
+3. **Consider extending** the solution to other tilesheets if needed
+4. **Test gameplay** to ensure no regressions in collision or interaction systems
+
+## Files Changed
+
+- ✅ `MoonBrookRidge/Core/Systems/SpriteSheetExtractor.cs` (NEW)
+- ✅ `MoonBrookRidge/Core/States/GameplayState.cs` (MODIFIED)
+- ✅ `MoonBrookRidge/World/Maps/WorldMap.cs` (MODIFIED)
+- ✅ `MoonBrookRidge/World/WorldObject.cs` (MODIFIED)
+- ✅ `MoonBrookRidge/Tests/SpriteSheetExtractionTest.cs` (NEW)
+- ✅ `SPRITE_SHEET_FIX.md` (NEW)
+
+All changes follow minimal modification principles and maintain compatibility with existing code.

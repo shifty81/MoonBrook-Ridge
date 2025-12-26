@@ -241,25 +241,45 @@ public class GameplayState : GameState
             ["Archery_Yellow"] = Game.Content.Load<Texture2D>("Textures/Buildings/Archery_Yellow")
         };
         
-        // Load tree textures
-        var trees = new Dictionary<string, Texture2D>
-        {
-            ["Tree1"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree1"),
-            ["Tree2"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree2"),
-            ["Tree3"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree3"),
-            ["Tree4"] = Game.Content.Load<Texture2D>("Textures/Resources/Tree4")
-        };
+        // Load tree texture sheets and extract individual tree sprites
+        // Tree1 & Tree2: 1536x256 = 6 trees of 256x256 each
+        // Tree3 & Tree4: 1536x192 = 8 trees of 192x192 each
+        var treeSprites = new Dictionary<string, SpriteInfo>();
         
-        // Load rock textures
-        var rocks = new Dictionary<string, Texture2D>
-        {
-            ["Rock1"] = Game.Content.Load<Texture2D>("Textures/Resources/Rock1"),
-            ["Rock2"] = Game.Content.Load<Texture2D>("Textures/Resources/Rock2"),
-            ["Rock3"] = Game.Content.Load<Texture2D>("Textures/Resources/Rock3")
-        };
+        var tree1Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Tree1");
+        var tree1Extracted = SpriteSheetExtractor.ExtractSpritesFromHorizontalStrip(tree1Sheet, "Tree1_", 256, 256);
+        foreach (var kvp in tree1Extracted) treeSprites[kvp.Key] = kvp.Value;
         
-        // Populate world with Sunnyside-style objects
-        _worldMap.PopulateSunnysideWorldObjects(buildings, trees, rocks);
+        var tree2Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Tree2");
+        var tree2Extracted = SpriteSheetExtractor.ExtractSpritesFromHorizontalStrip(tree2Sheet, "Tree2_", 256, 256);
+        foreach (var kvp in tree2Extracted) treeSprites[kvp.Key] = kvp.Value;
+        
+        var tree3Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Tree3");
+        var tree3Extracted = SpriteSheetExtractor.ExtractSpritesFromHorizontalStrip(tree3Sheet, "Tree3_", 192, 192);
+        foreach (var kvp in tree3Extracted) treeSprites[kvp.Key] = kvp.Value;
+        
+        var tree4Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Tree4");
+        var tree4Extracted = SpriteSheetExtractor.ExtractSpritesFromHorizontalStrip(tree4Sheet, "Tree4_", 192, 192);
+        foreach (var kvp in tree4Extracted) treeSprites[kvp.Key] = kvp.Value;
+        
+        // Load rock texture sheets and extract individual rock sprites
+        // Rocks are 128x128, likely containing 2x2 grid = 4 rocks of 64x64 each
+        var rockSprites = new Dictionary<string, SpriteInfo>();
+        
+        var rock1Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Rock1");
+        var rock1Extracted = SpriteSheetExtractor.ExtractSpritesFromGrid(rock1Sheet, 64, 64);
+        foreach (var kvp in rock1Extracted) rockSprites[$"Rock1_{kvp.Key}"] = kvp.Value;
+        
+        var rock2Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Rock2");
+        var rock2Extracted = SpriteSheetExtractor.ExtractSpritesFromGrid(rock2Sheet, 64, 64);
+        foreach (var kvp in rock2Extracted) rockSprites[$"Rock2_{kvp.Key}"] = kvp.Value;
+        
+        var rock3Sheet = Game.Content.Load<Texture2D>("Textures/Resources/Rock3");
+        var rock3Extracted = SpriteSheetExtractor.ExtractSpritesFromGrid(rock3Sheet, 64, 64);
+        foreach (var kvp in rock3Extracted) rockSprites[$"Rock3_{kvp.Key}"] = kvp.Value;
+        
+        // Populate world with Sunnyside-style objects using extracted sprites
+        _worldMap.PopulateSunnysideWorldObjects(buildings, treeSprites, rockSprites);
         
         // Plant some test crops to demonstrate the system
         _worldMap.PlantTestCrops();

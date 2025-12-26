@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.World.Maps;
 
@@ -376,20 +377,20 @@ public class WorldMap
     /// </summary>
     public void PopulateSunnysideWorldObjects(
         Dictionary<string, Texture2D> buildings,
-        Dictionary<string, Texture2D> trees,
-        Dictionary<string, Texture2D> rocks)
+        Dictionary<string, SpriteInfo> trees,
+        Dictionary<string, SpriteInfo> rocks)
     {
         Random random = new Random(42); // Fixed seed for consistency
         
         // NO BUILDINGS - focusing on natural scene generation
         
-        // Create dense tree borders along all edges of the map
-        string[] treeKeys = { "Tree1", "Tree2", "Tree3", "Tree4" };
+        // Get all tree sprite keys (e.g., Tree1_0, Tree1_1, etc.)
+        var treeKeys = trees.Keys.ToList();
         
         // Top border - dense tree line
         for (int x = 0; x < _width; x += 2)
         {
-            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
                 AddWorldObject(new WorldObject(treeKey, new Vector2(x * TILE_SIZE, 1 * TILE_SIZE), trees[treeKey]));
@@ -399,7 +400,7 @@ public class WorldMap
         // Bottom border - dense tree line
         for (int x = 0; x < _width; x += 2)
         {
-            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
                 AddWorldObject(new WorldObject(treeKey, new Vector2(x * TILE_SIZE, (_height - 2) * TILE_SIZE), trees[treeKey]));
@@ -409,7 +410,7 @@ public class WorldMap
         // Left border - dense tree line
         for (int y = 0; y < _height; y += 2)
         {
-            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
                 AddWorldObject(new WorldObject(treeKey, new Vector2(1 * TILE_SIZE, y * TILE_SIZE), trees[treeKey]));
@@ -419,7 +420,7 @@ public class WorldMap
         // Right border - dense tree line
         for (int y = 0; y < _height; y += 2)
         {
-            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
                 AddWorldObject(new WorldObject(treeKey, new Vector2((_width - 2) * TILE_SIZE, y * TILE_SIZE), trees[treeKey]));
@@ -470,7 +471,7 @@ public class WorldMap
         
         foreach (var pos in forestPositions)
         {
-            string treeKey = treeKeys[random.Next(treeKeys.Length)];
+            string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
                 AddWorldObject(new WorldObject(treeKey, pos, trees[treeKey]));
@@ -478,7 +479,7 @@ public class WorldMap
         }
         
         // Add scattered rocks for natural terrain detail (fewer than before)
-        string[] rockKeys = { "Rock1", "Rock2", "Rock3" };
+        var rockKeys = rocks.Keys.ToList();
         List<Vector2> rockPositions = new List<Vector2>
         {
             // Near pond
@@ -497,7 +498,7 @@ public class WorldMap
         
         foreach (var pos in rockPositions)
         {
-            string rockKey = rockKeys[random.Next(rockKeys.Length)];
+            string rockKey = rockKeys[random.Next(rockKeys.Count)];
             if (rocks.ContainsKey(rockKey))
             {
                 AddWorldObject(new WorldObject(rockKey, pos, rocks[rockKey]));
