@@ -845,7 +845,7 @@ public class GameplayState : GameState
     
     private void CreateTestNPC()
     {
-        // Create a test NPC named "Emma" the farmer
+        // Create Emma - the farmer
         var emma = new NPCCharacter("Emma", new Vector2(600, 400));
         
         // Add a daily schedule for Emma
@@ -874,16 +874,16 @@ public class GameplayState : GameState
             Activity = "Relaxing"
         });
         
-        // Create a simple greeting dialogue tree
-        var greetingNode = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
-        var option1Response = new DialogueNode("I'm Emma, I've been farming here for years. How can I help you?", "Emma");
-        var option2Response = new DialogueNode("The weather has been great for crops lately!", "Emma");
+        // Create Emma's dialogue tree
+        var emmaGreeting = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
+        var emmaOption1 = new DialogueNode("I'm Emma, I've been farming here for years. How can I help you?", "Emma");
+        var emmaOption2 = new DialogueNode("The weather has been great for crops lately!", "Emma");
         
-        greetingNode.AddOption("Who are you?", option1Response);
-        greetingNode.AddOption("How's the farm?", option2Response);
+        emmaGreeting.AddOption("Who are you?", emmaOption1);
+        emmaGreeting.AddOption("How's the farm?", emmaOption2);
         
-        var dialogueTree = new DialogueTree(greetingNode);
-        emma.AddDialogueTree("greeting", dialogueTree);
+        var emmaDialogue = new DialogueTree(emmaGreeting);
+        emma.AddDialogueTree("greeting", emmaDialogue);
         
         // Set Emma's gift preferences (she's a farmer who loves crops and flowers)
         emma.SetGiftPreferences(
@@ -893,7 +893,156 @@ public class GameplayState : GameState
             hated: new List<string> { "Coal", "Copper Ore" }
         );
         
-        // Add Emma to the NPC manager
         _npcManager.AddNPC(emma);
+        
+        // Create Marcus - the blacksmith/miner
+        var marcus = new NPCCharacter("Marcus", new Vector2(400, 600));
+        
+        // Marcus's schedule - focused on mining and metalwork
+        marcus.Schedule.AddScheduleEntry(7.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(400, 600), 
+            LocationName = "Workshop",
+            Activity = "Opening shop"
+        });
+        marcus.Schedule.AddScheduleEntry(10.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(300, 700), 
+            LocationName = "Mine",
+            Activity = "Mining"
+        });
+        marcus.Schedule.AddScheduleEntry(16.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(400, 600), 
+            LocationName = "Workshop",
+            Activity = "Smithing"
+        });
+        marcus.Schedule.AddScheduleEntry(20.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(450, 550), 
+            LocationName = "Tavern",
+            Activity = "Relaxing"
+        });
+        
+        // Create Marcus's dialogue tree
+        var marcusGreeting = new DialogueNode("Greetings, traveler. Need any tools repaired?", "Marcus");
+        var marcusOption1 = new DialogueNode("I'm Marcus, the town blacksmith. I also spend time in the mines gathering ore.", "Marcus");
+        var marcusOption2 = new DialogueNode("The mines have been yielding good ore lately. Dangerous though!", "Marcus");
+        
+        marcusGreeting.AddOption("Who are you?", marcusOption1);
+        marcusGreeting.AddOption("How's the mining?", marcusOption2);
+        
+        var marcusDialogue = new DialogueTree(marcusGreeting);
+        marcus.AddDialogueTree("greeting", marcusDialogue);
+        
+        // Marcus loves minerals and ores, dislikes farm produce
+        marcus.SetGiftPreferences(
+            loved: new List<string> { "Gold Ore", "Diamond", "Emerald" },
+            liked: new List<string> { "Copper Ore", "Iron Ore", "Coal", "Stone" },
+            disliked: new List<string> { "Wheat", "Carrot", "Cabbage" },
+            hated: new List<string> { "Sunflower" }
+        );
+        
+        _npcManager.AddNPC(marcus);
+        
+        // Create Lily - the merchant/shopkeeper
+        var lily = new NPCCharacter("Lily", new Vector2(800, 350));
+        
+        // Lily's schedule - manages the shop
+        lily.Schedule.AddScheduleEntry(8.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(800, 350), 
+            LocationName = "Shop",
+            Activity = "Opening shop"
+        });
+        lily.Schedule.AddScheduleEntry(12.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(750, 400), 
+            LocationName = "Market",
+            Activity = "Buying supplies"
+        });
+        lily.Schedule.AddScheduleEntry(15.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(800, 350), 
+            LocationName = "Shop",
+            Activity = "Managing shop"
+        });
+        lily.Schedule.AddScheduleEntry(19.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(850, 300), 
+            LocationName = "Home",
+            Activity = "Resting"
+        });
+        
+        // Create Lily's dialogue tree
+        var lilyGreeting = new DialogueNode("Welcome! Looking for anything special today?", "Lily");
+        var lilyOption1 = new DialogueNode("I'm Lily! I run the general store here. I sell all sorts of goods!", "Lily");
+        var lilyOption2 = new DialogueNode("Business is booming! Everyone needs seeds and supplies.", "Lily");
+        
+        lilyGreeting.AddOption("Who are you?", lilyOption1);
+        lilyGreeting.AddOption("How's business?", lilyOption2);
+        
+        var lilyDialogue = new DialogueTree(lilyGreeting);
+        lily.AddDialogueTree("greeting", lilyDialogue);
+        
+        // Lily loves valuable items and gems, likes crafted goods
+        lily.SetGiftPreferences(
+            loved: new List<string> { "Diamond", "Emerald", "Gold Ore" },
+            liked: new List<string> { "Copper Ore", "Fish", "Wood", "Stone" },
+            disliked: new List<string> { "Coal" },
+            hated: new List<string> { "Trash" }
+        );
+        
+        _npcManager.AddNPC(lily);
+        
+        // Create Oliver - the fisherman
+        var oliver = new NPCCharacter("Oliver", new Vector2(350, 250));
+        
+        // Oliver's schedule - fishing focused
+        oliver.Schedule.AddScheduleEntry(5.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(350, 250), 
+            LocationName = "Dock",
+            Activity = "Preparing boat"
+        });
+        oliver.Schedule.AddScheduleEntry(6.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(300, 200), 
+            LocationName = "Lake",
+            Activity = "Fishing"
+        });
+        oliver.Schedule.AddScheduleEntry(13.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(350, 250), 
+            LocationName = "Dock",
+            Activity = "Sorting catch"
+        });
+        oliver.Schedule.AddScheduleEntry(17.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(400, 300), 
+            LocationName = "Beach",
+            Activity = "Relaxing"
+        });
+        
+        // Create Oliver's dialogue tree
+        var oliverGreeting = new DialogueNode("Ahoy! The fish are biting today!", "Oliver");
+        var oliverOption1 = new DialogueNode("Name's Oliver. Been fishing these waters my whole life.", "Oliver");
+        var oliverOption2 = new DialogueNode("The lake's been generous lately. Caught a huge bass yesterday!", "Oliver");
+        
+        oliverGreeting.AddOption("Who are you?", oliverOption1);
+        oliverGreeting.AddOption("How's the fishing?", oliverOption2);
+        
+        var oliverDialogue = new DialogueTree(oliverGreeting);
+        oliver.AddDialogueTree("greeting", oliverDialogue);
+        
+        // Oliver loves fish and seafood-related items, dislikes mining items
+        oliver.SetGiftPreferences(
+            loved: new List<string> { "Salmon", "Tuna", "Lobster" },
+            liked: new List<string> { "Fish", "Seaweed", "Crab" },
+            disliked: new List<string> { "Coal", "Stone", "Copper Ore" },
+            hated: new List<string> { "Iron Ore" }
+        );
+        
+        _npcManager.AddNPC(oliver);
     }
 }

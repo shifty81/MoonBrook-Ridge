@@ -31,6 +31,11 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **NPC Schedules**: NPCs follow daily routines and move around the world ✅
 - **Branching Dialogues**: Multiple conversation paths based on friendship level ✅
 - **Pathfinding**: NPCs automatically navigate to scheduled locations ✅
+- **Unique NPCs**: 4 NPCs with distinct personalities and gift preferences ✅ **NEW**
+  - **Emma** (Farmer): Loves crops and flowers
+  - **Marcus** (Blacksmith): Loves minerals and ores
+  - **Lily** (Merchant): Loves gems and valuable items
+  - **Oliver** (Fisherman): Loves fish and seafood
 
 ### Character Systems
 - **Player Character**: Fully customizable with stats (health, energy, money)
@@ -316,7 +321,7 @@ Comprehensive guides and references:
 - [x] **Dialogue content and branching paths** ⭐
 - [x] **NPC schedules and pathfinding** ⭐
 - [x] **Gift-giving mechanics with UI** ⭐ **IMPLEMENTED**
-- [ ] Multiple NPCs with personalities (system ready, needs content)
+- [x] **Multiple NPCs with personalities** ⭐ **IMPLEMENTED** (Emma, Marcus, Lily, Oliver)
 
 ### Phase 4: Advanced Features 🚧 **IN PROGRESS**
 - [x] **Crafting UI and recipes** ⭐ **IMPLEMENTED**

@@ -249,6 +249,24 @@ Appear on left side when stats are critical:
 - 👎 Dislikes: Stone, Wood
 - 💔 Hates: Coal, Copper Ore
 
+**Marcus's Preferences (Blacksmith):**
+- ❤️ Loves: Gold Ore, Diamond, Emerald
+- 👍 Likes: Copper Ore, Iron Ore, Coal, Stone
+- 👎 Dislikes: Wheat, Carrot, Cabbage
+- 💔 Hates: Sunflower
+
+**Lily's Preferences (Merchant):**
+- ❤️ Loves: Diamond, Emerald, Gold Ore
+- 👍 Likes: Copper Ore, Fish, Wood, Stone
+- 👎 Dislikes: Coal
+- 💔 Hates: Trash
+
+**Oliver's Preferences (Fisherman):**
+- ❤️ Loves: Salmon, Tuna, Lobster
+- 👍 Likes: Fish, Seaweed, Crab
+- 👎 Dislikes: Coal, Stone, Copper Ore
+- 💔 Hates: Iron Ore
+
 ## Tips & Strategies
 
 ### Survival Tips
