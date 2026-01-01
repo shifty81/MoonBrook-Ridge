@@ -3,6 +3,7 @@ using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.World.Fishing;
 using MoonBrookRidge.Core;
 using MoonBrookRidge.Items;
 using MoonBrookRidge.Items.Inventory;
@@ -19,6 +20,7 @@ public class ToolManager
     private Tool _currentTool;
     private InventorySystem _inventory;
     private MiningManager _miningManager;
+    private FishingManager _fishingManager;
     
     public ToolManager(WorldMap worldMap, PlayerCharacter player, InventorySystem inventory = null)
     {
@@ -31,6 +33,11 @@ public class ToolManager
     public void SetMiningManager(MiningManager miningManager)
     {
         _miningManager = miningManager;
+    }
+    
+    public void SetFishingManager(FishingManager fishingManager)
+    {
+        _fishingManager = fishingManager;
     }
     
     public void SetCurrentTool(Tool tool)
@@ -89,6 +96,7 @@ public class ToolManager
         {
             toolUsed = UseHarvest(tile);
         }
+        // Note: FishingRod is handled separately in GameplayState.HandleToolInput
         
         // Consume energy if tool was used
         if (toolUsed)

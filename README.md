@@ -320,8 +320,8 @@ Comprehensive guides and references:
 ### Phase 4: Advanced Features 🚧 **IN PROGRESS**
 - [x] **Crafting UI and recipes** ⭐ **IMPLEMENTED**
 - [x] **Shop system** ⭐ **IMPLEMENTED**
-- [ ] Mining system with caves
-- [ ] Fishing minigame
+- [x] **Mining system with caves** ⭐ **IMPLEMENTED**
+- [x] **Fishing minigame** ⭐ **IMPLEMENTED**
 - [ ] Building construction
 - [ ] Quest/task system
 - [ ] Events and festivals
