@@ -10,6 +10,7 @@ using MoonBrookRidge.World.Fishing;
 using MoonBrookRidge.World.Buildings;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.UI.Menus;
+using MoonBrookRidge.UI;
 using MoonBrookRidge.Core.Systems;
 using MoonBrookRidge.Farming.Tools;
 using MoonBrookRidge.Items;
@@ -29,6 +30,8 @@ public class GameplayState : GameState
     private WorldMap _worldMap;
     private HUDManager _hud;
     private TimeSystem _timeSystem;
+    private EventSystem _eventSystem;
+    private EventNotification _eventNotification;
     private Camera2D _camera;
     private InputManager _inputManager;
     private ToolManager _toolManager;
@@ -52,6 +55,7 @@ public class GameplayState : GameState
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
+    private GameEvent? _lastShownEvent;
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -61,6 +65,8 @@ public class GameplayState : GameState
         
         // Initialize core systems
         _timeSystem = new TimeSystem();
+        _eventSystem = new EventSystem(_timeSystem);
+        _eventNotification = new EventNotification();
         _camera = new Camera2D(Game.GraphicsDevice.Viewport);
         _inputManager = new InputManager();
         
@@ -482,6 +488,19 @@ public class GameplayState : GameState
         
         // Update time system
         _timeSystem.Update(gameTime);
+        
+        // Update event system
+        _eventSystem.Update(gameTime);
+        
+        // Check if a new event has been triggered and show notification
+        if (_eventSystem.HasActiveEvent && _eventSystem.ActiveEvent != _lastShownEvent)
+        {
+            _eventNotification.Show(_eventSystem.ActiveEvent);
+            _lastShownEvent = _eventSystem.ActiveEvent;
+        }
+        
+        // Update event notification
+        _eventNotification.Update(gameTime);
         
         // Update crop growth based on game time
         _worldMap.UpdateCropGrowth(_timeSystem.LastGameHoursElapsed);
@@ -941,6 +960,9 @@ public class GameplayState : GameState
         {
             _buildingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice, _player.Money);
         }
+        
+        // Draw event notification (on top of most UI but below menus)
+        _eventNotification.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         
         // Draw pause indicator
         if (_isPaused)
