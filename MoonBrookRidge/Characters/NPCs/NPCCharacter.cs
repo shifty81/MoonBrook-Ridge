@@ -161,6 +161,15 @@ public class NPCCharacter
         _dialogueTrees[key] = tree;
     }
     
+    public void SetGiftPreferences(List<string> loved = null, List<string> liked = null, 
+                                   List<string> disliked = null, List<string> hated = null)
+    {
+        if (loved != null) _lovedGifts = loved;
+        if (liked != null) _likedGifts = liked;
+        if (disliked != null) _dislikedGifts = disliked;
+        if (hated != null) _hatedGifts = hated;
+    }
+    
     // Properties
     public string Name => _name;
     public Vector2 Position => _position;

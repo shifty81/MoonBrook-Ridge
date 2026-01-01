@@ -28,6 +28,7 @@
 | Open Map | M | - |
 | **Open Crafting Menu** ⭐ **NEW** | **K** | - |
 | **Open Shop Menu** ⭐ **NEW** | **B** | - |
+| **Gift to NPC** ⭐ **NEW** | **G** | - |
 | Switch Toolbar Row | Tab | - |
 | **Quick Save** ⭐ | **F5** | - |
 | **Quick Load** ⭐ | **F9** | - |
@@ -222,6 +223,31 @@ Appear on left side when stats are critical:
 - Food: Apple, Carrot
 - Drinks: Water, Spring Water
 - Materials: Wood, Stone
+
+### Gift Menu ⭐ **NEW**
+- Press **G** when near an NPC to open gift menu
+- Navigate with **↑/↓ arrow keys**
+- Press **Enter** or **X** to give selected gift
+- Press **Esc** or **G** to close menu
+
+**Gift System:**
+- Most items can be gifted (except tools)
+- NPCs have individual gift preferences
+- **Loved gifts**: +80 friendship points
+- **Liked gifts**: +45 friendship points
+- **Neutral gifts**: +20 friendship points
+- **Disliked gifts**: -20 friendship points
+- **Hated gifts**: -40 friendship points
+- Friendship is measured in hearts (10 max)
+- Each heart = 250 friendship points
+- Menu shows NPC's current heart level
+- Feedback message shows NPC's reaction
+
+**Emma's Preferences (Example NPC):**
+- ❤️ Loves: Sunflower, Pumpkin, Cauliflower
+- 👍 Likes: Wheat, Carrot, Potato, Cabbage
+- 👎 Dislikes: Stone, Wood
+- 💔 Hates: Coal, Copper Ore
 
 ## Tips & Strategies
 

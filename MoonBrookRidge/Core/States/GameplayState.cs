@@ -40,6 +40,7 @@ public class GameplayState : GameState
     private CraftingMenu _craftingMenu;
     private ShopSystem _shopSystem;
     private ShopMenu _shopMenu;
+    private GiftMenu _giftMenu;
     private MoonBrookRidge.World.MiningManager _miningManager;
     private FishingManager _fishingManager;
     private bool _isPaused;
@@ -101,6 +102,9 @@ public class GameplayState : GameState
         // Initialize shop system
         _shopSystem = new ShopSystem();
         _shopMenu = new ShopMenu(_shopSystem, _inventory, _player);
+        
+        // Initialize gift menu
+        _giftMenu = new GiftMenu(_inventory);
         
         // Initialize NPC manager
         _npcManager = new NPCManager();
@@ -361,6 +365,13 @@ public class GameplayState : GameState
             return; // Don't update game while in shop menu
         }
         
+        if (_giftMenu.IsActive)
+        {
+            _giftMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in gift menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -375,6 +386,19 @@ public class GameplayState : GameState
             _shopMenu.Show();
             _previousKeyboardState = keyboardState;
             return;
+        }
+        
+        // Check for gift menu (G key) - with debouncing
+        // Only allow when near an NPC
+        if (keyboardState.IsKeyDown(Keys.G) && !_previousKeyboardState.IsKeyDown(Keys.G))
+        {
+            var nearbyNPC = GetNearbyNPC();
+            if (nearbyNPC != null)
+            {
+                _giftMenu.Show(nearbyNPC);
+                _previousKeyboardState = keyboardState;
+                return;
+            }
         }
         
         // Check for pause
@@ -770,6 +794,11 @@ public class GameplayState : GameState
             _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
+        if (_giftMenu.IsActive)
+        {
+            _giftMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
         // Draw pause indicator
         if (_isPaused)
         {
@@ -806,6 +835,12 @@ public class GameplayState : GameState
         Texture2D texture = new Texture2D(Game.GraphicsDevice, 1, 1);
         texture.SetData(new[] { Color.White });
         return texture;
+    }
+    
+    private NPCCharacter GetNearbyNPC()
+    {
+        const float GIFT_DISTANCE = 64f; // Distance at which player can give gifts
+        return _npcManager.GetNearbyNPC(_player.Position, GIFT_DISTANCE);
     }
     
     private void CreateTestNPC()
@@ -849,6 +884,14 @@ public class GameplayState : GameState
         
         var dialogueTree = new DialogueTree(greetingNode);
         emma.AddDialogueTree("greeting", dialogueTree);
+        
+        // Set Emma's gift preferences (she's a farmer who loves crops and flowers)
+        emma.SetGiftPreferences(
+            loved: new List<string> { "Sunflower", "Pumpkin", "Cauliflower" },
+            liked: new List<string> { "Wheat", "Carrot", "Potato", "Cabbage" },
+            disliked: new List<string> { "Stone", "Wood" },
+            hated: new List<string> { "Coal", "Copper Ore" }
+        );
         
         // Add Emma to the NPC manager
         _npcManager.AddNPC(emma);

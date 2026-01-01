@@ -62,6 +62,27 @@ public class NPCManager
         return _npcs.Find(npc => npc.Name == name);
     }
     
+    /// <summary>
+    /// Get nearest NPC within a given distance
+    /// </summary>
+    public NPCCharacter GetNearbyNPC(Vector2 position, float maxDistance = 64f)
+    {
+        NPCCharacter nearestNPC = null;
+        float nearestDistance = float.MaxValue;
+        
+        foreach (var npc in _npcs)
+        {
+            float distance = Vector2.Distance(npc.Position, position);
+            if (distance < maxDistance && distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearestNPC = npc;
+            }
+        }
+        
+        return nearestNPC;
+    }
+    
     public void Update(GameTime gameTime, TimeSystem timeSystem, Vector2 playerPosition, bool interactPressed)
     {
         // Update all NPCs

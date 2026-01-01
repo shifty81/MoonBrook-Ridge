@@ -27,7 +27,7 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Chat Bubble Conversations**: NPCs communicate through floating chat bubbles ✅
 - **Radial Dialogue Wheel**: Sims 4-inspired dialogue selection system ✅
 - **Relationship System**: Build friendships with NPCs (10 heart levels) ✅
-- **Gift System**: Give gifts to NPCs to increase friendship (system ready)
+- **Gift System**: Give gifts to NPCs to increase friendship ✅ **NEW**
 - **NPC Schedules**: NPCs follow daily routines and move around the world ✅
 - **Branching Dialogues**: Multiple conversation paths based on friendship level ✅
 - **Pathfinding**: NPCs automatically navigate to scheduled locations ✅
@@ -251,6 +251,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Open Map | M |
 | **Open Crafting Menu** ⭐ **NEW** | **K** |
 | **Open Shop Menu** ⭐ **NEW** | **B** |
+| **Gift to NPC** ⭐ **NEW** | **G** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
@@ -308,13 +309,13 @@ Comprehensive guides and references:
 - [x] Crop growth with time system ⭐
 - [x] Save/load system (basic) ⭐
 
-### Phase 3: NPC & Social ✅ **NEW!**
+### Phase 3: NPC & Social ✅ **COMPLETE!**
 - [x] **NPC spawning and movement** ⭐
 - [x] **Chat bubble system implementation** ⭐
 - [x] **Radial dialogue wheel with mouse interaction** ⭐
 - [x] **Dialogue content and branching paths** ⭐
 - [x] **NPC schedules and pathfinding** ⭐
-- [ ] Gift-giving mechanics (system ready, needs UI)
+- [x] **Gift-giving mechanics with UI** ⭐ **IMPLEMENTED**
 - [ ] Multiple NPCs with personalities (system ready, needs content)
 
 ### Phase 4: Advanced Features 🚧 **IN PROGRESS**
