@@ -7,6 +7,7 @@ using MoonBrookRidge.Characters.NPCs;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.World.Fishing;
+using MoonBrookRidge.World.Buildings;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.UI.Menus;
 using MoonBrookRidge.Core.Systems;
@@ -46,8 +47,11 @@ public class GameplayState : GameState
     private QuestMenu _questMenu;
     private MoonBrookRidge.World.MiningManager _miningManager;
     private FishingManager _fishingManager;
+    private BuildingManager _buildingManager;
+    private BuildingMenu _buildingMenu;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
+    private MouseState _previousMouseState;
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -86,6 +90,15 @@ public class GameplayState : GameState
         _inventory.AddItem(SeedFactory.GetSeed("carrot seeds"), 10);
         _inventory.AddItem(SeedFactory.GetSeed("potato seeds"), 10);
         
+        // Add starting building materials for testing
+        _inventory.AddItem(MineralFactory.GetMineralItem("stone"), 100);
+        _inventory.AddItem(new Item("Wood", ItemType.Crafting), 150);
+        _inventory.AddItem(MineralFactory.GetMineralItem("copper ore"), 20);
+        _inventory.AddItem(MineralFactory.GetMineralItem("iron ore"), 50);
+        
+        // Give player starting money
+        _player.SetMoney(10000);
+        
         // Initialize tool manager with inventory
         _toolManager = new ToolManager(_worldMap, _player, _inventory);
         
@@ -112,6 +125,10 @@ public class GameplayState : GameState
         // Initialize quest system
         _questSystem = new QuestSystem();
         _questMenu = new QuestMenu(_questSystem);
+        
+        // Initialize building system
+        _buildingManager = new BuildingManager();
+        _buildingMenu = new BuildingMenu(_buildingManager, _inventory);
         
         // Initialize NPC manager
         _npcManager = new NPCManager();
@@ -389,6 +406,13 @@ public class GameplayState : GameState
             return; // Don't update game while in quest menu
         }
         
+        if (_buildingMenu.IsActive)
+        {
+            _buildingMenu.Update(gameTime, _player.Money);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in building menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -426,6 +450,14 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for building menu (H key for "house/build") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.H) && !_previousKeyboardState.IsKeyDown(Keys.H))
+        {
+            _buildingMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Check for pause
         if (_inputManager.IsOpenMenuPressed())
         {
@@ -438,6 +470,14 @@ public class GameplayState : GameState
             // Update pause menu here when implemented
             _previousKeyboardState = keyboardState;
             return;
+        }
+        
+        // Handle building placement mode
+        if (_buildingMenu.IsPlacementMode)
+        {
+            HandleBuildingPlacement();
+            _previousKeyboardState = keyboardState;
+            return; // Don't update other game logic during placement
         }
         
         // Update time system
@@ -662,6 +702,60 @@ public class GameplayState : GameState
         // TODO: Add "can't eat/drink when full" message
     }
     
+    private void HandleBuildingPlacement()
+    {
+        var mouseState = Mouse.GetState();
+        var keyboardState = Keyboard.GetState();
+        
+        // Get tile position under mouse cursor
+        Vector2 mouseWorldPos = GetMouseWorldPosition();
+        Vector2 tilePos = new Vector2(
+            (int)(mouseWorldPos.X / GameConstants.TILE_SIZE),
+            (int)(mouseWorldPos.Y / GameConstants.TILE_SIZE)
+        );
+        
+        // Left click to place building
+        if (mouseState.LeftButton == ButtonState.Pressed && 
+            _previousMouseState.LeftButton == ButtonState.Released)
+        {
+            int newGold = _buildingManager.ConstructBuilding(
+                _buildingMenu.SelectedBuildingType,
+                tilePos,
+                _inventory,
+                _player.Money,
+                _worldMap.GetAllTiles()
+            );
+            
+            if (newGold >= 0)
+            {
+                _player.SetMoney(newGold);
+                _buildingMenu.ExitPlacementMode();
+            }
+        }
+        
+        // Right click or Escape to cancel placement
+        if ((mouseState.RightButton == ButtonState.Pressed && 
+             _previousMouseState.RightButton == ButtonState.Released) ||
+            (keyboardState.IsKeyDown(Keys.Escape) && 
+             !_previousKeyboardState.IsKeyDown(Keys.Escape)))
+        {
+            _buildingMenu.ExitPlacementMode();
+        }
+        
+        _previousMouseState = mouseState;
+    }
+    
+    private Vector2 GetMouseWorldPosition()
+    {
+        var mouseState = Mouse.GetState();
+        Vector2 mouseScreenPos = new Vector2(mouseState.X, mouseState.Y);
+        
+        // Convert screen position to world position accounting for camera
+        Vector2 mouseWorldPos = mouseScreenPos / _camera.Zoom + _camera.Position;
+        
+        return mouseWorldPos;
+    }
+    
     private void ForceSleep()
     {
         // Player passes out from exhaustion
@@ -791,6 +885,20 @@ public class GameplayState : GameState
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
         
+        // Draw building placement preview (in world space with camera transform)
+        if (_buildingMenu.IsPlacementMode)
+        {
+            Vector2 mouseWorldPos = GetMouseWorldPosition();
+            Vector2 tilePos = new Vector2(
+                (int)(mouseWorldPos.X / GameConstants.TILE_SIZE),
+                (int)(mouseWorldPos.Y / GameConstants.TILE_SIZE)
+            );
+            
+            _buildingMenu.DrawPlacementPreview(spriteBatch, Game.DefaultFont, Game.GraphicsDevice,
+                                              tilePos, _worldMap.GetAllTiles(), GameConstants.TILE_SIZE,
+                                              _camera.Position, _camera.Zoom);
+        }
+        
         spriteBatch.End();
         
         // Draw HUD (no camera transform)
@@ -827,6 +935,11 @@ public class GameplayState : GameState
         if (_questMenu.IsActive)
         {
             _questMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_buildingMenu.IsActive_Menu)
+        {
+            _buildingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice, _player.Money);
         }
         
         // Draw pause indicator

@@ -19,9 +19,24 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Mining & Fishing**: Explore caves for resources and catch various fish species
 - **Crafting System**: Create items from collected resources using recipes ⭐ **NEW UI**
 - **Shop System**: Buy seeds, food, and materials; sell your harvested goods ⭐ **NEW**
+- **Building Construction**: Construct and place buildings on your farm ⭐ **NEW**
 - **Tool System**: Upgrade tools (hoe, watering can, axe, pickaxe, fishing rod, scythe)
 - **Time & Season System**: Dynamic day/night cycle with 4 seasons (28 days each)
 - **Weather System**: Different weather patterns affecting gameplay
+
+### Building System ⭐ **NEW**
+- **8 Building Types Available**:
+  - **Barn**: Houses livestock (12 animal capacity) - 6,000g + 200 Wood + 100 Stone
+  - **Coop**: Houses chickens and ducks (8 bird capacity) - 4,000g + 150 Wood + 50 Stone
+  - **Shed**: Storage building (120 inventory slots) - 3,000g + 100 Wood + 50 Stone
+  - **Silo**: Stores hay for animals (240 hay capacity) - 1,000g + 50 Wood + 50 Stone + 10 Copper
+  - **Well**: Provides water (refills every 2 minutes) - 500g + 75 Stone
+  - **Greenhouse**: Year-round crop growth (48 tillable tiles) - 15,000g + 300 Wood + 100 Stone + 50 Iron + 20 Gold
+  - **Mill**: Process crops into products - 5,000g + 150 Wood + 100 Stone + 25 Iron
+  - **Workshop**: Advanced crafting and ore smelting - 4,000g + 100 Wood + 100 Stone + 50 Iron
+- **Placement System**: Visual preview with green/red validation
+- **Resource Requirements**: Buildings require gold, wood, stone, and ores
+- **Smart Validation**: Only place on valid terrain, prevents overlapping
 
 ### Enhanced NPC Interactions ⭐ **IMPLEMENTED**
 - **Chat Bubble Conversations**: NPCs communicate through floating chat bubbles ✅
@@ -53,6 +68,7 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Inventory Menu**: Manage items and tools
 - **Crafting Menu**: Browse and craft items from recipes (K key) ⭐
 - **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐
+- **Building Menu**: Construct and place buildings on your farm (H key) ⭐ **NEW**
 - **Gift Menu**: Give gifts to NPCs to build relationships (G key) ⭐ **NEW**
 - **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
 - **Dialogue System**: Interactive conversation interface with radial wheel
@@ -258,6 +274,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Open Map | M |
 | **Open Crafting Menu** ⭐ **NEW** | **K** |
 | **Open Shop Menu** ⭐ **NEW** | **B** |
+| **Open Building Menu** ⭐ **NEW** | **H** |
 | **Gift to NPC** ⭐ **NEW** | **G** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
@@ -331,7 +348,7 @@ Comprehensive guides and references:
 - [x] **Mining system with caves** ⭐ **IMPLEMENTED**
 - [x] **Fishing minigame** ⭐ **IMPLEMENTED**
 - [x] **Quest/task system** ⭐ **IMPLEMENTED** - 5 starter quests available
-- [ ] Building construction
+- [x] **Building construction** ⭐ **IMPLEMENTED** - 8 building types available
 - [ ] Events and festivals
 
 ### Phase 5: Polish & Content 📋
