@@ -120,9 +120,9 @@ See `world_sample.png` - Demonstrates how tiles look together in a small game wo
 
 If you want to further customize or regenerate tiles:
 
-1. Edit `/tmp/generate_tile_placeholders.py`
-2. Adjust colors, patterns, or noise levels
-3. Run: `python3 generate_tile_placeholders.py`
+1. The generation script is located at `tools/generate_tile_placeholders.py`
+2. Edit the script to adjust colors, patterns, or noise levels
+3. Run: `python3 tools/generate_tile_placeholders.py`
 4. Tiles will be regenerated in `MoonBrookRidge/Content/Textures/Tiles/`
 
 ### Customization Options
