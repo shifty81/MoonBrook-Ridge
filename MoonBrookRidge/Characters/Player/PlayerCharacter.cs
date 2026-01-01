@@ -364,6 +364,8 @@ public class PlayerCharacter
     public void ModifyHealth(float amount) => _stats.ModifyHealth(amount);
     public void ModifyEnergy(float amount) => _stats.ModifyEnergy(amount);
     public void ModifyMoney(int amount) => _stats.ModifyMoney(amount);
+    public void AddMoney(int amount) => _stats.ModifyMoney(amount);
+    public void SpendMoney(int amount) => _stats.ModifyMoney(-amount);
     
     // Setters for save/load
     public void SetPosition(Vector2 position) => _position = position;

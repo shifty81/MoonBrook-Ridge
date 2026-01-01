@@ -7,10 +7,13 @@ using MoonBrookRidge.Characters.NPCs;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.UI.HUD;
+using MoonBrookRidge.UI.Menus;
 using MoonBrookRidge.Core.Systems;
 using MoonBrookRidge.Farming.Tools;
 using MoonBrookRidge.Items;
 using MoonBrookRidge.Items.Inventory;
+using MoonBrookRidge.Items.Crafting;
+using MoonBrookRidge.Items.Shop;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -32,6 +35,10 @@ public class GameplayState : GameState
     private SeedManager _seedManager;
     private SaveSystem _saveSystem;
     private NPCManager _npcManager;
+    private CraftingSystem _craftingSystem;
+    private CraftingMenu _craftingMenu;
+    private ShopSystem _shopSystem;
+    private ShopMenu _shopMenu;
     private bool _isPaused;
 
     public GameplayState(Game1 game) : base(game) { }
@@ -82,6 +89,14 @@ public class GameplayState : GameState
         
         // Initialize UI
         _hud = new HUDManager();
+        
+        // Initialize crafting system
+        _craftingSystem = new CraftingSystem();
+        _craftingMenu = new CraftingMenu(_craftingSystem, _inventory);
+        
+        // Initialize shop system
+        _shopSystem = new ShopSystem();
+        _shopMenu = new ShopMenu(_shopSystem, _inventory, _player);
         
         // Initialize NPC manager
         _npcManager = new NPCManager();
@@ -300,12 +315,6 @@ public class GameplayState : GameState
         // Update input first
         _inputManager.Update();
         
-        // Check for pause
-        if (_inputManager.IsOpenMenuPressed())
-        {
-            _isPaused = !_isPaused;
-        }
-        
         // Check for quick save/load (F5/F9)
         var keyboardState = Keyboard.GetState();
         if (keyboardState.IsKeyDown(Keys.F5))
@@ -315,6 +324,39 @@ public class GameplayState : GameState
         if (keyboardState.IsKeyDown(Keys.F9))
         {
             QuickLoad();
+        }
+        
+        // Update menus if active
+        if (_craftingMenu.IsActive)
+        {
+            _craftingMenu.Update(gameTime);
+            return; // Don't update game while in crafting menu
+        }
+        
+        if (_shopMenu.IsActive)
+        {
+            _shopMenu.Update(gameTime);
+            return; // Don't update game while in shop menu
+        }
+        
+        // Check for crafting menu (K key)
+        if (keyboardState.IsKeyDown(Keys.K))
+        {
+            _craftingMenu.Show();
+            return;
+        }
+        
+        // Check for shop menu (B key for "buy")
+        if (keyboardState.IsKeyDown(Keys.B))
+        {
+            _shopMenu.Show();
+            return;
+        }
+        
+        // Check for pause
+        if (_inputManager.IsOpenMenuPressed())
+        {
+            _isPaused = !_isPaused;
         }
         
         // Don't update game logic when paused
@@ -579,6 +621,17 @@ public class GameplayState : GameState
         
         // Draw NPC UI (dialogue wheel)
         _npcManager.DrawUI(spriteBatch, Game.DefaultFont);
+        
+        // Draw menus (on top of everything)
+        if (_craftingMenu.IsActive)
+        {
+            _craftingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_shopMenu.IsActive)
+        {
+            _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
         
         // Draw pause indicator
         if (_isPaused)
