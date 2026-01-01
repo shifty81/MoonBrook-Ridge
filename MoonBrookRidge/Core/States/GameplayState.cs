@@ -32,6 +32,8 @@ public class GameplayState : GameState
     private TimeSystem _timeSystem;
     private EventSystem _eventSystem;
     private EventNotification _eventNotification;
+    private WeatherSystem _weatherSystem;
+    private ParticleSystem _particleSystem;
     private Camera2D _camera;
     private InputManager _inputManager;
     private ToolManager _toolManager;
@@ -67,6 +69,8 @@ public class GameplayState : GameState
         _timeSystem = new TimeSystem();
         _eventSystem = new EventSystem(_timeSystem);
         _eventNotification = new EventNotification();
+        _weatherSystem = new WeatherSystem(_timeSystem);
+        _particleSystem = new ParticleSystem();
         _camera = new Camera2D(Game.GraphicsDevice.Viewport);
         _inputManager = new InputManager();
         
@@ -489,6 +493,12 @@ public class GameplayState : GameState
         // Update time system
         _timeSystem.Update(gameTime);
         
+        // Update weather system
+        _weatherSystem.Update(gameTime);
+        
+        // Update particle system
+        _particleSystem.Update(gameTime);
+        
         // Update event system
         _eventSystem.Update(gameTime);
         
@@ -563,6 +573,8 @@ public class GameplayState : GameState
                     string season = _timeSystem.CurrentSeason.ToString();
                     _fishingManager.StartFishing(season);
                     _player.Stats.ConsumeEnergy(currentTool.EnergyCost);
+                    // Spawn water particles
+                    _particleSystem.SpawnParticles(_player.Position, ParticleEffectType.Water, 15);
                 }
             }
             else
@@ -572,6 +584,9 @@ public class GameplayState : GameState
                 
                 // Use the tool at that position
                 _toolManager.UseTool(toolPosition, _player.Stats);
+                
+                // Spawn particles based on tool type
+                SpawnToolParticles(currentTool, toolPosition);
             }
         }
         
@@ -580,6 +595,28 @@ public class GameplayState : GameState
         if (_inputManager.IsSwitchToolbarPressed())
         {
             CycleTools();
+        }
+    }
+    
+    private void SpawnToolParticles(Tool tool, Vector2 position)
+    {
+        switch (tool)
+        {
+            case Hoe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Dust, 12);
+                break;
+            case WateringCan:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Water, 15);
+                break;
+            case Pickaxe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Rock, 20);
+                break;
+            case Axe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Wood, 18);
+                break;
+            case Scythe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Sparkle, 10);
+                break;
         }
     }
     
@@ -903,6 +940,18 @@ public class GameplayState : GameState
         
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
+        
+        // Draw particle effects in world space (with camera transform)
+        _particleSystem.Draw(spriteBatch, Game.GraphicsDevice);
+        
+        // Draw weather effects in world space (with camera transform)
+        var viewportBounds = new Rectangle(
+            (int)(_camera.Position.X - Game.GraphicsDevice.Viewport.Width / (2 * _camera.Zoom)),
+            (int)(_camera.Position.Y - Game.GraphicsDevice.Viewport.Height / (2 * _camera.Zoom)),
+            (int)(Game.GraphicsDevice.Viewport.Width / _camera.Zoom),
+            (int)(Game.GraphicsDevice.Viewport.Height / _camera.Zoom)
+        );
+        _weatherSystem.Draw(spriteBatch, Game.GraphicsDevice, viewportBounds);
         
         // Draw building placement preview (in world space with camera transform)
         if (_buildingMenu.IsPlacementMode)
