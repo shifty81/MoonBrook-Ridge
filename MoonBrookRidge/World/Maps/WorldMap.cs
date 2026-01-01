@@ -323,6 +323,11 @@ public class WorldMap
         return null;
     }
     
+    public Tile[,] GetAllTiles()
+    {
+        return _tiles;
+    }
+    
     /// <summary>
     /// Plant some test crops for demonstration
     /// </summary>

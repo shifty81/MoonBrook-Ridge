@@ -3,6 +3,7 @@ using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.World.Fishing;
 using MoonBrookRidge.Core;
 using MoonBrookRidge.Items;
 using MoonBrookRidge.Items.Inventory;
@@ -19,6 +20,7 @@ public class ToolManager
     private Tool _currentTool;
     private InventorySystem _inventory;
     private MiningManager _miningManager;
+    private FishingManager _fishingManager;
     
     public ToolManager(WorldMap worldMap, PlayerCharacter player, InventorySystem inventory = null)
     {
@@ -31,6 +33,11 @@ public class ToolManager
     public void SetMiningManager(MiningManager miningManager)
     {
         _miningManager = miningManager;
+    }
+    
+    public void SetFishingManager(FishingManager fishingManager)
+    {
+        _fishingManager = fishingManager;
     }
     
     public void SetCurrentTool(Tool tool)
@@ -88,6 +95,18 @@ public class ToolManager
         else if (_currentTool is Scythe)
         {
             toolUsed = UseHarvest(tile);
+        }
+        else if (_currentTool is FishingRod)
+        {
+            // Check if near water and not already fishing
+            if (_fishingManager != null && !_fishingManager.IsFishing)
+            {
+                if (_fishingManager.IsNearWater(_player.Position, _worldMap.GetAllTiles()))
+                {
+                    // Start fishing (season will be passed from GameplayState)
+                    toolUsed = true;
+                }
+            }
         }
         
         // Consume energy if tool was used

@@ -6,6 +6,7 @@ using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.Characters.NPCs;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.World.Fishing;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.UI.Menus;
 using MoonBrookRidge.Core.Systems;
@@ -40,6 +41,7 @@ public class GameplayState : GameState
     private ShopSystem _shopSystem;
     private ShopMenu _shopMenu;
     private MoonBrookRidge.World.MiningManager _miningManager;
+    private FishingManager _fishingManager;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
 
@@ -304,8 +306,12 @@ public class GameplayState : GameState
             Game.Content.Load<Texture2D>("Textures/Tiles/stone_01")
         );
         
-        // Link mining manager to tool manager
+        // Initialize fishing manager
+        _fishingManager = new FishingManager();
+        
+        // Link managers to tool manager
         _toolManager.SetMiningManager(_miningManager);
+        _toolManager.SetFishingManager(_fishingManager);
         
         // Populate world with Sunnyside-style objects using extracted sprites
         _worldMap.PopulateSunnysideWorldObjects(buildings, treeSprites, rockSprites);
@@ -412,6 +418,12 @@ public class GameplayState : GameState
         // Update NPCs
         _npcManager.Update(gameTime, _timeSystem, _player.Position, _inputManager.IsDoActionPressed());
         
+        // Update fishing manager
+        if (_fishingManager.IsFishing)
+        {
+            _fishingManager.Update(gameTime, _inventory);
+        }
+        
         // Update camera to follow player
         _camera.Follow(_player.Position);
         
@@ -433,11 +445,26 @@ public class GameplayState : GameState
         // Check for tool usage (C key)
         if (_inputManager.IsUseToolPressed())
         {
-            // Calculate tile position in front of player based on facing direction
-            Vector2 toolPosition = CalculateToolTargetPosition();
-            
-            // Use the tool at that position
-            _toolManager.UseTool(toolPosition, _player.Stats);
+            // Special handling for fishing rod
+            Tool currentTool = _toolManager.GetCurrentTool();
+            if (currentTool is FishingRod && !_fishingManager.IsFishing)
+            {
+                // Check if near water and start fishing
+                if (_fishingManager.IsNearWater(_player.Position, _worldMap.GetAllTiles()))
+                {
+                    string season = _timeSystem.CurrentSeason.ToString();
+                    _fishingManager.StartFishing(season);
+                    _player.Stats.ConsumeEnergy(currentTool.EnergyCost);
+                }
+            }
+            else
+            {
+                // Calculate tile position in front of player based on facing direction
+                Vector2 toolPosition = CalculateToolTargetPosition();
+                
+                // Use the tool at that position
+                _toolManager.UseTool(toolPosition, _player.Stats);
+            }
         }
         
         // TODO: Add hotkey switching between tools (1-9 keys)
@@ -723,6 +750,14 @@ public class GameplayState : GameState
         
         // Draw NPC UI (dialogue wheel)
         _npcManager.DrawUI(spriteBatch, Game.DefaultFont);
+        
+        // Draw fishing UI
+        if (_fishingManager.IsFishing)
+        {
+            _fishingManager.Draw(spriteBatch, Game.DefaultFont, 
+                                Game.GraphicsDevice.Viewport.Width, 
+                                Game.GraphicsDevice.Viewport.Height);
+        }
         
         // Draw menus (on top of everything)
         if (_craftingMenu.IsActive)
