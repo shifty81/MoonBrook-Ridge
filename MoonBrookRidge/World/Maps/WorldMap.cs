@@ -111,6 +111,9 @@ public class WorldMap
                 _tiles[x, y] = new Tile(tileType, new Vector2(x, y));
             }
         }
+        
+        // Place mine entrance in bottom-left area
+        _tiles[10, 40] = new Tile(TileType.MineEntrance, new Vector2(10, 40));
     }
     
     public void LoadContent(Dictionary<TileType, Texture2D> tileTextures, Dictionary<string, Texture2D[]> cropTextures = null)
