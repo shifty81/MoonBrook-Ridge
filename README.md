@@ -27,10 +27,15 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Chat Bubble Conversations**: NPCs communicate through floating chat bubbles ✅
 - **Radial Dialogue Wheel**: Sims 4-inspired dialogue selection system ✅
 - **Relationship System**: Build friendships with NPCs (10 heart levels) ✅
-- **Gift System**: Give gifts to NPCs to increase friendship (system ready)
+- **Gift System**: Give gifts to NPCs to increase friendship ✅ **NEW**
 - **NPC Schedules**: NPCs follow daily routines and move around the world ✅
 - **Branching Dialogues**: Multiple conversation paths based on friendship level ✅
 - **Pathfinding**: NPCs automatically navigate to scheduled locations ✅
+- **Unique NPCs**: 4 NPCs with distinct personalities and gift preferences ✅ **NEW**
+  - **Emma** (Farmer): Loves crops and flowers
+  - **Marcus** (Blacksmith): Loves minerals and ores
+  - **Lily** (Merchant): Loves gems and valuable items
+  - **Oliver** (Fisherman): Loves fish and seafood
 
 ### Character Systems
 - **Player Character**: Fully customizable with stats (health, energy, money)
@@ -46,8 +51,10 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 ### User Interface ⭐ **ENHANCED**
 - **HUD**: Displays health, energy, time, date, season, and money
 - **Inventory Menu**: Manage items and tools
-- **Crafting Menu**: Browse and craft items from recipes (K key) ⭐ **NEW**
-- **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐ **NEW**
+- **Crafting Menu**: Browse and craft items from recipes (K key) ⭐
+- **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐
+- **Gift Menu**: Give gifts to NPCs to build relationships (G key) ⭐ **NEW**
+- **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
 - **Dialogue System**: Interactive conversation interface with radial wheel
 
 ## 🎨 Art Assets
@@ -251,6 +258,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Open Map | M |
 | **Open Crafting Menu** ⭐ **NEW** | **K** |
 | **Open Shop Menu** ⭐ **NEW** | **B** |
+| **Gift to NPC** ⭐ **NEW** | **G** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
@@ -308,22 +316,22 @@ Comprehensive guides and references:
 - [x] Crop growth with time system ⭐
 - [x] Save/load system (basic) ⭐
 
-### Phase 3: NPC & Social ✅ **NEW!**
+### Phase 3: NPC & Social ✅ **COMPLETE!**
 - [x] **NPC spawning and movement** ⭐
 - [x] **Chat bubble system implementation** ⭐
 - [x] **Radial dialogue wheel with mouse interaction** ⭐
 - [x] **Dialogue content and branching paths** ⭐
 - [x] **NPC schedules and pathfinding** ⭐
-- [ ] Gift-giving mechanics (system ready, needs UI)
-- [ ] Multiple NPCs with personalities (system ready, needs content)
+- [x] **Gift-giving mechanics with UI** ⭐ **IMPLEMENTED**
+- [x] **Multiple NPCs with personalities** ⭐ **IMPLEMENTED** (Emma, Marcus, Lily, Oliver)
 
 ### Phase 4: Advanced Features 🚧 **IN PROGRESS**
 - [x] **Crafting UI and recipes** ⭐ **IMPLEMENTED**
 - [x] **Shop system** ⭐ **IMPLEMENTED**
 - [x] **Mining system with caves** ⭐ **IMPLEMENTED**
 - [x] **Fishing minigame** ⭐ **IMPLEMENTED**
+- [x] **Quest/task system** ⭐ **IMPLEMENTED** - 5 starter quests available
 - [ ] Building construction
-- [ ] Quest/task system
 - [ ] Events and festivals
 
 ### Phase 5: Polish & Content 📋

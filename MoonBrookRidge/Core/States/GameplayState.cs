@@ -15,6 +15,7 @@ using MoonBrookRidge.Items;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Items.Crafting;
 using MoonBrookRidge.Items.Shop;
+using MoonBrookRidge.Quests;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -40,6 +41,9 @@ public class GameplayState : GameState
     private CraftingMenu _craftingMenu;
     private ShopSystem _shopSystem;
     private ShopMenu _shopMenu;
+    private GiftMenu _giftMenu;
+    private QuestSystem _questSystem;
+    private QuestMenu _questMenu;
     private MoonBrookRidge.World.MiningManager _miningManager;
     private FishingManager _fishingManager;
     private bool _isPaused;
@@ -101,6 +105,13 @@ public class GameplayState : GameState
         // Initialize shop system
         _shopSystem = new ShopSystem();
         _shopMenu = new ShopMenu(_shopSystem, _inventory, _player);
+        
+        // Initialize gift menu
+        _giftMenu = new GiftMenu(_inventory);
+        
+        // Initialize quest system
+        _questSystem = new QuestSystem();
+        _questMenu = new QuestMenu(_questSystem);
         
         // Initialize NPC manager
         _npcManager = new NPCManager();
@@ -328,6 +339,9 @@ public class GameplayState : GameState
         
         // Create a test NPC
         CreateTestNPC();
+        
+        // Initialize starter quests
+        InitializeQuests();
     }
 
     public override void Update(GameTime gameTime)
@@ -361,6 +375,20 @@ public class GameplayState : GameState
             return; // Don't update game while in shop menu
         }
         
+        if (_giftMenu.IsActive)
+        {
+            _giftMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in gift menu
+        }
+        
+        if (_questMenu.IsActive)
+        {
+            _questMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in quest menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -373,6 +401,27 @@ public class GameplayState : GameState
         if (keyboardState.IsKeyDown(Keys.B) && !_previousKeyboardState.IsKeyDown(Keys.B))
         {
             _shopMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for gift menu (G key) - with debouncing
+        // Only allow when near an NPC
+        if (keyboardState.IsKeyDown(Keys.G) && !_previousKeyboardState.IsKeyDown(Keys.G))
+        {
+            var nearbyNPC = GetNearbyNPC();
+            if (nearbyNPC != null)
+            {
+                _giftMenu.Show(nearbyNPC);
+                _previousKeyboardState = keyboardState;
+                return;
+            }
+        }
+        
+        // Check for quest menu (F key for "quests") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F))
+        {
+            _questMenu.Show();
             _previousKeyboardState = keyboardState;
             return;
         }
@@ -770,6 +819,16 @@ public class GameplayState : GameState
             _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
+        if (_giftMenu.IsActive)
+        {
+            _giftMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_questMenu.IsActive)
+        {
+            _questMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
         // Draw pause indicator
         if (_isPaused)
         {
@@ -808,9 +867,24 @@ public class GameplayState : GameState
         return texture;
     }
     
+    private NPCCharacter GetNearbyNPC()
+    {
+        const float GIFT_DISTANCE = 64f; // Distance at which player can give gifts
+        return _npcManager.GetNearbyNPC(_player.Position, GIFT_DISTANCE);
+    }
+    
     private void CreateTestNPC()
     {
-        // Create a test NPC named "Emma" the farmer
+        // Create and add all NPCs
+        _npcManager.AddNPC(CreateEmma());
+        _npcManager.AddNPC(CreateMarcus());
+        _npcManager.AddNPC(CreateLily());
+        _npcManager.AddNPC(CreateOliver());
+    }
+    
+    private NPCCharacter CreateEmma()
+    {
+        // Create Emma - the farmer
         var emma = new NPCCharacter("Emma", new Vector2(600, 400));
         
         // Add a daily schedule for Emma
@@ -839,18 +913,263 @@ public class GameplayState : GameState
             Activity = "Relaxing"
         });
         
-        // Create a simple greeting dialogue tree
-        var greetingNode = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
-        var option1Response = new DialogueNode("I'm Emma, I've been farming here for years. How can I help you?", "Emma");
-        var option2Response = new DialogueNode("The weather has been great for crops lately!", "Emma");
+        // Create Emma's dialogue tree
+        var emmaGreeting = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
+        var emmaOption1 = new DialogueNode("I'm Emma, I've been farming here for years. How can I help you?", "Emma");
+        var emmaOption2 = new DialogueNode("The weather has been great for crops lately!", "Emma");
         
-        greetingNode.AddOption("Who are you?", option1Response);
-        greetingNode.AddOption("How's the farm?", option2Response);
+        emmaGreeting.AddOption("Who are you?", emmaOption1);
+        emmaGreeting.AddOption("How's the farm?", emmaOption2);
         
-        var dialogueTree = new DialogueTree(greetingNode);
-        emma.AddDialogueTree("greeting", dialogueTree);
+        var emmaDialogue = new DialogueTree(emmaGreeting);
+        emma.AddDialogueTree("greeting", emmaDialogue);
         
-        // Add Emma to the NPC manager
-        _npcManager.AddNPC(emma);
+        // Set Emma's gift preferences (she's a farmer who loves crops and flowers)
+        emma.SetGiftPreferences(
+            loved: new List<string> { "Sunflower", "Pumpkin", "Cauliflower" },
+            liked: new List<string> { "Wheat", "Carrot", "Potato", "Cabbage" },
+            disliked: new List<string> { "Stone", "Wood" },
+            hated: new List<string> { "Coal", "Copper Ore" }
+        );
+        
+        return emma;
+    }
+    
+    private NPCCharacter CreateMarcus()
+    {
+        // Create Marcus - the blacksmith/miner
+        var marcus = new NPCCharacter("Marcus", new Vector2(400, 600));
+        
+        // Marcus's schedule - focused on mining and metalwork
+        marcus.Schedule.AddScheduleEntry(7.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(400, 600), 
+            LocationName = "Workshop",
+            Activity = "Opening shop"
+        });
+        marcus.Schedule.AddScheduleEntry(10.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(300, 700), 
+            LocationName = "Mine",
+            Activity = "Mining"
+        });
+        marcus.Schedule.AddScheduleEntry(16.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(400, 600), 
+            LocationName = "Workshop",
+            Activity = "Smithing"
+        });
+        marcus.Schedule.AddScheduleEntry(20.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(450, 550), 
+            LocationName = "Tavern",
+            Activity = "Relaxing"
+        });
+        
+        // Create Marcus's dialogue tree
+        var marcusGreeting = new DialogueNode("Greetings, traveler. Need any tools repaired?", "Marcus");
+        var marcusOption1 = new DialogueNode("I'm Marcus, the town blacksmith. I also spend time in the mines gathering ore.", "Marcus");
+        var marcusOption2 = new DialogueNode("The mines have been yielding good ore lately. Dangerous though!", "Marcus");
+        
+        marcusGreeting.AddOption("Who are you?", marcusOption1);
+        marcusGreeting.AddOption("How's the mining?", marcusOption2);
+        
+        var marcusDialogue = new DialogueTree(marcusGreeting);
+        marcus.AddDialogueTree("greeting", marcusDialogue);
+        
+        // Marcus loves minerals and ores, dislikes farm produce
+        marcus.SetGiftPreferences(
+            loved: new List<string> { "Gold Ore", "Diamond", "Emerald" },
+            liked: new List<string> { "Copper Ore", "Iron Ore", "Coal", "Stone" },
+            disliked: new List<string> { "Wheat", "Carrot", "Cabbage" },
+            hated: new List<string> { "Sunflower" }
+        );
+        
+        return marcus;
+    }
+    
+    private NPCCharacter CreateLily()
+    {
+        // Create Lily - the merchant/shopkeeper
+        var lily = new NPCCharacter("Lily", new Vector2(800, 350));
+        
+        // Lily's schedule - manages the shop
+        lily.Schedule.AddScheduleEntry(8.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(800, 350), 
+            LocationName = "Shop",
+            Activity = "Opening shop"
+        });
+        lily.Schedule.AddScheduleEntry(12.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(750, 400), 
+            LocationName = "Market",
+            Activity = "Buying supplies"
+        });
+        lily.Schedule.AddScheduleEntry(15.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(800, 350), 
+            LocationName = "Shop",
+            Activity = "Managing shop"
+        });
+        lily.Schedule.AddScheduleEntry(19.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(850, 300), 
+            LocationName = "Home",
+            Activity = "Resting"
+        });
+        
+        // Create Lily's dialogue tree
+        var lilyGreeting = new DialogueNode("Welcome! Looking for anything special today?", "Lily");
+        var lilyOption1 = new DialogueNode("I'm Lily! I run the general store here. I sell all sorts of goods!", "Lily");
+        var lilyOption2 = new DialogueNode("Business is booming! Everyone needs seeds and supplies.", "Lily");
+        
+        lilyGreeting.AddOption("Who are you?", lilyOption1);
+        lilyGreeting.AddOption("How's business?", lilyOption2);
+        
+        var lilyDialogue = new DialogueTree(lilyGreeting);
+        lily.AddDialogueTree("greeting", lilyDialogue);
+        
+        // Lily loves valuable items and gems, likes crafted goods
+        lily.SetGiftPreferences(
+            loved: new List<string> { "Diamond", "Emerald", "Gold Ore" },
+            liked: new List<string> { "Copper Ore", "Fish", "Wood", "Stone" },
+            disliked: new List<string> { "Coal" },
+            hated: new List<string> { "Trash" }
+        );
+        
+        return lily;
+    }
+    
+    private NPCCharacter CreateOliver()
+    {
+        // Create Oliver - the fisherman
+        var oliver = new NPCCharacter("Oliver", new Vector2(350, 250));
+        
+        // Oliver's schedule - fishing focused
+        oliver.Schedule.AddScheduleEntry(5.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(350, 250), 
+            LocationName = "Dock",
+            Activity = "Preparing boat"
+        });
+        oliver.Schedule.AddScheduleEntry(6.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(300, 200), 
+            LocationName = "Lake",
+            Activity = "Fishing"
+        });
+        oliver.Schedule.AddScheduleEntry(13.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(350, 250), 
+            LocationName = "Dock",
+            Activity = "Sorting catch"
+        });
+        oliver.Schedule.AddScheduleEntry(17.0f, new ScheduleLocation 
+        { 
+            Position = new Vector2(400, 300), 
+            LocationName = "Beach",
+            Activity = "Relaxing"
+        });
+        
+        // Create Oliver's dialogue tree
+        var oliverGreeting = new DialogueNode("Ahoy! The fish are biting today!", "Oliver");
+        var oliverOption1 = new DialogueNode("Name's Oliver. Been fishing these waters my whole life.", "Oliver");
+        var oliverOption2 = new DialogueNode("The lake's been generous lately. Caught a huge bass yesterday!", "Oliver");
+        
+        oliverGreeting.AddOption("Who are you?", oliverOption1);
+        oliverGreeting.AddOption("How's the fishing?", oliverOption2);
+        
+        var oliverDialogue = new DialogueTree(oliverGreeting);
+        oliver.AddDialogueTree("greeting", oliverDialogue);
+        
+        // Oliver loves fish and seafood-related items, dislikes mining items
+        oliver.SetGiftPreferences(
+            loved: new List<string> { "Salmon", "Tuna", "Lobster" },
+            liked: new List<string> { "Fish", "Seaweed", "Crab" },
+            disliked: new List<string> { "Coal", "Stone", "Copper Ore" },
+            hated: new List<string> { "Iron Ore" }
+        );
+        
+        return oliver;
+    }
+    
+    private void InitializeQuests()
+    {
+        // Quest 1: Emma's First Harvest
+        var quest1 = new Quest("emma_harvest", "First Harvest", 
+            "Emma needs help getting crops ready for the market.", "Emma");
+        quest1.AddObjective(new QuestObjective("harvest_wheat", "Harvest 5 Wheat", 
+            QuestObjectiveType.Harvest, "Wheat", 5));
+        quest1.Reward = new QuestReward 
+        { 
+            Money = 100, 
+            FriendshipPoints = 50, 
+            FriendshipNPC = "Emma" 
+        };
+        quest1.Reward.Items.Add("Wheat Seeds", 10);
+        _questSystem.AddAvailableQuest(quest1);
+        
+        // Quest 2: Marcus's Mining Request
+        var quest2 = new Quest("marcus_ore", "Mining for Marcus", 
+            "Marcus needs copper ore for his smithing work.", "Marcus");
+        quest2.AddObjective(new QuestObjective("collect_copper", "Collect 10 Copper Ore", 
+            QuestObjectiveType.CollectItem, "Copper Ore", 10));
+        quest2.Reward = new QuestReward 
+        { 
+            Money = 200, 
+            FriendshipPoints = 75, 
+            FriendshipNPC = "Marcus" 
+        };
+        quest2.Reward.Items.Add("Iron Pickaxe", 1);
+        _questSystem.AddAvailableQuest(quest2);
+        
+        // Quest 3: Lily's Shopping List
+        var quest3 = new Quest("lily_items", "Lily's Supply Run", 
+            "Lily needs various items to stock her shop.", "Lily");
+        quest3.AddObjective(new QuestObjective("collect_wood", "Collect 20 Wood", 
+            QuestObjectiveType.CollectItem, "Wood", 20));
+        quest3.AddObjective(new QuestObjective("collect_stone", "Collect 15 Stone", 
+            QuestObjectiveType.CollectItem, "Stone", 15));
+        quest3.Reward = new QuestReward 
+        { 
+            Money = 250, 
+            FriendshipPoints = 60, 
+            FriendshipNPC = "Lily" 
+        };
+        _questSystem.AddAvailableQuest(quest3);
+        
+        // Quest 4: Oliver's Fishing Challenge
+        var quest4 = new Quest("oliver_fish", "The Big Catch", 
+            "Oliver wants you to prove your fishing skills.", "Oliver");
+        quest4.AddObjective(new QuestObjective("catch_fish", "Catch 15 Fish", 
+            QuestObjectiveType.Fish, "Fish", 15));
+        quest4.Reward = new QuestReward 
+        { 
+            Money = 150, 
+            FriendshipPoints = 80, 
+            FriendshipNPC = "Oliver" 
+        };
+        quest4.Reward.Items.Add("Advanced Fishing Rod", 1);
+        _questSystem.AddAvailableQuest(quest4);
+        
+        // Quest 5: Welcome to MoonBrook Ridge
+        var quest5 = new Quest("welcome", "Welcome to Town", 
+            "Get to know the residents of MoonBrook Ridge.", "Town Notice");
+        quest5.AddObjective(new QuestObjective("talk_emma", "Talk to Emma", 
+            QuestObjectiveType.TalkToNPC, "Emma", 1));
+        quest5.AddObjective(new QuestObjective("talk_marcus", "Talk to Marcus", 
+            QuestObjectiveType.TalkToNPC, "Marcus", 1));
+        quest5.AddObjective(new QuestObjective("talk_lily", "Talk to Lily", 
+            QuestObjectiveType.TalkToNPC, "Lily", 1));
+        quest5.AddObjective(new QuestObjective("talk_oliver", "Talk to Oliver", 
+            QuestObjectiveType.TalkToNPC, "Oliver", 1));
+        quest5.Reward = new QuestReward 
+        { 
+            Money = 300, 
+            FriendshipPoints = 0 
+        };
+        quest5.Reward.Items.Add("Starter Pack", 1);
+        _questSystem.AddAvailableQuest(quest5);
     }
 }
