@@ -56,9 +56,6 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Gift Menu**: Give gifts to NPCs to build relationships (G key) ⭐ **NEW**
 - **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
 - **Dialogue System**: Interactive conversation interface with radial wheel
-- **Crafting Menu**: Browse and craft items from recipes (K key) ⭐ **NEW**
-- **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐ **NEW**
-- **Dialogue System**: Interactive conversation interface with radial wheel
 
 ## 🎨 Art Assets
 

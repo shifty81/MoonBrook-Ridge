@@ -875,6 +875,15 @@ public class GameplayState : GameState
     
     private void CreateTestNPC()
     {
+        // Create and add all NPCs
+        _npcManager.AddNPC(CreateEmma());
+        _npcManager.AddNPC(CreateMarcus());
+        _npcManager.AddNPC(CreateLily());
+        _npcManager.AddNPC(CreateOliver());
+    }
+    
+    private NPCCharacter CreateEmma()
+    {
         // Create Emma - the farmer
         var emma = new NPCCharacter("Emma", new Vector2(600, 400));
         
@@ -923,8 +932,11 @@ public class GameplayState : GameState
             hated: new List<string> { "Coal", "Copper Ore" }
         );
         
-        _npcManager.AddNPC(emma);
-        
+        return emma;
+    }
+    
+    private NPCCharacter CreateMarcus()
+    {
         // Create Marcus - the blacksmith/miner
         var marcus = new NPCCharacter("Marcus", new Vector2(400, 600));
         
@@ -973,8 +985,11 @@ public class GameplayState : GameState
             hated: new List<string> { "Sunflower" }
         );
         
-        _npcManager.AddNPC(marcus);
-        
+        return marcus;
+    }
+    
+    private NPCCharacter CreateLily()
+    {
         // Create Lily - the merchant/shopkeeper
         var lily = new NPCCharacter("Lily", new Vector2(800, 350));
         
@@ -1023,8 +1038,11 @@ public class GameplayState : GameState
             hated: new List<string> { "Trash" }
         );
         
-        _npcManager.AddNPC(lily);
-        
+        return lily;
+    }
+    
+    private NPCCharacter CreateOliver()
+    {
         // Create Oliver - the fisherman
         var oliver = new NPCCharacter("Oliver", new Vector2(350, 250));
         
@@ -1073,7 +1091,7 @@ public class GameplayState : GameState
             hated: new List<string> { "Iron Ore" }
         );
         
-        _npcManager.AddNPC(oliver);
+        return oliver;
     }
     
     private void InitializeQuests()
