@@ -303,15 +303,24 @@ public class ShopMenu
     private void DrawSellMode(SpriteBatch spriteBatch, SpriteFont font, int menuX, int startY, int maxVisible)
     {
         var slots = _inventory.GetSlots();
-        int itemsDrawn = 0;
+        var nonEmptySlots = new List<(int slotIndex, InventorySlot slot)>();
         
-        for (int i = 0; i < slots.Count && itemsDrawn < maxVisible; i++)
+        // Build list of non-empty slots
+        for (int i = 0; i < slots.Count; i++)
         {
-            var slot = slots[i];
-            if (slot.IsEmpty) continue;
+            if (!slots[i].IsEmpty)
+            {
+                nonEmptySlots.Add((i, slots[i]));
+            }
+        }
+        
+        // Draw items
+        for (int displayIndex = 0; displayIndex < nonEmptySlots.Count && displayIndex < maxVisible; displayIndex++)
+        {
+            var (slotIndex, slot) = nonEmptySlots[displayIndex];
             
-            int itemY = startY + itemsDrawn * ITEM_HEIGHT;
-            bool isSelected = (i == _selectedItemIndex);
+            int itemY = startY + displayIndex * ITEM_HEIGHT;
+            bool isSelected = (slotIndex == _selectedItemIndex);
             
             // Draw item background
             Rectangle itemRect = new Rectangle(menuX + PADDING, itemY, 
@@ -334,11 +343,9 @@ public class ShopMenu
             Vector2 priceSize = font.MeasureString(priceText);
             Vector2 pricePos = new Vector2(itemRect.Right - priceSize.X - 10, itemRect.Y + 8);
             DrawTextWithShadow(spriteBatch, font, priceText, pricePos, Color.LimeGreen);
-            
-            itemsDrawn++;
         }
         
-        if (itemsDrawn == 0)
+        if (nonEmptySlots.Count == 0)
         {
             string noItems = "No items to sell";
             Vector2 noItemsSize = font.MeasureString(noItems);

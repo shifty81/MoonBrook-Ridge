@@ -19,18 +19,18 @@ public class ShopSystem
     
     private void InitializeShopInventory()
     {
-        // Seeds
-        _shopInventory.Add(new ShopItem(SeedFactory.GetSeed("wheat seeds"), 50, 20));
-        _shopInventory.Add(new ShopItem(SeedFactory.GetSeed("carrot seeds"), 80, 30));
-        _shopInventory.Add(new ShopItem(SeedFactory.GetSeed("potato seeds"), 100, 40));
-        _shopInventory.Add(new ShopItem(SeedFactory.GetSeed("cabbage seeds"), 120, 45));
-        _shopInventory.Add(new ShopItem(SeedFactory.GetSeed("pumpkin seeds"), 200, 80));
+        // Seeds - all should exist in SeedFactory
+        AddShopSeed("wheat seeds", 50, 20);
+        AddShopSeed("carrot seeds", 80, 30);
+        AddShopSeed("potato seeds", 100, 40);
+        AddShopSeed("cabbage seeds", 120, 45);
+        AddShopSeed("pumpkin seeds", 200, 80);
         
-        // Food and drinks
-        _shopInventory.Add(new ShopItem(ConsumableManager.GetFood("Apple"), 30, 10));
-        _shopInventory.Add(new ShopItem(ConsumableManager.GetFood("Carrot"), 20, 8));
-        _shopInventory.Add(new ShopItem(ConsumableManager.GetDrink("Water"), 10, 5));
-        _shopInventory.Add(new ShopItem(ConsumableManager.GetDrink("Spring Water"), 25, 10));
+        // Food and drinks - all should exist in ConsumableDatabase
+        AddShopFood("Apple", 30, 10);
+        AddShopFood("Carrot", 20, 8);
+        AddShopDrink("Water", 10, 5);
+        AddShopDrink("Spring Water", 25, 10);
         
         // Basic crafting materials
         var wood = new Item("Wood", ItemType.Crafting);
@@ -42,6 +42,33 @@ public class ShopSystem
         stone.BuyPrice = 30;
         stone.SellPrice = 5;
         _shopInventory.Add(new ShopItem(stone, 30, 5));
+    }
+    
+    private void AddShopSeed(string seedName, int buyPrice, int sellPrice)
+    {
+        var seed = SeedFactory.GetSeed(seedName);
+        if (seed != null)
+        {
+            _shopInventory.Add(new ShopItem(seed, buyPrice, sellPrice));
+        }
+    }
+    
+    private void AddShopFood(string foodName, int buyPrice, int sellPrice)
+    {
+        var food = ConsumableManager.GetFood(foodName);
+        if (food != null)
+        {
+            _shopInventory.Add(new ShopItem(food, buyPrice, sellPrice));
+        }
+    }
+    
+    private void AddShopDrink(string drinkName, int buyPrice, int sellPrice)
+    {
+        var drink = ConsumableManager.GetDrink(drinkName);
+        if (drink != null)
+        {
+            _shopInventory.Add(new ShopItem(drink, buyPrice, sellPrice));
+        }
     }
     
     public bool BuyItem(ShopItem shopItem, int quantity, InventorySystem inventory, PlayerCharacter player)

@@ -40,6 +40,7 @@ public class GameplayState : GameState
     private ShopSystem _shopSystem;
     private ShopMenu _shopMenu;
     private bool _isPaused;
+    private KeyboardState _previousKeyboardState;
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -315,13 +316,13 @@ public class GameplayState : GameState
         // Update input first
         _inputManager.Update();
         
-        // Check for quick save/load (F5/F9)
+        // Check for quick save/load (F5/F9) - using keyboard state
         var keyboardState = Keyboard.GetState();
-        if (keyboardState.IsKeyDown(Keys.F5))
+        if (keyboardState.IsKeyDown(Keys.F5) && !_previousKeyboardState.IsKeyDown(Keys.F5))
         {
             QuickSave();
         }
-        if (keyboardState.IsKeyDown(Keys.F9))
+        if (keyboardState.IsKeyDown(Keys.F9) && !_previousKeyboardState.IsKeyDown(Keys.F9))
         {
             QuickLoad();
         }
@@ -330,26 +331,30 @@ public class GameplayState : GameState
         if (_craftingMenu.IsActive)
         {
             _craftingMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
             return; // Don't update game while in crafting menu
         }
         
         if (_shopMenu.IsActive)
         {
             _shopMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
             return; // Don't update game while in shop menu
         }
         
-        // Check for crafting menu (K key)
-        if (keyboardState.IsKeyDown(Keys.K))
+        // Check for crafting menu (K key) - with debouncing
+        if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
             _craftingMenu.Show();
+            _previousKeyboardState = keyboardState;
             return;
         }
         
-        // Check for shop menu (B key for "buy")
-        if (keyboardState.IsKeyDown(Keys.B))
+        // Check for shop menu (B key for "buy") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.B) && !_previousKeyboardState.IsKeyDown(Keys.B))
         {
             _shopMenu.Show();
+            _previousKeyboardState = keyboardState;
             return;
         }
         
@@ -363,6 +368,7 @@ public class GameplayState : GameState
         if (_isPaused)
         {
             // Update pause menu here when implemented
+            _previousKeyboardState = keyboardState;
             return;
         }
         
@@ -401,6 +407,9 @@ public class GameplayState : GameState
         {
             ForceSleep();
         }
+        
+        // Store keyboard state for next frame
+        _previousKeyboardState = keyboardState;
     }
     
     private void HandleToolInput()
