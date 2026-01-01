@@ -9,7 +9,8 @@ import numpy as np
 import random
 import os
 
-# Set random seed for consistency
+# Set random seed for consistency - ensures reproducible tile generation across runs
+# This means the same textures will be generated every time for version control
 random.seed(42)
 np.random.seed(42)
 
@@ -252,9 +253,18 @@ def create_rock_tile(base_color=(100, 100, 100)):
     return img
 
 def main():
-    output_dir = "/home/runner/work/MoonBrook-Ridge/MoonBrook-Ridge/MoonBrookRidge/Content/Textures/Tiles"
+    # Determine output directory relative to script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.dirname(script_dir)
+    output_dir = os.path.join(repo_root, "MoonBrookRidge", "Content", "Textures", "Tiles")
     
-    print("Generating placeholder tiles...")
+    if not os.path.exists(output_dir):
+        print(f"❌ Error: Output directory not found: {output_dir}")
+        print("Please run this script from the repository root or tools directory.")
+        return
+    
+    print(f"Generating placeholder tiles to: {output_dir}")
+    print("="*60)
     
     # Grass variants
     grass = create_grass_tile((34, 139, 34), 0)
