@@ -39,6 +39,7 @@ public class GameplayState : GameState
     private CraftingMenu _craftingMenu;
     private ShopSystem _shopSystem;
     private ShopMenu _shopMenu;
+    private MoonBrookRidge.World.MiningManager _miningManager;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
 
@@ -294,6 +295,18 @@ public class GameplayState : GameState
         var rock3Extracted = SpriteSheetExtractor.ExtractSpritesFromGrid(rock3Sheet, 64, 64);
         foreach (var kvp in rock3Extracted) rockSprites[$"Rock3_{kvp.Key}"] = kvp.Value;
         
+        // Initialize mining manager with rock sprites
+        var rockSpriteList = new List<SpriteInfo>(rockSprites.Values);
+        _miningManager = new MoonBrookRidge.World.MiningManager(
+            rock1Sheet, // Fallback texture if sprites aren't available
+            rockSpriteList,
+            Game.Content.Load<Texture2D>("Textures/Tiles/dirt_01"),
+            Game.Content.Load<Texture2D>("Textures/Tiles/stone_01")
+        );
+        
+        // Link mining manager to tool manager
+        _toolManager.SetMiningManager(_miningManager);
+        
         // Populate world with Sunnyside-style objects using extracted sprites
         _worldMap.PopulateSunnysideWorldObjects(buildings, treeSprites, rockSprites);
         
@@ -386,6 +399,9 @@ public class GameplayState : GameState
         
         // Handle seed planting input
         HandleSeedPlantingInput();
+        
+        // Handle mine entrance/exit interaction
+        HandleMineInteraction();
         
         // Handle consumable usage input
         HandleConsumableInput();
@@ -485,6 +501,74 @@ public class GameplayState : GameState
             // Try to plant a seed
             _seedManager.TryPlantSeed(plantPosition);
         }
+    }
+    
+    private void HandleMineInteraction()
+    {
+        // Check if player is standing on a mine entrance tile
+        if (!_miningManager.InMine)
+        {
+            Vector2 gridPos = WorldToGridPosition(_player.Position);
+            var tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
+            
+            if (tile != null && tile.Type == MoonBrookRidge.World.Tiles.TileType.MineEntrance)
+            {
+                // Check for interact key (X or Down) to enter mine
+                if (_inputManager.IsDoActionPressed() || Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    // Enter the mine
+                    Vector2 spawnPos = _miningManager.EnterMine(1);
+                    _player.SetPosition(spawnPos);
+                }
+            }
+        }
+        else
+        {
+            // Player is in the mine - check for exit/descent/ascent
+            
+            // Check if near exit stairs (to go deeper)
+            if (_miningManager.IsNearExit(_player.Position))
+            {
+                // Show prompt or check for Down key
+                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    Vector2 spawnPos = _miningManager.DescendLevel();
+                    _player.SetPosition(spawnPos);
+                }
+            }
+            
+            // Check if near entrance stairs (to go up)
+            if (_miningManager.IsNearEntrance(_player.Position))
+            {
+                // Show prompt or check for Up key
+                if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                {
+                    Vector2 spawnPos = _miningManager.AscendLevel();
+                    
+                    if (!_miningManager.InMine)
+                    {
+                        // Exited mine - return to mine entrance in overworld
+                        Vector2 entrancePixelPos = _worldMap.MineEntranceGridPosition * GameConstants.TILE_SIZE;
+                        _player.SetPosition(entrancePixelPos);
+                    }
+                    else
+                    {
+                        _player.SetPosition(spawnPos);
+                    }
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Convert world position to grid position
+    /// </summary>
+    private Vector2 WorldToGridPosition(Vector2 worldPosition)
+    {
+        return new Vector2(
+            (int)(worldPosition.X / GameConstants.TILE_SIZE),
+            (int)(worldPosition.Y / GameConstants.TILE_SIZE)
+        );
     }
     
     private void HandleConsumableInput()
@@ -618,7 +702,16 @@ public class GameplayState : GameState
         spriteBatch.Begin(transformMatrix: _camera.GetTransform(), 
                          samplerState: SamplerState.PointClamp);
         
-        _worldMap.Draw(spriteBatch);
+        // Draw either mine or overworld
+        if (_miningManager.InMine)
+        {
+            _miningManager.Draw(spriteBatch);
+        }
+        else
+        {
+            _worldMap.Draw(spriteBatch);
+        }
+        
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
         

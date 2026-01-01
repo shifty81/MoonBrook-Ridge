@@ -78,6 +78,9 @@ public class Tile
             TileType.SlatesSnow => Color.White,
             TileType.SlatesIce => new Color(200, 230, 255),
             
+            // Mine entrance
+            TileType.MineEntrance => new Color(50, 50, 50),
+            
             _ => Color.Green
         };
     }
@@ -181,7 +184,10 @@ public enum TileType
     
     // Slates tileset types - Special terrain
     SlatesSnow,
-    SlatesIce
+    SlatesIce,
+    
+    // Mine/Cave entrance
+    MineEntrance
 }
 
 /// <summary>

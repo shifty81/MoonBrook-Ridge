@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using MoonBrookRidge.Characters.Player;
+using MoonBrookRidge.World;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.Core;
@@ -17,6 +18,7 @@ public class ToolManager
     private PlayerCharacter _player;
     private Tool _currentTool;
     private InventorySystem _inventory;
+    private MiningManager _miningManager;
     
     public ToolManager(WorldMap worldMap, PlayerCharacter player, InventorySystem inventory = null)
     {
@@ -24,6 +26,11 @@ public class ToolManager
         _player = player;
         _inventory = inventory;
         _currentTool = null;
+    }
+    
+    public void SetMiningManager(MiningManager miningManager)
+    {
+        _miningManager = miningManager;
     }
     
     public void SetCurrentTool(Tool tool)
@@ -67,8 +74,16 @@ public class ToolManager
         }
         else if (_currentTool is Pickaxe)
         {
-            // TODO: Implement rock mining
-            toolUsed = false;
+            // Try to mine rocks in the mine
+            if (_miningManager != null && _miningManager.InMine)
+            {
+                toolUsed = _miningManager.TryMine(worldPosition, _inventory);
+            }
+            else
+            {
+                // TODO: Implement rock breaking in overworld
+                toolUsed = false;
+            }
         }
         else if (_currentTool is Scythe)
         {
