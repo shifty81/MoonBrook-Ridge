@@ -17,7 +17,8 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 ### Core Gameplay
 - **Farming System**: Plant, water, and harvest crops with seasonal variations
 - **Mining & Fishing**: Explore caves for resources and catch various fish species
-- **Crafting System**: Create items from collected resources using recipes
+- **Crafting System**: Create items from collected resources using recipes ⭐ **NEW UI**
+- **Shop System**: Buy seeds, food, and materials; sell your harvested goods ⭐ **NEW**
 - **Tool System**: Upgrade tools (hoe, watering can, axe, pickaxe, fishing rod, scythe)
 - **Time & Season System**: Dynamic day/night cycle with 4 seasons (28 days each)
 - **Weather System**: Different weather patterns affecting gameplay
@@ -42,10 +43,11 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Dynamic Camera**: Smooth camera following with zoom support
 - **Building System**: Construct buildings and place furniture
 
-### User Interface
+### User Interface ⭐ **ENHANCED**
 - **HUD**: Displays health, energy, time, date, season, and money
 - **Inventory Menu**: Manage items and tools
-- **Crafting Menu**: Browse and craft items from recipes
+- **Crafting Menu**: Browse and craft items from recipes (K key) ⭐ **NEW**
+- **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐ **NEW**
 - **Dialogue System**: Interactive conversation interface with radial wheel
 
 ## 🎨 Art Assets
@@ -247,6 +249,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Open Menu/Inventory | E or Esc |
 | Open Journal/Quests | F |
 | Open Map | M |
+| **Open Crafting Menu** ⭐ **NEW** | **K** |
+| **Open Shop Menu** ⭐ **NEW** | **B** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
@@ -313,12 +317,12 @@ Comprehensive guides and references:
 - [ ] Gift-giving mechanics (system ready, needs UI)
 - [ ] Multiple NPCs with personalities (system ready, needs content)
 
-### Phase 4: Advanced Features 📋
+### Phase 4: Advanced Features 🚧 **IN PROGRESS**
+- [x] **Crafting UI and recipes** ⭐ **IMPLEMENTED**
+- [x] **Shop system** ⭐ **IMPLEMENTED**
 - [ ] Mining system with caves
 - [ ] Fishing minigame
-- [ ] Crafting UI and recipes
 - [ ] Building construction
-- [ ] Shop system
 - [ ] Quest/task system
 - [ ] Events and festivals
 

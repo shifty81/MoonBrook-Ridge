@@ -26,7 +26,11 @@
 | Open Menu / Inventory | E | Escape |
 | Open Journal / Quests | F | - |
 | Open Map | M | - |
+| **Open Crafting Menu** ⭐ **NEW** | **K** | - |
+| **Open Shop Menu** ⭐ **NEW** | **B** | - |
 | Switch Toolbar Row | Tab | - |
+| **Quick Save** ⭐ | **F5** | - |
+| **Quick Load** ⭐ | **F9** | - |
 
 ### Hotbar (Quick Access)
 | Slot | Key |
@@ -176,6 +180,49 @@ Appear on left side when stats are critical:
 - Semi-transparent overlay
 - Resume with same keys
 
+### Crafting Menu ⭐ **NEW**
+- Press **K** to open crafting menu
+- Navigate with **↑/↓ arrow keys**
+- Press **Enter** to craft selected recipe
+- Press **Esc** to close menu
+- Shows required ingredients and owned quantities
+- Recipes are color-coded:
+  - **Green**: Can craft (all ingredients available)
+  - **Red**: Cannot craft (missing ingredients)
+  - **Gray**: Item name when locked
+
+**Available Recipes:**
+- **Wood Fence**: 2 Wood → 1 Fence
+- **Chest**: 50 Wood → 1 Chest
+- **Fertilizer**: 1 Wood + 1 Stone → 5 Fertilizer
+- **Scarecrow**: 10 Wood → 1 Scarecrow
+- **Stone Path**: 3 Stone → 1 Path
+
+### Shop Menu ⭐ **NEW**
+- Press **B** to open shop menu
+- Navigate with **↑/↓ arrow keys**
+- Press **Enter** to buy/sell selected item
+- Press **Tab** to switch between Buy and Sell modes
+- Press **Esc** to close menu
+
+**Buy Mode:**
+- Shows available items with prices
+- Displays how many you already own
+- Cannot buy if insufficient funds
+- Cannot buy if inventory is full
+
+**Sell Mode:**
+- Shows your inventory items that can be sold
+- Displays sell price per item
+- Sells items one at a time
+- Empty slots are not shown
+
+**Shop Inventory:**
+- Seeds: Wheat, Carrot, Potato, Cabbage, Pumpkin
+- Food: Apple, Carrot
+- Drinks: Water, Spring Water
+- Materials: Wood, Stone
+
 ## Tips & Strategies
 
 ### Survival Tips
@@ -201,10 +248,20 @@ Appear on left side when stats are critical:
 - Don't waste daylight hours
 
 ### Economic Tips
-- Sell crops at peak ripeness
-- Invest in tool upgrades for efficiency
+- Sell crops at peak ripeness for maximum profit
+- Buy seeds from shop when you run out
+- Gather Wood and Stone to sell for quick money
+- Use crafting to create valuable items
+- Shop prices are fixed (buy and sell prices differ)
 - Keep emergency food/water supply
 - Don't hoard consumables - use them!
+
+### Crafting Tips ⭐ **NEW**
+- Gather Wood and Stone before crafting
+- Craft Fertilizer to improve crop growth (planned feature)
+- Build Scarecrows to protect crops (planned feature)
+- Save expensive recipes (like Chest) for when you have surplus materials
+- Check crafting menu regularly for new recipes
 
 ## Accessibility
 
