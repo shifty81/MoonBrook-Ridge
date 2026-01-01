@@ -96,18 +96,7 @@ public class ToolManager
         {
             toolUsed = UseHarvest(tile);
         }
-        else if (_currentTool is FishingRod)
-        {
-            // Check if near water and not already fishing
-            if (_fishingManager != null && !_fishingManager.IsFishing)
-            {
-                if (_fishingManager.IsNearWater(_player.Position, _worldMap.GetAllTiles()))
-                {
-                    // Start fishing (season will be passed from GameplayState)
-                    toolUsed = true;
-                }
-            }
-        }
+        // Note: FishingRod is handled separately in GameplayState.HandleToolInput
         
         // Consume energy if tool was used
         if (toolUsed)

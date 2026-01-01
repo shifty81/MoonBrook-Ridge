@@ -10,7 +10,7 @@ namespace MoonBrookRidge.World.Fishing;
 /// <summary>
 /// Manages the fishing system - detecting water, starting minigame, catching fish
 /// </summary>
-public class FishingManager
+public class FishingManager : IDisposable
 {
     private FishingMinigame _minigame;
     private bool _isFishing;
@@ -259,6 +259,11 @@ public class FishingManager
         Texture2D texture = new Texture2D(graphicsDevice, 1, 1);
         texture.SetData(new[] { Color.White });
         return texture;
+    }
+    
+    public void Dispose()
+    {
+        _pixelTexture?.Dispose();
     }
 }
 

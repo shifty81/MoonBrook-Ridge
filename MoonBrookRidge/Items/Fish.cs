@@ -19,7 +19,18 @@ public class FishItem : Item
         Season = season;
         SellPrice = sellPrice;
         BuyPrice = buyPrice;
-        Description = $"A {rarity.ToString().ToLower()} {name.ToLower()}. Found in {habitat.ToString().ToLower()}s.";
+        
+        // Proper pluralization for habitat
+        string habitatText = habitat switch
+        {
+            FishHabitat.Ocean => "the ocean",
+            FishHabitat.River => "rivers",
+            FishHabitat.Lake => "lakes",
+            FishHabitat.Any => "any water",
+            _ => habitat.ToString().ToLower() + "s"
+        };
+        
+        Description = $"A {rarity.ToString().ToLower()} {name.ToLower()}. Found in {habitatText}.";
     }
 }
 
