@@ -29,6 +29,7 @@ public class ParticleSystem
     private List<Particle> _activeParticles;
     private Queue<Particle> _particlePool;
     private const int POOL_SIZE = 500;
+    private static Texture2D? _whitePixel; // Shared texture for drawing particles
     
     public ParticleSystem()
     {
@@ -81,9 +82,16 @@ public class ParticleSystem
     /// </summary>
     public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
+        // Initialize shared texture if needed
+        if (_whitePixel == null)
+        {
+            _whitePixel = new Texture2D(graphicsDevice, 1, 1);
+            _whitePixel.SetData(new[] { Color.White });
+        }
+        
         foreach (var particle in _activeParticles)
         {
-            particle.Draw(spriteBatch, graphicsDevice);
+            particle.Draw(spriteBatch, _whitePixel);
         }
     }
 }
@@ -237,7 +245,7 @@ internal class Particle
         _velocity *= 0.98f;
     }
     
-    public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+    public void Draw(SpriteBatch spriteBatch, Texture2D pixel)
     {
         // Calculate fade based on lifetime
         float fadeProgress = _age / _lifetime;
@@ -245,10 +253,6 @@ internal class Particle
         
         // Create color with fade
         Color drawColor = _color * alpha;
-        
-        // Create a simple texture
-        Texture2D pixel = new Texture2D(graphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
         
         // Draw the particle
         Rectangle rect = new Rectangle(

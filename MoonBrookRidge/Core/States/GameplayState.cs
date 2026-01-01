@@ -573,8 +573,8 @@ public class GameplayState : GameState
                     string season = _timeSystem.CurrentSeason.ToString();
                     _fishingManager.StartFishing(season);
                     _player.Stats.ConsumeEnergy(currentTool.EnergyCost);
-                    // Spawn water particles
-                    _particleSystem.SpawnParticles(_player.Position, ParticleEffectType.Water, 15);
+                    // Spawn fishing particles
+                    _particleSystem.SpawnParticles(_player.Position, ParticleEffectType.Fish, 15);
                 }
             }
             else

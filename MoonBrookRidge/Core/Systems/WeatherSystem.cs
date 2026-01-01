@@ -33,6 +33,7 @@ public class WeatherSystem
     // Weather particles
     private WeatherParticle[] _particles;
     private const int MAX_PARTICLES = 500;
+    private static Texture2D? _whitePixel; // Shared texture for drawing
     
     public WeatherSystem(TimeSystem timeSystem)
     {
@@ -184,21 +185,28 @@ public class WeatherSystem
     /// </summary>
     public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Rectangle viewportBounds)
     {
+        // Initialize shared texture if needed
+        if (_whitePixel == null)
+        {
+            _whitePixel = new Texture2D(graphicsDevice, 1, 1);
+            _whitePixel.SetData(new[] { Color.White });
+        }
+        
         // Draw overlay tint based on weather
-        DrawWeatherOverlay(spriteBatch, graphicsDevice, viewportBounds);
+        DrawWeatherOverlay(spriteBatch, viewportBounds);
         
         // Draw weather particles
         int activeParticles = GetActiveParticleCount();
         for (int i = 0; i < activeParticles; i++)
         {
-            _particles[i].Draw(spriteBatch, graphicsDevice);
+            _particles[i].Draw(spriteBatch, _whitePixel);
         }
     }
     
     /// <summary>
     /// Draws a weather overlay to tint the screen
     /// </summary>
-    private void DrawWeatherOverlay(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Rectangle viewportBounds)
+    private void DrawWeatherOverlay(SpriteBatch spriteBatch, Rectangle viewportBounds)
     {
         Color overlayColor = _currentWeather switch
         {
@@ -212,9 +220,7 @@ public class WeatherSystem
         
         if (overlayColor != Color.Transparent)
         {
-            Texture2D pixel = new Texture2D(graphicsDevice, 1, 1);
-            pixel.SetData(new[] { Color.White });
-            spriteBatch.Draw(pixel, viewportBounds, overlayColor);
+            spriteBatch.Draw(_whitePixel, viewportBounds, overlayColor);
         }
     }
     
@@ -336,12 +342,9 @@ internal class WeatherParticle
         }
     }
     
-    public void Draw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+    public void Draw(SpriteBatch spriteBatch, Texture2D pixel)
     {
         if (!_isActive) return;
-        
-        Texture2D pixel = new Texture2D(graphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
         
         Rectangle rect = new Rectangle((int)_position.X, (int)_position.Y, (int)_size, (int)_size);
         spriteBatch.Draw(pixel, rect, _color);

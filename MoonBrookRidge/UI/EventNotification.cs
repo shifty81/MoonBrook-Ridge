@@ -15,6 +15,7 @@ public class EventNotification
     private bool _isVisible;
     private Color _backgroundColor;
     private Color _textColor;
+    private static Texture2D? _whitePixel; // Shared texture for drawing rectangles
     
     private const float NOTIFICATION_DURATION = 5f; // Display for 5 seconds
     private const int PADDING = 20;
@@ -70,6 +71,13 @@ public class EventNotification
     {
         if (!_isVisible) return;
         
+        // Initialize shared texture if needed
+        if (_whitePixel == null)
+        {
+            _whitePixel = new Texture2D(graphicsDevice, 1, 1);
+            _whitePixel.SetData(new[] { Color.White });
+        }
+        
         // Calculate fade effect
         float alpha = 1f;
         if (_elapsed > _displayTime - 1f)
@@ -95,7 +103,7 @@ public class EventNotification
         
         // Draw background box
         var bgColor = _backgroundColor * alpha;
-        DrawRectangle(spriteBatch, new Rectangle(boxX, boxY, boxWidth, boxHeight), bgColor);
+        spriteBatch.Draw(_whitePixel, new Rectangle(boxX, boxY, boxWidth, boxHeight), bgColor);
         
         // Draw border
         DrawRectangleBorder(spriteBatch, new Rectangle(boxX, boxY, boxWidth, boxHeight), Color.Gold * alpha, 2);
@@ -106,33 +114,18 @@ public class EventNotification
     }
     
     /// <summary>
-    /// Helper method to draw a filled rectangle
-    /// </summary>
-    private void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
-    {
-        // Create a 1x1 white texture if needed
-        Texture2D whiteTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        whiteTexture.SetData(new[] { Color.White });
-        
-        spriteBatch.Draw(whiteTexture, rectangle, color);
-    }
-    
-    /// <summary>
     /// Helper method to draw a rectangle border
     /// </summary>
     private void DrawRectangleBorder(SpriteBatch spriteBatch, Rectangle rectangle, Color color, int thickness)
     {
-        Texture2D whiteTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        whiteTexture.SetData(new[] { Color.White });
-        
         // Top
-        spriteBatch.Draw(whiteTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, thickness), color);
+        spriteBatch.Draw(_whitePixel, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, thickness), color);
         // Bottom
-        spriteBatch.Draw(whiteTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - thickness, rectangle.Width, thickness), color);
+        spriteBatch.Draw(_whitePixel, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - thickness, rectangle.Width, thickness), color);
         // Left
-        spriteBatch.Draw(whiteTexture, new Rectangle(rectangle.X, rectangle.Y, thickness, rectangle.Height), color);
+        spriteBatch.Draw(_whitePixel, new Rectangle(rectangle.X, rectangle.Y, thickness, rectangle.Height), color);
         // Right
-        spriteBatch.Draw(whiteTexture, new Rectangle(rectangle.X + rectangle.Width - thickness, rectangle.Y, thickness, rectangle.Height), color);
+        spriteBatch.Draw(_whitePixel, new Rectangle(rectangle.X + rectangle.Width - thickness, rectangle.Y, thickness, rectangle.Height), color);
     }
     
     public bool IsVisible => _isVisible;
