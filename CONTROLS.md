@@ -267,6 +267,31 @@ Appear on left side when stats are critical:
 - 👎 Dislikes: Coal, Stone, Copper Ore
 - 💔 Hates: Iron Ore
 
+### Quest Journal ⭐ **NEW**
+- Press **F** to open quest journal
+- Navigate with **↑/↓ arrow keys**
+- Switch tabs with **Tab** or **1-3 keys**:
+  - **1**: Active Quests
+  - **2**: Available Quests
+  - **3**: Completed Quests
+- Press **Enter** to accept an available quest
+- Press **Esc** or **F** to close journal
+
+**Quest System Features:**
+- Track multiple quests simultaneously
+- View detailed objectives and progress
+- See rewards before accepting
+- Quests given by NPCs or town notices
+- Objectives update automatically as you play
+- Quest completion awards money, items, and friendship
+
+**Starter Quests:**
+1. **Welcome to Town**: Meet all 4 NPCs
+2. **First Harvest** (Emma): Harvest 5 Wheat
+3. **Mining for Marcus** (Marcus): Collect 10 Copper Ore
+4. **Lily's Supply Run** (Lily): Collect 20 Wood & 15 Stone
+5. **The Big Catch** (Oliver): Catch 15 Fish
+
 ## Tips & Strategies
 
 ### Survival Tips

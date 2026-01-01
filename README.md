@@ -51,6 +51,11 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 ### User Interface ⭐ **ENHANCED**
 - **HUD**: Displays health, energy, time, date, season, and money
 - **Inventory Menu**: Manage items and tools
+- **Crafting Menu**: Browse and craft items from recipes (K key) ⭐
+- **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐
+- **Gift Menu**: Give gifts to NPCs to build relationships (G key) ⭐ **NEW**
+- **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
+- **Dialogue System**: Interactive conversation interface with radial wheel
 - **Crafting Menu**: Browse and craft items from recipes (K key) ⭐ **NEW**
 - **Shop Menu**: Buy and sell items with dynamic pricing (B key) ⭐ **NEW**
 - **Dialogue System**: Interactive conversation interface with radial wheel
@@ -328,8 +333,8 @@ Comprehensive guides and references:
 - [x] **Shop system** ⭐ **IMPLEMENTED**
 - [x] **Mining system with caves** ⭐ **IMPLEMENTED**
 - [x] **Fishing minigame** ⭐ **IMPLEMENTED**
+- [x] **Quest/task system** ⭐ **IMPLEMENTED** - 5 starter quests available
 - [ ] Building construction
-- [ ] Quest/task system
 - [ ] Events and festivals
 
 ### Phase 5: Polish & Content 📋

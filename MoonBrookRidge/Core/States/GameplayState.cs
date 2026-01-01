@@ -15,6 +15,7 @@ using MoonBrookRidge.Items;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Items.Crafting;
 using MoonBrookRidge.Items.Shop;
+using MoonBrookRidge.Quests;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -41,6 +42,8 @@ public class GameplayState : GameState
     private ShopSystem _shopSystem;
     private ShopMenu _shopMenu;
     private GiftMenu _giftMenu;
+    private QuestSystem _questSystem;
+    private QuestMenu _questMenu;
     private MoonBrookRidge.World.MiningManager _miningManager;
     private FishingManager _fishingManager;
     private bool _isPaused;
@@ -105,6 +108,10 @@ public class GameplayState : GameState
         
         // Initialize gift menu
         _giftMenu = new GiftMenu(_inventory);
+        
+        // Initialize quest system
+        _questSystem = new QuestSystem();
+        _questMenu = new QuestMenu(_questSystem);
         
         // Initialize NPC manager
         _npcManager = new NPCManager();
@@ -332,6 +339,9 @@ public class GameplayState : GameState
         
         // Create a test NPC
         CreateTestNPC();
+        
+        // Initialize starter quests
+        InitializeQuests();
     }
 
     public override void Update(GameTime gameTime)
@@ -372,6 +382,13 @@ public class GameplayState : GameState
             return; // Don't update game while in gift menu
         }
         
+        if (_questMenu.IsActive)
+        {
+            _questMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in quest menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -399,6 +416,14 @@ public class GameplayState : GameState
                 _previousKeyboardState = keyboardState;
                 return;
             }
+        }
+        
+        // Check for quest menu (F key for "quests") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F))
+        {
+            _questMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
         }
         
         // Check for pause
@@ -799,6 +824,11 @@ public class GameplayState : GameState
             _giftMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
+        if (_questMenu.IsActive)
+        {
+            _questMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
         // Draw pause indicator
         if (_isPaused)
         {
@@ -1044,5 +1074,84 @@ public class GameplayState : GameState
         );
         
         _npcManager.AddNPC(oliver);
+    }
+    
+    private void InitializeQuests()
+    {
+        // Quest 1: Emma's First Harvest
+        var quest1 = new Quest("emma_harvest", "First Harvest", 
+            "Emma needs help getting crops ready for the market.", "Emma");
+        quest1.AddObjective(new QuestObjective("harvest_wheat", "Harvest 5 Wheat", 
+            QuestObjectiveType.Harvest, "Wheat", 5));
+        quest1.Reward = new QuestReward 
+        { 
+            Money = 100, 
+            FriendshipPoints = 50, 
+            FriendshipNPC = "Emma" 
+        };
+        quest1.Reward.Items.Add("Wheat Seeds", 10);
+        _questSystem.AddAvailableQuest(quest1);
+        
+        // Quest 2: Marcus's Mining Request
+        var quest2 = new Quest("marcus_ore", "Mining for Marcus", 
+            "Marcus needs copper ore for his smithing work.", "Marcus");
+        quest2.AddObjective(new QuestObjective("collect_copper", "Collect 10 Copper Ore", 
+            QuestObjectiveType.CollectItem, "Copper Ore", 10));
+        quest2.Reward = new QuestReward 
+        { 
+            Money = 200, 
+            FriendshipPoints = 75, 
+            FriendshipNPC = "Marcus" 
+        };
+        quest2.Reward.Items.Add("Iron Pickaxe", 1);
+        _questSystem.AddAvailableQuest(quest2);
+        
+        // Quest 3: Lily's Shopping List
+        var quest3 = new Quest("lily_items", "Lily's Supply Run", 
+            "Lily needs various items to stock her shop.", "Lily");
+        quest3.AddObjective(new QuestObjective("collect_wood", "Collect 20 Wood", 
+            QuestObjectiveType.CollectItem, "Wood", 20));
+        quest3.AddObjective(new QuestObjective("collect_stone", "Collect 15 Stone", 
+            QuestObjectiveType.CollectItem, "Stone", 15));
+        quest3.Reward = new QuestReward 
+        { 
+            Money = 250, 
+            FriendshipPoints = 60, 
+            FriendshipNPC = "Lily" 
+        };
+        _questSystem.AddAvailableQuest(quest3);
+        
+        // Quest 4: Oliver's Fishing Challenge
+        var quest4 = new Quest("oliver_fish", "The Big Catch", 
+            "Oliver wants you to prove your fishing skills.", "Oliver");
+        quest4.AddObjective(new QuestObjective("catch_fish", "Catch 15 Fish", 
+            QuestObjectiveType.Fish, "Fish", 15));
+        quest4.Reward = new QuestReward 
+        { 
+            Money = 150, 
+            FriendshipPoints = 80, 
+            FriendshipNPC = "Oliver" 
+        };
+        quest4.Reward.Items.Add("Advanced Fishing Rod", 1);
+        _questSystem.AddAvailableQuest(quest4);
+        
+        // Quest 5: Welcome to MoonBrook Ridge
+        var quest5 = new Quest("welcome", "Welcome to Town", 
+            "Get to know the residents of MoonBrook Ridge.", "Town Notice");
+        quest5.AddObjective(new QuestObjective("talk_emma", "Talk to Emma", 
+            QuestObjectiveType.TalkToNPC, "Emma", 1));
+        quest5.AddObjective(new QuestObjective("talk_marcus", "Talk to Marcus", 
+            QuestObjectiveType.TalkToNPC, "Marcus", 1));
+        quest5.AddObjective(new QuestObjective("talk_lily", "Talk to Lily", 
+            QuestObjectiveType.TalkToNPC, "Lily", 1));
+        quest5.AddObjective(new QuestObjective("talk_oliver", "Talk to Oliver", 
+            QuestObjectiveType.TalkToNPC, "Oliver", 1));
+        quest5.Reward = new QuestReward 
+        { 
+            Money = 300, 
+            FriendshipPoints = 0 
+        };
+        quest5.Reward.Items.Add("Starter Pack", 1);
+        _questSystem.AddAvailableQuest(quest5);
     }
 }
