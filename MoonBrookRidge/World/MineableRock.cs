@@ -17,22 +17,22 @@ public class MineableRock : WorldObject
     
     private System.Random _random;
     
-    public MineableRock(string name, Vector2 position, Texture2D texture, int mineLevel = 1) 
+    public MineableRock(string name, Vector2 position, Texture2D texture, int mineLevel = 1, System.Random random = null) 
         : base(name, position, texture)
     {
         MineLevel = mineLevel;
         HitsRequired = DetermineHitsRequired(mineLevel);
         CurrentHits = 0;
-        _random = new System.Random();
+        _random = random ?? new System.Random();
     }
     
-    public MineableRock(string name, Vector2 position, SpriteInfo spriteInfo, int mineLevel = 1)
+    public MineableRock(string name, Vector2 position, SpriteInfo spriteInfo, int mineLevel = 1, System.Random random = null)
         : base(name, position, spriteInfo)
     {
         MineLevel = mineLevel;
         HitsRequired = DetermineHitsRequired(mineLevel);
         CurrentHits = 0;
-        _random = new System.Random();
+        _random = random ?? new System.Random();
     }
     
     private int DetermineHitsRequired(int level)

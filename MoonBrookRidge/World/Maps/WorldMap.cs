@@ -31,6 +31,9 @@ public class WorldMap
     // World objects (buildings, trees, rocks, decorations)
     private List<WorldObject> _worldObjects;
     
+    // Mine entrance location
+    public Vector2 MineEntranceGridPosition { get; private set; }
+    
     public WorldMap()
     {
         _width = 50;
@@ -40,6 +43,7 @@ public class WorldMap
         _tileTextures = new Dictionary<TileType, Texture2D>();
         _sunnysideTileMapping = new Dictionary<TileType, int>();
         _worldObjects = new List<WorldObject>();
+        MineEntranceGridPosition = new Vector2(10, 40); // Default mine entrance location
         
         InitializeMap();
     }
@@ -112,8 +116,9 @@ public class WorldMap
             }
         }
         
-        // Place mine entrance in bottom-left area
-        _tiles[10, 40] = new Tile(TileType.MineEntrance, new Vector2(10, 40));
+        // Place mine entrance at designated location
+        _tiles[(int)MineEntranceGridPosition.X, (int)MineEntranceGridPosition.Y] = 
+            new Tile(TileType.MineEntrance, MineEntranceGridPosition);
     }
     
     public void LoadContent(Dictionary<TileType, Texture2D> tileTextures, Dictionary<string, Texture2D[]> cropTextures = null)

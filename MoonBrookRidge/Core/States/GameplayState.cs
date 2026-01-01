@@ -547,10 +547,9 @@ public class GameplayState : GameState
                     
                     if (!_miningManager.InMine)
                     {
-                        // Exited mine - return to overworld
-                        // Find the mine entrance tile and position player there
-                        // For now, just position at center of map
-                        _player.SetPosition(new Vector2(27.5f * GameConstants.TILE_SIZE, 27.5f * GameConstants.TILE_SIZE));
+                        // Exited mine - return to mine entrance in overworld
+                        Vector2 entrancePixelPos = _worldMap.MineEntranceGridPosition * GameConstants.TILE_SIZE;
+                        _player.SetPosition(entrancePixelPos);
                     }
                     else
                     {

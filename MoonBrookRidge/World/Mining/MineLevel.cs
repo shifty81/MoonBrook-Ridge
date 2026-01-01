@@ -21,6 +21,7 @@ public class MineLevel
     
     private int _width;
     private int _height;
+    private System.Random _random;
     
     public MineLevel(int level, int width, int height, Texture2D rockTexture, List<SpriteInfo> rockSprites)
     {
@@ -28,6 +29,7 @@ public class MineLevel
         _width = width;
         _height = height;
         Rocks = new List<MineableRock>();
+        _random = new System.Random(level * 1000); // Use same seed as generator for consistency
         
         // Generate the mine level
         MineGenerator generator = new MineGenerator(level * 1000); // Seed based on level
@@ -47,14 +49,14 @@ public class MineLevel
             
             if (rockSprites != null && rockSprites.Count > 0)
             {
-                // Use extracted rock sprites
-                var randomSprite = rockSprites[new System.Random().Next(rockSprites.Count)];
-                rock = new MineableRock($"Rock_{pos.X}_{pos.Y}", pos * 16, randomSprite, level);
+                // Use extracted rock sprites with shared random generator
+                var randomSprite = rockSprites[_random.Next(rockSprites.Count)];
+                rock = new MineableRock($"Rock_{pos.X}_{pos.Y}", pos * 16, randomSprite, level, _random);
             }
             else
             {
                 // Fallback to full texture
-                rock = new MineableRock($"Rock_{pos.X}_{pos.Y}", pos * 16, rockTexture, level);
+                rock = new MineableRock($"Rock_{pos.X}_{pos.Y}", pos * 16, rockTexture, level, _random);
             }
             
             Rocks.Add(rock);
