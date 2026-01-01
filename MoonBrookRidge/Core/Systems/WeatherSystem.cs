@@ -278,12 +278,10 @@ internal class WeatherParticle
     private float _size;
     private Color _color;
     private bool _isActive;
-    private Random _random;
     private static Random _sharedRandom = new Random();
     
     public WeatherParticle()
     {
-        _random = _sharedRandom;
         _isActive = false;
     }
     
@@ -292,31 +290,31 @@ internal class WeatherParticle
         _isActive = true;
         
         // Random starting position across the screen
-        _position = new Vector2(_random.Next(0, 1280), _random.Next(-100, 720));
+        _position = new Vector2(_sharedRandom.Next(0, 1280), _sharedRandom.Next(-100, 720));
         
         switch (weatherType)
         {
             case WeatherType.Rainy:
-                _velocity = new Vector2(_random.Next(-50, -30), _random.Next(400, 600));
-                _size = _random.Next(1, 3);
+                _velocity = new Vector2(_sharedRandom.Next(-50, -30), _sharedRandom.Next(400, 600));
+                _size = _sharedRandom.Next(1, 3);
                 _color = new Color(150, 150, 200, 180);
                 break;
                 
             case WeatherType.Stormy:
-                _velocity = new Vector2(_random.Next(-100, -50), _random.Next(500, 800));
-                _size = _random.Next(2, 4);
+                _velocity = new Vector2(_sharedRandom.Next(-100, -50), _sharedRandom.Next(500, 800));
+                _size = _sharedRandom.Next(2, 4);
                 _color = new Color(120, 120, 180, 200);
                 break;
                 
             case WeatherType.Snowy:
-                _velocity = new Vector2(_random.Next(-20, 20), _random.Next(50, 150));
-                _size = _random.Next(2, 5);
+                _velocity = new Vector2(_sharedRandom.Next(-20, 20), _sharedRandom.Next(50, 150));
+                _size = _sharedRandom.Next(2, 5);
                 _color = new Color(255, 255, 255, 220);
                 break;
                 
             case WeatherType.Foggy:
-                _velocity = new Vector2(_random.Next(-10, 10), _random.Next(-5, 5));
-                _size = _random.Next(20, 50);
+                _velocity = new Vector2(_sharedRandom.Next(-10, 10), _sharedRandom.Next(-5, 5));
+                _size = _sharedRandom.Next(20, 50);
                 _color = new Color(200, 200, 200, 40);
                 break;
                 
