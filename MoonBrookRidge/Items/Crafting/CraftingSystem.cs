@@ -31,6 +31,25 @@ public class CraftingSystem
         chestRecipe.AddIngredient("Wood", 50);
         chestRecipe.SetOutput("Chest", 1);
         _recipes.Add("Chest", chestRecipe);
+        
+        // Basic fertilizer
+        var fertilizerRecipe = new Recipe("Fertilizer");
+        fertilizerRecipe.AddIngredient("Wood", 1);
+        fertilizerRecipe.AddIngredient("Stone", 1);
+        fertilizerRecipe.SetOutput("Fertilizer", 5);
+        _recipes.Add("Fertilizer", fertilizerRecipe);
+        
+        // Scarecrow
+        var scarecrowRecipe = new Recipe("Scarecrow");
+        scarecrowRecipe.AddIngredient("Wood", 10);
+        scarecrowRecipe.SetOutput("Scarecrow", 1);
+        _recipes.Add("Scarecrow", scarecrowRecipe);
+        
+        // Stone path
+        var pathRecipe = new Recipe("Stone Path");
+        pathRecipe.AddIngredient("Stone", 3);
+        pathRecipe.SetOutput("Stone Path", 1);
+        _recipes.Add("Stone Path", pathRecipe);
     }
     
     public bool CanCraft(string recipeName, InventorySystem inventory)
