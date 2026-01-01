@@ -22,7 +22,9 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Building Construction**: Construct and place buildings on your farm ⭐ **NEW**
 - **Tool System**: Upgrade tools (hoe, watering can, axe, pickaxe, fishing rod, scythe)
 - **Time & Season System**: Dynamic day/night cycle with 4 seasons (28 days each)
-- **Weather System**: Different weather patterns affecting gameplay
+- **Weather System**: Dynamic weather with rain, snow, storms, and fog affecting gameplay ⭐ **NEW**
+- **Events & Festivals**: 8 seasonal festivals throughout the year ⭐ **NEW**
+- **Particle Effects**: Visual feedback for all actions (farming, mining, fishing, etc.) ⭐ **NEW**
 
 ### Building System ⭐ **NEW**
 - **8 Building Types Available**:
@@ -52,6 +54,38 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
   - **Lily** (Merchant): Loves gems and valuable items
   - **Oliver** (Fisherman): Loves fish and seafood
 
+### Events & Festivals System ⭐ **NEW**
+- **8 Seasonal Festivals**:
+  - **Spring**: Egg Festival (Day 13), Flower Dance (Day 24)
+  - **Summer**: Luau (Day 11), Moonlight Jellies (Day 28)
+  - **Fall**: Harvest Festival (Day 15), Spirit's Eve (Day 27)
+  - **Winter**: Festival of Ice (Day 8), Feast of the Winter Star (Day 25)
+- **Event Notifications**: Visual notifications appear when festivals begin
+- **Calendar Integration**: Events are tied to specific days and seasons
+- **Festival Variety**: Different types including egg hunts, dances, feasts, and viewing events
+
+### Weather System ⭐ **NEW**
+- **8 Weather Types**: Clear, Sunny, Cloudy, Rainy, Stormy, Snowy, Windy, Foggy
+- **Seasonal Patterns**: Weather probability varies by season
+  - Spring: More rainy and cloudy days
+  - Summer: Predominantly sunny with occasional storms
+  - Fall: Mix of rain, wind, and fog
+  - Winter: Frequent snow with foggy conditions
+- **Visual Effects**: Weather particles (rain drops, snowflakes) and screen tinting
+- **Gameplay Impact**: Weather affects movement speed and natural crop watering
+- **Dynamic Duration**: Each weather pattern lasts 30 minutes to 2 hours of game time
+
+### Particle Effects System ⭐ **NEW**
+- **Tool Action Effects**:
+  - **Hoe**: Dust particles when tilling soil
+  - **Watering Can**: Water droplets when watering
+  - **Pickaxe**: Rock fragments when mining
+  - **Axe**: Wood chips when chopping
+  - **Scythe**: Sparkles when harvesting
+  - **Fishing Rod**: Water splashes when casting
+- **Visual Feedback**: Immediate particle effects for all player actions
+- **Performance Optimized**: Particle pooling system for efficient rendering
+
 ### Character Systems
 - **Player Character**: Fully customizable with stats (health, energy, money)
 - **Animation System**: Multiple animation states (idle, walking, running, using tools)
@@ -71,6 +105,7 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Building Menu**: Construct and place buildings on your farm (H key) ⭐ **NEW**
 - **Gift Menu**: Give gifts to NPCs to build relationships (G key) ⭐ **NEW**
 - **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
+- **Event Notifications**: Visual notifications for festivals and special events ⭐ **NEW**
 - **Dialogue System**: Interactive conversation interface with radial wheel
 
 ## 🎨 Art Assets
@@ -180,6 +215,28 @@ MoonBrookRidge/
 - Season progression (Spring → Summer → Fall → Winter)
 - Day/night cycle
 - 28 days per season
+
+#### Event System ⭐ **NEW**
+- `EventSystem`: Manages festivals and special events
+- `Festival`: Defines festival types and properties
+- `EventNotification`: Displays event announcements
+- Seasonal event triggering based on date
+- 8 unique festivals across all seasons
+
+#### Weather System ⭐ **NEW**
+- `WeatherSystem`: Dynamic weather patterns
+- Seasonal weather probability
+- Visual weather effects (rain, snow, fog particles)
+- Screen tinting based on weather
+- Movement speed modifiers
+- Natural crop watering during rain
+
+#### Particle System ⭐ **NEW**
+- `ParticleSystem`: Manages visual effects
+- Particle pooling for performance
+- Tool-specific particle effects
+- Physics-based particle movement
+- Fade and gravity effects
 
 #### Camera System
 - 2D camera with smooth following
@@ -342,19 +399,19 @@ Comprehensive guides and references:
 - [x] **Gift-giving mechanics with UI** ⭐ **IMPLEMENTED**
 - [x] **Multiple NPCs with personalities** ⭐ **IMPLEMENTED** (Emma, Marcus, Lily, Oliver)
 
-### Phase 4: Advanced Features 🚧 **IN PROGRESS**
+### Phase 4: Advanced Features ✅ **COMPLETE!**
 - [x] **Crafting UI and recipes** ⭐ **IMPLEMENTED**
 - [x] **Shop system** ⭐ **IMPLEMENTED**
 - [x] **Mining system with caves** ⭐ **IMPLEMENTED**
 - [x] **Fishing minigame** ⭐ **IMPLEMENTED**
 - [x] **Quest/task system** ⭐ **IMPLEMENTED** - 5 starter quests available
 - [x] **Building construction** ⭐ **IMPLEMENTED** - 8 building types available
-- [ ] Events and festivals
+- [x] **Events and festivals** ⭐ **IMPLEMENTED** - 8 seasonal festivals with notifications
 
-### Phase 5: Polish & Content 📋
+### Phase 5: Polish & Content 🚧 **IN PROGRESS**
 - [ ] Sound effects and music
-- [ ] Particle effects
-- [ ] Weather effects
+- [x] **Particle effects** ⭐ **IMPLEMENTED** - Visual effects for all tool actions
+- [x] **Weather effects** ⭐ **IMPLEMENTED** - Dynamic weather system with seasonal patterns
 - [ ] More crops, items, and recipes
 - [ ] Multiple NPCs with unique personalities
 - [ ] Marriage and family system
