@@ -321,7 +321,7 @@ Comprehensive guides and references:
 - [x] **Crafting UI and recipes** ⭐ **IMPLEMENTED**
 - [x] **Shop system** ⭐ **IMPLEMENTED**
 - [x] **Mining system with caves** ⭐ **IMPLEMENTED**
-- [ ] Fishing minigame
+- [x] **Fishing minigame** ⭐ **IMPLEMENTED**
 - [ ] Building construction
 - [ ] Quest/task system
 - [ ] Events and festivals

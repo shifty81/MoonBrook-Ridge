@@ -23,6 +23,8 @@ public class FishingMinigame
     private float _targetZoneEnd;
     private float _targetZoneSize;
     
+    private Texture2D _pixelTexture;
+    
     private const float MIN_ZONE_SIZE = 0.15f;
     private const float MAX_ZONE_SIZE = 0.35f;
     
@@ -93,8 +95,10 @@ public class FishingMinigame
         KeyboardState currentKeyState = Keyboard.GetState();
         
         // Player presses C or Space to attempt catch
-        if ((currentKeyState.IsKeyDown(Keys.C) || currentKeyState.IsKeyDown(Keys.Space)) && 
-            !_previousKeyState.IsKeyDown(Keys.C) && !_previousKeyState.IsKeyDown(Keys.Space))
+        bool cKeyPressed = currentKeyState.IsKeyDown(Keys.C) && !_previousKeyState.IsKeyDown(Keys.C);
+        bool spaceKeyPressed = currentKeyState.IsKeyDown(Keys.Space) && !_previousKeyState.IsKeyDown(Keys.Space);
+        
+        if (cKeyPressed || spaceKeyPressed)
         {
             CompleteFishing();
         }
@@ -133,6 +137,12 @@ public class FishingMinigame
         if (!_isActive)
             return;
         
+        // Create pixel texture if not already created
+        if (_pixelTexture == null)
+        {
+            _pixelTexture = CreatePixelTexture(spriteBatch.GraphicsDevice);
+        }
+        
         // Draw semi-transparent background
         int panelWidth = 400;
         int panelHeight = 100;
@@ -140,8 +150,7 @@ public class FishingMinigame
         int panelY = screenHeight - 150;
         
         // Background panel
-        Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
-        spriteBatch.Draw(pixel, new Rectangle(panelX, panelY, panelWidth, panelHeight), Color.Black * 0.7f);
+        spriteBatch.Draw(_pixelTexture, new Rectangle(panelX, panelY, panelWidth, panelHeight), Color.Black * 0.7f);
         
         // Progress bar background
         int barWidth = 360;
@@ -149,16 +158,16 @@ public class FishingMinigame
         int barX = panelX + 20;
         int barY = panelY + 35;
         
-        spriteBatch.Draw(pixel, new Rectangle(barX, barY, barWidth, barHeight), Color.DarkGray);
+        spriteBatch.Draw(_pixelTexture, new Rectangle(barX, barY, barWidth, barHeight), Color.DarkGray);
         
         // Target zone (green)
         int zoneX = barX + (int)(_targetZoneStart * barWidth);
         int zoneWidth = (int)(_targetZoneSize * barWidth);
-        spriteBatch.Draw(pixel, new Rectangle(zoneX, barY, zoneWidth, barHeight), Color.Green * 0.5f);
+        spriteBatch.Draw(_pixelTexture, new Rectangle(zoneX, barY, zoneWidth, barHeight), Color.Green * 0.5f);
         
         // Progress indicator (white line)
         int indicatorX = barX + (int)(_progress * barWidth);
-        spriteBatch.Draw(pixel, new Rectangle(indicatorX - 2, barY - 5, 4, barHeight + 10), Color.White);
+        spriteBatch.Draw(_pixelTexture, new Rectangle(indicatorX - 2, barY - 5, 4, barHeight + 10), Color.White);
         
         // Instruction text
         string instruction = _isComplete 

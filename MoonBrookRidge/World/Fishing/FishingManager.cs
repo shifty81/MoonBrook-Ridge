@@ -21,6 +21,8 @@ public class FishingManager
     private FishHabitat _currentHabitat;
     private string _currentSeason;
     
+    private Texture2D _pixelTexture;
+    
     private Random _random;
     
     private const float CASTING_DURATION = 1.5f;
@@ -206,6 +208,12 @@ public class FishingManager
         if (!_isFishing)
             return;
         
+        // Create pixel texture if not already created
+        if (_pixelTexture == null)
+        {
+            _pixelTexture = CreatePixelTexture(spriteBatch.GraphicsDevice);
+        }
+        
         // Draw fishing state
         if (_currentState == FishingState.Minigame)
         {
@@ -229,10 +237,9 @@ public class FishingManager
                 Vector2 textPos = new Vector2((screenWidth - textSize.X) / 2, screenHeight - 100);
                 
                 // Draw background
-                Texture2D pixel = CreatePixelTexture(spriteBatch.GraphicsDevice);
                 Rectangle bgRect = new Rectangle((int)textPos.X - 10, (int)textPos.Y - 10, 
                                                  (int)textSize.X + 20, (int)textSize.Y + 20);
-                spriteBatch.Draw(pixel, bgRect, Color.Black * 0.7f);
+                spriteBatch.Draw(_pixelTexture, bgRect, Color.Black * 0.7f);
                 
                 // Draw text
                 Color textColor = _currentState switch
