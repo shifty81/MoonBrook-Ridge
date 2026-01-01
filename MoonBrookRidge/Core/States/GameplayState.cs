@@ -10,6 +10,7 @@ using MoonBrookRidge.World.Fishing;
 using MoonBrookRidge.World.Buildings;
 using MoonBrookRidge.UI.HUD;
 using MoonBrookRidge.UI.Menus;
+using MoonBrookRidge.UI;
 using MoonBrookRidge.Core.Systems;
 using MoonBrookRidge.Farming.Tools;
 using MoonBrookRidge.Items;
@@ -29,6 +30,10 @@ public class GameplayState : GameState
     private WorldMap _worldMap;
     private HUDManager _hud;
     private TimeSystem _timeSystem;
+    private EventSystem _eventSystem;
+    private EventNotification _eventNotification;
+    private WeatherSystem _weatherSystem;
+    private ParticleSystem _particleSystem;
     private Camera2D _camera;
     private InputManager _inputManager;
     private ToolManager _toolManager;
@@ -52,6 +57,7 @@ public class GameplayState : GameState
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
+    private GameEvent? _lastShownEvent;
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -61,6 +67,10 @@ public class GameplayState : GameState
         
         // Initialize core systems
         _timeSystem = new TimeSystem();
+        _eventSystem = new EventSystem(_timeSystem);
+        _eventNotification = new EventNotification();
+        _weatherSystem = new WeatherSystem(_timeSystem);
+        _particleSystem = new ParticleSystem();
         _camera = new Camera2D(Game.GraphicsDevice.Viewport);
         _inputManager = new InputManager();
         
@@ -483,6 +493,25 @@ public class GameplayState : GameState
         // Update time system
         _timeSystem.Update(gameTime);
         
+        // Update weather system
+        _weatherSystem.Update(gameTime);
+        
+        // Update particle system
+        _particleSystem.Update(gameTime);
+        
+        // Update event system
+        _eventSystem.Update(gameTime);
+        
+        // Check if a new event has been triggered and show notification
+        if (_eventSystem.HasActiveEvent && _eventSystem.ActiveEvent != _lastShownEvent)
+        {
+            _eventNotification.Show(_eventSystem.ActiveEvent);
+            _lastShownEvent = _eventSystem.ActiveEvent;
+        }
+        
+        // Update event notification
+        _eventNotification.Update(gameTime);
+        
         // Update crop growth based on game time
         _worldMap.UpdateCropGrowth(_timeSystem.LastGameHoursElapsed);
         
@@ -544,6 +573,8 @@ public class GameplayState : GameState
                     string season = _timeSystem.CurrentSeason.ToString();
                     _fishingManager.StartFishing(season);
                     _player.Stats.ConsumeEnergy(currentTool.EnergyCost);
+                    // Spawn fishing particles
+                    _particleSystem.SpawnParticles(_player.Position, ParticleEffectType.Fish, 15);
                 }
             }
             else
@@ -553,6 +584,9 @@ public class GameplayState : GameState
                 
                 // Use the tool at that position
                 _toolManager.UseTool(toolPosition, _player.Stats);
+                
+                // Spawn particles based on tool type
+                SpawnToolParticles(currentTool, toolPosition);
             }
         }
         
@@ -561,6 +595,28 @@ public class GameplayState : GameState
         if (_inputManager.IsSwitchToolbarPressed())
         {
             CycleTools();
+        }
+    }
+    
+    private void SpawnToolParticles(Tool tool, Vector2 position)
+    {
+        switch (tool)
+        {
+            case Hoe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Dust, 12);
+                break;
+            case WateringCan:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Water, 15);
+                break;
+            case Pickaxe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Rock, 20);
+                break;
+            case Axe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Wood, 18);
+                break;
+            case Scythe:
+                _particleSystem.SpawnParticles(position, ParticleEffectType.Sparkle, 10);
+                break;
         }
     }
     
@@ -885,6 +941,18 @@ public class GameplayState : GameState
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
         
+        // Draw particle effects in world space (with camera transform)
+        _particleSystem.Draw(spriteBatch, Game.GraphicsDevice);
+        
+        // Draw weather effects in world space (with camera transform)
+        var viewportBounds = new Rectangle(
+            (int)(_camera.Position.X - Game.GraphicsDevice.Viewport.Width / (2 * _camera.Zoom)),
+            (int)(_camera.Position.Y - Game.GraphicsDevice.Viewport.Height / (2 * _camera.Zoom)),
+            (int)(Game.GraphicsDevice.Viewport.Width / _camera.Zoom),
+            (int)(Game.GraphicsDevice.Viewport.Height / _camera.Zoom)
+        );
+        _weatherSystem.Draw(spriteBatch, Game.GraphicsDevice, viewportBounds);
+        
         // Draw building placement preview (in world space with camera transform)
         if (_buildingMenu.IsPlacementMode)
         {
@@ -941,6 +1009,9 @@ public class GameplayState : GameState
         {
             _buildingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice, _player.Money);
         }
+        
+        // Draw event notification (on top of most UI but below menus)
+        _eventNotification.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         
         // Draw pause indicator
         if (_isPaused)
