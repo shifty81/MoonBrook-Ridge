@@ -139,7 +139,8 @@ public class MarriageSystem
         if (!_isMarried) return false;
         
         // 30% chance spouse helps with farm work each day
-        Random rand = new Random(_daysSinceMarriage);
+        // Use combination of marriage day and current day for consistent daily check
+        Random rand = new Random((_daysSinceMarriage * 1000) + GetHashCode());
         return rand.NextDouble() < 0.3;
     }
     
@@ -150,7 +151,7 @@ public class MarriageSystem
     {
         if (!_isMarried || !SpouseHelpsToday()) return SpouseHelpType.None;
         
-        Random rand = new Random(_daysSinceMarriage + 100);
+        Random rand = new Random((_daysSinceMarriage * 1000 + 100) + GetHashCode());
         int helpType = rand.Next(0, 4);
         
         return helpType switch

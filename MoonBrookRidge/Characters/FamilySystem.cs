@@ -44,7 +44,8 @@ public class FamilySystem
         if (CanHaveChild())
         {
             // Random chance for pregnancy/adoption (5% per day after requirements met)
-            Random rand = new Random(currentDay + currentSeason * 28 + currentYear * 112);
+            // Use current date for seed to get consistent daily random check
+            Random rand = new Random(currentDay + currentSeason * 28 + currentYear * 112 + GetHashCode());
             if (rand.NextDouble() < 0.05)
             {
                 AddChild(currentDay, currentSeason, currentYear);
@@ -87,7 +88,8 @@ public class FamilySystem
     private void AddChild(int birthDay, int birthSeason, int birthYear)
     {
         // Determine child name and gender
-        Random rand = new Random(_children.Count + birthDay);
+        // Use stable seed based on birth date and current child count
+        Random rand = new Random((_children.Count * 1000) + birthDay + (birthSeason * 28) + (birthYear * 112));
         bool isBoy = rand.Next(0, 2) == 0;
         
         string childName = GenerateChildName(isBoy, _children.Count);

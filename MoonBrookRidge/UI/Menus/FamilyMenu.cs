@@ -66,7 +66,7 @@ public class FamilyMenu
         
         // Close menu
         if ((keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape)) ||
-            (keyboardState.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F)))
+            (keyboardState.IsKeyDown(Keys.Y) && !_previousKeyboardState.IsKeyDown(Keys.Y)))
         {
             Hide();
         }
@@ -312,7 +312,7 @@ public class FamilyMenu
         }
         
         // Instructions
-        string instructions = "↑↓: Select Child | ←→: Select Action | Enter: Do Action | F/Esc: Close";
+        string instructions = "↑↓: Select Child | ←→: Select Action | Enter: Do Action | Y/Esc: Close";
         Vector2 instructSize = font.MeasureString(instructions);
         spriteBatch.DrawString(font, instructions,
             new Vector2(menuX + MENU_WIDTH / 2 - instructSize.X / 2, menuY + MENU_HEIGHT - PADDING - 10),
@@ -339,13 +339,6 @@ public class FamilyMenu
         
         // Border
         DrawBorder(spriteBatch, x, y, width, height, 1, Color.White);
-        
-        // Label (optional - only if it fits)
-        if (width > 60)
-        {
-            string text = $"{current}/{max}";
-            // Small text rendering would go here if we had a smaller font
-        }
     }
     
     /// <summary>
