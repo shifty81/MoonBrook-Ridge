@@ -311,7 +311,15 @@ public enum QuestObjectiveType
     Craft,            // Craft X items
     Visit,            // Visit a location
     Build,            // Build a structure
-    Kill              // Defeat X enemies (future)
+    Kill,             // Defeat X enemies
+    EnterDungeon,     // Enter a specific dungeon
+    ClearRooms,       // Clear X dungeon rooms
+    CompleteDungeon,  // Complete a full dungeon
+    TamePet,          // Tame a pet
+    ReachSkillLevel,  // Reach a skill level
+    UnlockSkill,      // Unlock a skill
+    LearnSpell,       // Learn a spell
+    CastSpell         // Cast spells X times
 }
 
 /// <summary>

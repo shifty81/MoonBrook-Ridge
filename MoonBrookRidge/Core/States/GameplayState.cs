@@ -1793,6 +1793,85 @@ public class GameplayState : GameState
         };
         quest5.Reward.Items.Add("Starter Pack", 1);
         _questSystem.AddAvailableQuest(quest5);
+        
+        // Quest 6: Dungeon Explorer - Slime Cave
+        var quest6 = new Quest("dungeon_slime", "Slime Cave Expedition", 
+            "Investigate the Slime Cave and clear at least 3 rooms.", "Town Elder");
+        quest6.AddObjective(new QuestObjective("enter_slime_cave", "Enter the Slime Cave", 
+            QuestObjectiveType.EnterDungeon, "SlimeCave", 1));
+        quest6.AddObjective(new QuestObjective("clear_3_rooms", "Clear 3 dungeon rooms", 
+            QuestObjectiveType.ClearRooms, "Any", 3));
+        quest6.Reward = new QuestReward 
+        { 
+            Money = 400, 
+            FriendshipPoints = 0 
+        };
+        quest6.Reward.Items.Add("Iron Sword", 1);
+        quest6.Reward.Items.Add("Health Potion", 5);
+        _questSystem.AddAvailableQuest(quest6);
+        
+        // Quest 7: Pet Companion - Tame Your First Pet
+        var quest7 = new Quest("pet_taming", "A Loyal Companion", 
+            "Find and tame your first pet companion.", "Sarah");
+        quest7.AddObjective(new QuestObjective("tame_pet", "Tame any pet", 
+            QuestObjectiveType.TamePet, "Any", 1));
+        quest7.Reward = new QuestReward 
+        { 
+            Money = 250, 
+            FriendshipPoints = 50, 
+            FriendshipNPC = "Sarah" 
+        };
+        quest7.Reward.Items.Add("Pet Food", 10);
+        quest7.Reward.Items.Add("Pet Toy", 1);
+        _questSystem.AddAvailableQuest(quest7);
+        
+        // Quest 8: Skilled Farmer - Master a Farming Skill
+        var quest8 = new Quest("skill_farming", "Path of the Farmer", 
+            "Reach Farming Level 5 and unlock your first farming skill.", "Emma");
+        quest8.AddObjective(new QuestObjective("farming_level_5", "Reach Farming Level 5", 
+            QuestObjectiveType.ReachSkillLevel, "Farming", 5));
+        quest8.AddObjective(new QuestObjective("unlock_farming_skill", "Unlock any Farming skill", 
+            QuestObjectiveType.UnlockSkill, "Farming", 1));
+        quest8.Reward = new QuestReward 
+        { 
+            Money = 500, 
+            FriendshipPoints = 100, 
+            FriendshipNPC = "Emma" 
+        };
+        quest8.Reward.Items.Add("Quality Fertilizer", 20);
+        _questSystem.AddAvailableQuest(quest8);
+        
+        // Quest 9: Arcane Studies - Learn Magic
+        var quest9 = new Quest("magic_learning", "First Steps into Magic", 
+            "Learn your first spell and cast it successfully.", "Town Mage");
+        quest9.AddObjective(new QuestObjective("learn_spell", "Learn any spell", 
+            QuestObjectiveType.LearnSpell, "Any", 1));
+        quest9.AddObjective(new QuestObjective("cast_spell", "Cast a spell 3 times", 
+            QuestObjectiveType.CastSpell, "Any", 3));
+        quest9.Reward = new QuestReward 
+        { 
+            Money = 300, 
+            FriendshipPoints = 0 
+        };
+        quest9.Reward.Items.Add("Mana Potion", 5);
+        quest9.Reward.Items.Add("Spell Scroll", 1);
+        _questSystem.AddAvailableQuest(quest9);
+        
+        // Quest 10: Dungeon Master - Complete Any Dungeon
+        var quest10 = new Quest("dungeon_complete", "Dungeon Master", 
+            "Complete any dungeon by clearing all rooms and defeating the boss.", "Marcus");
+        quest10.AddObjective(new QuestObjective("complete_dungeon", "Complete a full dungeon", 
+            QuestObjectiveType.CompleteDungeon, "Any", 1));
+        quest10.Reward = new QuestReward 
+        { 
+            Money = 1000, 
+            FriendshipPoints = 100, 
+            FriendshipNPC = "Marcus" 
+        };
+        quest10.Reward.Items.Add("Steel Sword", 1);
+        quest10.Reward.Items.Add("Golden Ring", 1);
+        quest10.Reward.Items.Add("Rare Gem", 3);
+        _questSystem.AddAvailableQuest(quest10);
     }
     
     /// <summary>
