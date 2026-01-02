@@ -444,6 +444,21 @@ Comprehensive guides and references:
 - [x] **Achievements** ⭐ **IMPLEMENTED** - 30 achievements across 8 categories with notification system
 - [ ] Marriage and family system (deferred to future phase)
 
+### Phase 6: Advanced Game Systems ✅ **COMPLETE!**
+- [x] **Magic System** ⭐ **IMPLEMENTED** - 8 spells, mana resource, spell casting mechanics
+- [x] **Alchemy System** ⭐ **IMPLEMENTED** - 10 potion recipes with ingredient-based brewing
+- [x] **Skill Tree System** ⭐ **IMPLEMENTED** - 6 skill categories, 30+ skills, XP and leveling
+- [x] **Combat System** ⭐ **IMPLEMENTED** - 12 weapons, 16 enemy types, boss battles, loot system
+- [x] **Pet/Companion System** ⭐ **IMPLEMENTED** - 10 pet types with taming, abilities, and management
+- [x] **Dungeon System** ⭐ **IMPLEMENTED** - Procedural generation, multi-floor dungeons, 8 dungeon types
+- [x] **Biome System** ⭐ **IMPLEMENTED** - 12 unique biomes with resources and creatures
+- [ ] UI integration for new systems (magic, alchemy, skills, pets)
+- [ ] Combat integration into game loop
+- [ ] Advanced quest system with moral choices and branching
+- [ ] Faction system
+
+See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.
+
 ## 🤝 Contributing
 
 We welcome contributions to MoonBrook Ridge! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
