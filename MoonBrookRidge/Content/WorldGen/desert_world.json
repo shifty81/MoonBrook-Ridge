@@ -1,0 +1,102 @@
+{
+  "Width": 50,
+  "Height": 50,
+  "RandomSeed": 888,
+  "MineEntrance": {
+    "X": 10,
+    "Y": 45
+  },
+  "DefaultTerrain": {
+    "TileWeights": [
+      { "TileType": "Sand", "Weight": 60 },
+      { "TileType": "Sand01", "Weight": 40 }
+    ]
+  },
+  "Biomes": [
+    {
+      "Name": "Central Oasis",
+      "X": 25,
+      "Y": 25,
+      "Width": 12,
+      "Height": 12,
+      "Shape": "circle",
+      "TileWeights": [
+        { "TileType": "Water", "Weight": 70 },
+        { "TileType": "Grass", "Weight": 30 }
+      ]
+    },
+    {
+      "Name": "Grassy Ring Around Oasis",
+      "X": 20,
+      "Y": 20,
+      "Width": 22,
+      "Height": 22,
+      "Shape": "ellipse",
+      "TileWeights": [
+        { "TileType": "Grass", "Weight": 60 },
+        { "TileType": "Grass01", "Weight": 40 }
+      ]
+    },
+    {
+      "Name": "Rocky Outcrop North",
+      "X": 22,
+      "Y": 5,
+      "Width": 8,
+      "Height": 6,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Stone", "Weight": 70 },
+        { "TileType": "Stone01", "Weight": 30 }
+      ]
+    },
+    {
+      "Name": "Rocky Outcrop South",
+      "X": 35,
+      "Y": 42,
+      "Width": 10,
+      "Height": 5,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Stone", "Weight": 70 },
+        { "TileType": "Rock", "Weight": 30 }
+      ]
+    }
+  ],
+  "Paths": [
+    {
+      "Name": "Path to Oasis from West",
+      "StartX": 5,
+      "StartY": 25,
+      "EndX": 20,
+      "EndY": 25,
+      "Width": 2,
+      "TileWeights": [
+        { "TileType": "Dirt", "Weight": 50 },
+        { "TileType": "Dirt01", "Weight": 50 }
+      ]
+    },
+    {
+      "Name": "Path to Oasis from East",
+      "StartX": 37,
+      "StartY": 25,
+      "EndX": 45,
+      "EndY": 25,
+      "Width": 2,
+      "TileWeights": [
+        { "TileType": "Dirt", "Weight": 50 },
+        { "TileType": "Dirt01", "Weight": 50 }
+      ]
+    },
+    {
+      "Name": "Path to Mine",
+      "StartX": 25,
+      "StartY": 37,
+      "EndX": 10,
+      "EndY": 45,
+      "Width": 2,
+      "TileWeights": [
+        { "TileType": "Dirt", "Weight": 100 }
+      ]
+    }
+  ]
+}
