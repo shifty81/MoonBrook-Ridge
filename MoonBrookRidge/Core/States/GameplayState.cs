@@ -58,6 +58,7 @@ public class GameplayState : GameState
     private AchievementNotification _achievementNotification;
     private AchievementMenu _achievementMenu;
     private SettingsMenu _settingsMenu;
+    private Texture2D _pixelTexture; // Shared 1x1 white pixel texture for UI rendering
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
@@ -385,12 +386,14 @@ public class GameplayState : GameState
         // Create a test NPC
         CreateTestNPC();
         
+        // Create shared pixel texture for UI rendering
+        _pixelTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
+        _pixelTexture.SetData(new[] { Color.White });
+        
         // Load achievement and settings UI
-        Texture2D pixel = new Texture2D(Game.GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
-        _achievementMenu.LoadContent(Game.DefaultFont, pixel);
-        _achievementNotification.LoadContent(Game.DefaultFont, pixel);
-        _settingsMenu.LoadContent(Game.DefaultFont, pixel);
+        _achievementMenu.LoadContent(Game.DefaultFont, _pixelTexture);
+        _achievementNotification.LoadContent(Game.DefaultFont, _pixelTexture);
+        _settingsMenu.LoadContent(Game.DefaultFont, _pixelTexture);
         
         // Initialize starter quests
         InitializeQuests();
@@ -1098,9 +1101,8 @@ public class GameplayState : GameState
     private void DrawPauseOverlay(SpriteBatch spriteBatch)
     {
         // Draw semi-transparent overlay
-        Texture2D pixel = CreatePixelTexture();
         Rectangle screen = new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
-        spriteBatch.Draw(pixel, screen, Color.Black * 0.5f);
+        spriteBatch.Draw(_pixelTexture, screen, Color.Black * 0.5f);
         
         // Draw "PAUSED" text
         if (Game.DefaultFont != null)
@@ -1115,13 +1117,6 @@ public class GameplayState : GameState
             spriteBatch.DrawString(Game.DefaultFont, pauseText, textPos + Vector2.One * 2, Color.Black);
             spriteBatch.DrawString(Game.DefaultFont, pauseText, textPos, Color.White);
         }
-    }
-    
-    private Texture2D CreatePixelTexture()
-    {
-        Texture2D texture = new Texture2D(Game.GraphicsDevice, 1, 1);
-        texture.SetData(new[] { Color.White });
-        return texture;
     }
     
     private NPCCharacter GetNearbyNPC()
