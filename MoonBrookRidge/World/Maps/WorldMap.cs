@@ -48,6 +48,17 @@ public class WorldMap
         InitializeMap();
     }
     
+    /// <summary>
+    /// Initialize world from a configuration object
+    /// </summary>
+    public void InitializeFromConfig(WorldGenConfig config)
+    {
+        _width = config.Width;
+        _height = config.Height;
+        _tiles = WorldGenConfigApplier.GenerateWorld(config);
+        MineEntranceGridPosition = new Vector2(config.MineEntrance.X, config.MineEntrance.Y);
+    }
+    
     private void InitializeMap()
     {
         // Create a natural farm scene with forests and water

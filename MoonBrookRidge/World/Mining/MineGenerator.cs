@@ -75,6 +75,14 @@ public class MineGenerator
     }
     
     /// <summary>
+    /// Generate a mine level using configuration
+    /// </summary>
+    public Tile[,] GenerateMineLevelFromConfig(MineGenConfig config, int level)
+    {
+        return MineGenConfigApplier.GenerateMineLevel(config, level);
+    }
+    
+    /// <summary>
     /// Create a rectangular room
     /// </summary>
     private void CreateRoom(Tile[,] tiles, int startX, int startY, int width, int height)
