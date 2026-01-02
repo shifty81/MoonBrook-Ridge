@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.Pets;
 
@@ -122,6 +124,63 @@ public class PetSystem
     }
     
     public List<PetDefinition> GetAvailablePets() => _availablePets;
+    
+    /// <summary>
+    /// Export pet system state for saving
+    /// </summary>
+    public PetsSaveData ExportSaveData()
+    {
+        var petSaves = _ownedPets.Select(p => new PetSaveData
+        {
+            DefinitionId = p.DefinitionId,
+            Name = p.Name,
+            Level = p.Level,
+            Experience = p.Experience,
+            Health = p.Health,
+            MaxHealth = p.MaxHealth,
+            Hunger = p.Hunger,
+            Happiness = p.Happiness,
+            PositionX = p.Position.X,
+            PositionY = p.Position.Y
+        }).ToArray();
+        
+        return new PetsSaveData
+        {
+            OwnedPets = petSaves,
+            ActivePetId = _activePet?.DefinitionId
+        };
+    }
+    
+    /// <summary>
+    /// Import pet system state from save data
+    /// </summary>
+    public void ImportSaveData(PetsSaveData data)
+    {
+        if (data == null) return;
+        
+        _ownedPets.Clear();
+        _activePet = null;
+        
+        if (data.OwnedPets != null)
+        {
+            foreach (var petData in data.OwnedPets)
+            {
+                var definition = _availablePets.Find(p => p.Id == petData.DefinitionId);
+                if (definition != null)
+                {
+                    var pet = new Pet(definition, new Vector2(petData.PositionX, petData.PositionY));
+                    pet.SetSaveData(petData.Name, petData.Level, petData.Experience, 
+                                   petData.Health, petData.MaxHealth, petData.Hunger, petData.Happiness);
+                    _ownedPets.Add(pet);
+                    
+                    if (petData.DefinitionId == data.ActivePetId)
+                    {
+                        SummonPet(pet);
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// <summary>
@@ -283,6 +342,21 @@ public class Pet
         }
         
         return effectiveness;
+    }
+    
+    /// <summary>
+    /// Set pet state from save data
+    /// </summary>
+    public void SetSaveData(string name, int level, float experience, float health, 
+                           float maxHealth, float hunger, float happiness)
+    {
+        Name = name;
+        Level = level;
+        Experience = experience;
+        Health = health;
+        MaxHealth = maxHealth;
+        Hunger = hunger;
+        Happiness = happiness;
     }
 }
 

@@ -174,6 +174,12 @@ public class GameSaveData
     // World data (simplified - just crops for now)
     public WorldSaveData World { get; set; }
     
+    // Phase 6 data
+    public MagicSaveData Magic { get; set; }
+    public SkillsSaveData Skills { get; set; }
+    public PetsSaveData Pets { get; set; }
+    public DungeonProgressData DungeonProgress { get; set; }
+    
     public GameSaveData()
     {
         SaveTime = DateTime.Now;
@@ -191,6 +197,7 @@ public class PlayerSaveData
     public float Hunger { get; set; }
     public float Thirst { get; set; }
     public int Money { get; set; }
+    // Note: Mana is saved in MagicSaveData, not here
 }
 
 public class TimeSaveData
@@ -227,4 +234,73 @@ public class CropSaveData
     public int MaxGrowthStage { get; set; }
     public float HoursGrown { get; set; }
     public float HoursPerStage { get; set; }
+}
+
+/// <summary>
+/// Save data for magic system
+/// </summary>
+public class MagicSaveData
+{
+    public float CurrentMana { get; set; }
+    public float MaxMana { get; set; }
+    public string[] LearnedSpellIds { get; set; }
+}
+
+/// <summary>
+/// Save data for skill tree system
+/// </summary>
+public class SkillsSaveData
+{
+    public int AvailableSkillPoints { get; set; }
+    public SkillCategorySaveData[] Categories { get; set; }
+}
+
+public class SkillCategorySaveData
+{
+    public string CategoryName { get; set; }
+    public int Level { get; set; }
+    public float Experience { get; set; }
+    public string[] UnlockedSkillIds { get; set; }
+}
+
+/// <summary>
+/// Save data for pet system
+/// </summary>
+public class PetsSaveData
+{
+    public PetSaveData[] OwnedPets { get; set; }
+    public string ActivePetId { get; set; }
+}
+
+public class PetSaveData
+{
+    public string DefinitionId { get; set; }
+    public string Name { get; set; }
+    public int Level { get; set; }
+    public float Experience { get; set; }
+    public float Health { get; set; }
+    public float MaxHealth { get; set; }
+    public float Hunger { get; set; }
+    public float Happiness { get; set; }
+    public float PositionX { get; set; }
+    public float PositionY { get; set; }
+}
+
+/// <summary>
+/// Save data for dungeon progress
+/// </summary>
+public class DungeonProgressData
+{
+    public DungeonCompletionData[] CompletedDungeons { get; set; }
+    public bool IsInDungeon { get; set; }
+    public string CurrentDungeonType { get; set; }
+    public int CurrentFloor { get; set; }
+}
+
+public class DungeonCompletionData
+{
+    public string DungeonType { get; set; }
+    public int HighestFloorReached { get; set; }
+    public bool Completed { get; set; }
+    public DateTime FirstCompletionTime { get; set; }
 }

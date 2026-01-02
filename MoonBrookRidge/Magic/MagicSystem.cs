@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.Magic;
 
@@ -101,6 +102,39 @@ public class MagicSystem
     }
     
     public List<Spell> GetAvailableSpells() => _availableSpells;
+    
+    /// <summary>
+    /// Export magic system state for saving
+    /// </summary>
+    public MagicSaveData ExportSaveData()
+    {
+        return new MagicSaveData
+        {
+            CurrentMana = _mana,
+            MaxMana = _maxMana,
+            LearnedSpellIds = _knownSpells.Select(s => s.Id).ToArray()
+        };
+    }
+    
+    /// <summary>
+    /// Import magic system state from save data
+    /// </summary>
+    public void ImportSaveData(MagicSaveData data)
+    {
+        if (data == null) return;
+        
+        _mana = data.CurrentMana;
+        _maxMana = data.MaxMana;
+        
+        _knownSpells.Clear();
+        if (data.LearnedSpellIds != null)
+        {
+            foreach (var spellId in data.LearnedSpellIds)
+            {
+                LearnSpell(spellId);
+            }
+        }
+    }
 }
 
 /// <summary>
