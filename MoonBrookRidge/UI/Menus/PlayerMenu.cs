@@ -236,7 +236,7 @@ public class PlayerMenu : TabbedMenu
         HandleRecipeMouseClick(mouseState, recipes);
     }
     
-    private void HandleRecipeMouseClick(MouseState mouseState, List<CraftingRecipe> recipes)
+    private void HandleRecipeMouseClick(MouseState mouseState, List<Recipe> recipes)
     {
         if (mouseState.LeftButton == ButtonState.Pressed && 
             _previousMouseState.LeftButton == ButtonState.Released)
