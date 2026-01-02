@@ -50,6 +50,97 @@ public class CraftingSystem
         pathRecipe.AddIngredient("Stone", 3);
         pathRecipe.SetOutput("Stone Path", 1);
         _recipes.Add("Stone Path", pathRecipe);
+        
+        // NEW RECIPES - Tools & Equipment
+        var copperAxe = new Recipe("Copper Axe");
+        copperAxe.AddIngredient("Wood", 5);
+        copperAxe.AddIngredient("Copper Ore", 10);
+        copperAxe.SetOutput("Copper Axe", 1);
+        _recipes.Add("Copper Axe", copperAxe);
+        
+        var copperPickaxe = new Recipe("Copper Pickaxe");
+        copperPickaxe.AddIngredient("Wood", 5);
+        copperPickaxe.AddIngredient("Copper Ore", 10);
+        copperPickaxe.SetOutput("Copper Pickaxe", 1);
+        _recipes.Add("Copper Pickaxe", copperPickaxe);
+        
+        var sprinkler = new Recipe("Sprinkler");
+        sprinkler.AddIngredient("Iron Bar", 1);
+        sprinkler.AddIngredient("Copper Bar", 1);
+        sprinkler.SetOutput("Sprinkler", 1);
+        _recipes.Add("Sprinkler", sprinkler);
+        
+        // NEW RECIPES - Food Processing
+        var flour = new Recipe("Flour");
+        flour.AddIngredient("Wheat", 1);
+        flour.SetOutput("Flour", 1);
+        _recipes.Add("Flour", flour);
+        
+        var bread = new Recipe("Bread");
+        bread.AddIngredient("Flour", 1);
+        bread.SetOutput("Wheat Bread", 1);
+        _recipes.Add("Bread", bread);
+        
+        var salad = new Recipe("Salad");
+        salad.AddIngredient("Lettuce", 1);
+        salad.AddIngredient("Tomato", 1);
+        salad.AddIngredient("Carrot", 1);
+        salad.SetOutput("Fresh Salad", 1);
+        _recipes.Add("Salad", salad);
+        
+        var vegStew = new Recipe("Vegetable Stew");
+        vegStew.AddIngredient("Potato", 2);
+        vegStew.AddIngredient("Carrot", 1);
+        vegStew.AddIngredient("Cabbage", 1);
+        vegStew.SetOutput("Vegetable Stew", 1);
+        _recipes.Add("Vegetable Stew", vegStew);
+        
+        var pumpkinSoup = new Recipe("Pumpkin Soup");
+        pumpkinSoup.AddIngredient("Pumpkin", 1);
+        pumpkinSoup.AddIngredient("Milk", 1);
+        pumpkinSoup.SetOutput("Pumpkin Soup", 1);
+        _recipes.Add("Pumpkin Soup", pumpkinSoup);
+        
+        var berryJam = new Recipe("Berry Jam");
+        berryJam.AddIngredient("Strawberry", 3);
+        berryJam.SetOutput("Strawberry Jam", 1);
+        _recipes.Add("Berry Jam", berryJam);
+        
+        // NEW RECIPES - Decorations
+        var woodenSign = new Recipe("Wooden Sign");
+        woodenSign.AddIngredient("Wood", 5);
+        woodenSign.SetOutput("Wooden Sign", 1);
+        _recipes.Add("Wooden Sign", woodenSign);
+        
+        var torch = new Recipe("Torch");
+        torch.AddIngredient("Wood", 1);
+        torch.AddIngredient("Coal", 1);
+        torch.SetOutput("Torch", 5);
+        _recipes.Add("Torch", torch);
+        
+        var flowerPot = new Recipe("Flower Pot");
+        flowerPot.AddIngredient("Clay", 3);
+        flowerPot.SetOutput("Flower Pot", 1);
+        _recipes.Add("Flower Pot", flowerPot);
+        
+        // NEW RECIPES - Advanced Materials
+        var ironBar = new Recipe("Iron Bar");
+        ironBar.AddIngredient("Iron Ore", 5);
+        ironBar.AddIngredient("Coal", 1);
+        ironBar.SetOutput("Iron Bar", 1);
+        _recipes.Add("Iron Bar", ironBar);
+        
+        var copperBar = new Recipe("Copper Bar");
+        copperBar.AddIngredient("Copper Ore", 5);
+        copperBar.AddIngredient("Coal", 1);
+        copperBar.SetOutput("Copper Bar", 1);
+        _recipes.Add("Copper Bar", copperBar);
+        
+        var goldBar = new Recipe("Gold Bar");
+        goldBar.AddIngredient("Gold Ore", 5);
+        goldBar.AddIngredient("Coal", 1);
+        goldBar.SetOutput("Gold Bar", 1);
+        _recipes.Add("Gold Bar", goldBar);
     }
     
     public bool CanCraft(string recipeName, InventorySystem inventory)

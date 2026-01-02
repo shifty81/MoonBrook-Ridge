@@ -49,6 +49,14 @@ public static class HarvestFactory
             "kale" => new HarvestItem("Kale", 55, 35, quality),
             "parsnip" => new HarvestItem("Parsnip", 28, 20, quality),
             "radish" => new HarvestItem("Radish", 20, 12, quality),
+            // New crops
+            "strawberry" => new HarvestItem("Strawberry", 65, 45, quality),
+            "lettuce" => new HarvestItem("Lettuce", 32, 18, quality),
+            "tomato" => new HarvestItem("Tomato", 70, 55, quality),
+            "corn" => new HarvestItem("Corn", 85, 65, quality),
+            "melon" => new HarvestItem("Melon", 95, 75, quality),
+            "grape" => new HarvestItem("Grape", 90, 70, quality),
+            "winter root" => new HarvestItem("Winter Root", 48, 30, quality),
             _ => new HarvestItem("Unknown Crop", 10, 5, quality)
         };
         

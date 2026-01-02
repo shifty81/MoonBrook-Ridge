@@ -45,6 +45,17 @@ public static class SeedFactory
             "kale seeds" => new Seed("Kale Seeds", "kale", 6, 2.2f, "Spring/Fall", 35, 17),
             "parsnip seeds" => new Seed("Parsnip Seeds", "parsnip", 6, 1.0f, "Spring", 20, 10),
             "radish seeds" => new Seed("Radish Seeds", "radish", 6, 0.8f, "Summer", 12, 6),
+            // New crops - Spring
+            "strawberry seeds" => new Seed("Strawberry Seeds", "strawberry", 6, 2.0f, "Spring", 45, 22),
+            "lettuce seeds" => new Seed("Lettuce Seeds", "lettuce", 6, 0.9f, "Spring", 18, 9),
+            // New crops - Summer
+            "tomato seeds" => new Seed("Tomato Seeds", "tomato", 6, 2.8f, "Summer", 55, 27),
+            "corn seeds" => new Seed("Corn Seeds", "corn", 6, 3.2f, "Summer", 65, 32),
+            "melon seeds" => new Seed("Melon Seeds", "melon", 6, 3.5f, "Summer", 75, 37),
+            // New crops - Fall
+            "grape seeds" => new Seed("Grape Seeds", "grape", 6, 2.7f, "Fall", 70, 35),
+            // New crops - Winter (greenhouse only)
+            "winter root seeds" => new Seed("Winter Root Seeds", "winter root", 6, 1.5f, "Winter", 30, 15),
             _ => null
         };
     }
@@ -63,7 +74,15 @@ public static class SeedFactory
             GetSeed("cauliflower seeds"),
             GetSeed("kale seeds"),
             GetSeed("parsnip seeds"),
-            GetSeed("radish seeds")
+            GetSeed("radish seeds"),
+            // New seeds
+            GetSeed("strawberry seeds"),
+            GetSeed("lettuce seeds"),
+            GetSeed("tomato seeds"),
+            GetSeed("corn seeds"),
+            GetSeed("melon seeds"),
+            GetSeed("grape seeds"),
+            GetSeed("winter root seeds")
         };
     }
 }

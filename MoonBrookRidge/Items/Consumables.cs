@@ -73,6 +73,34 @@ public static class ConsumableDatabase
             { SellPrice = 30, BuyPrice = 60 },
         new FoodItem("Cheese", hungerRestored: 35f, energyRestored: 12f) 
             { SellPrice = 60, BuyPrice = 120 },
+        
+        // NEW FOODS - Fresh produce
+        new FoodItem("Strawberry", hungerRestored: 22f, energyRestored: 9f)
+            { SellPrice = 35, BuyPrice = 70 },
+        new FoodItem("Lettuce", hungerRestored: 12f, energyRestored: 4f)
+            { SellPrice = 18, BuyPrice = 36 },
+        new FoodItem("Melon", hungerRestored: 28f, energyRestored: 12f)
+            { SellPrice = 45, BuyPrice = 90 },
+        new FoodItem("Grape", hungerRestored: 16f, energyRestored: 7f)
+            { SellPrice = 32, BuyPrice = 64 },
+        
+        // NEW FOODS - Cooked dishes
+        new FoodItem("Fresh Salad", hungerRestored: 50f, energyRestored: 20f, healthRestored: 8)
+            { SellPrice = 90, BuyPrice = 180 },
+        new FoodItem("Pumpkin Soup", hungerRestored: 58f, energyRestored: 28f, healthRestored: 12)
+            { SellPrice = 130, BuyPrice = 260 },
+        new FoodItem("Strawberry Jam", hungerRestored: 38f, energyRestored: 18f)
+            { SellPrice = 80, BuyPrice = 160 },
+        new FoodItem("Grilled Corn", hungerRestored: 42f, energyRestored: 22f)
+            { SellPrice = 75, BuyPrice = 150 },
+        new FoodItem("Tomato Soup", hungerRestored: 48f, energyRestored: 24f, healthRestored: 8)
+            { SellPrice = 95, BuyPrice = 190 },
+        new FoodItem("Roasted Vegetables", hungerRestored: 65f, energyRestored: 30f, healthRestored: 15)
+            { SellPrice = 140, BuyPrice = 280 },
+        new FoodItem("Fish Sandwich", hungerRestored: 62f, energyRestored: 32f, healthRestored: 18)
+            { SellPrice = 160, BuyPrice = 320 },
+        new FoodItem("Fruit Salad", hungerRestored: 52f, energyRestored: 26f, healthRestored: 10)
+            { SellPrice = 110, BuyPrice = 220 },
     };
     
     public static DrinkItem[] Drinks = 
