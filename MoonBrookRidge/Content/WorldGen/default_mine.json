@@ -1,0 +1,32 @@
+{
+  "Width": 40,
+  "Height": 40,
+  "RandomSeedBase": 100,
+  "Rooms": {
+    "BaseCount": 3,
+    "CountPerLevel": 1,
+    "MinWidth": 4,
+    "MaxWidth": 8,
+    "MinHeight": 4,
+    "MaxHeight": 8,
+    "MarginFromEdge": 5
+  },
+  "Tunnels": {
+    "Width": 2,
+    "RandomTunnelsPerLevel": 1
+  },
+  "Entrance": {
+    "Position": "top-center",
+    "Width": 5,
+    "Height": 4
+  },
+  "Exit": {
+    "Position": "bottom-center",
+    "Width": 5,
+    "Height": 4
+  },
+  "TileTypes": {
+    "WallTile": "Stone",
+    "FloorTile": "Dirt"
+  }
+}

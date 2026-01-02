@@ -1,0 +1,119 @@
+{
+  "Width": 50,
+  "Height": 50,
+  "RandomSeed": 42,
+  "MineEntrance": {
+    "X": 10,
+    "Y": 40
+  },
+  "DefaultTerrain": {
+    "TileWeights": [
+      { "TileType": "Grass", "Weight": 40 },
+      { "TileType": "Grass01", "Weight": 25 },
+      { "TileType": "Grass02", "Weight": 20 },
+      { "TileType": "Grass03", "Weight": 15 }
+    ]
+  },
+  "Biomes": [
+    {
+      "Name": "Central Farm Area",
+      "X": 20,
+      "Y": 20,
+      "Width": 15,
+      "Height": 15,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Grass", "Weight": 50 },
+        { "TileType": "Grass01", "Weight": 30 },
+        { "TileType": "Grass02", "Weight": 20 }
+      ]
+    },
+    {
+      "Name": "Pond",
+      "X": 40,
+      "Y": 10,
+      "Width": 10,
+      "Height": 10,
+      "Shape": "ellipse",
+      "TileWeights": [
+        { "TileType": "Water", "Weight": 100 }
+      ]
+    },
+    {
+      "Name": "Beach North",
+      "X": 33,
+      "Y": 5,
+      "Width": 2,
+      "Height": 10,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Sand", "Weight": 50 },
+        { "TileType": "Sand01", "Weight": 50 }
+      ]
+    },
+    {
+      "Name": "Beach East",
+      "X": 45,
+      "Y": 5,
+      "Width": 2,
+      "Height": 10,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Sand", "Weight": 50 },
+        { "TileType": "Sand01", "Weight": 50 }
+      ]
+    },
+    {
+      "Name": "Beach West",
+      "X": 35,
+      "Y": 3,
+      "Width": 10,
+      "Height": 2,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Sand", "Weight": 50 },
+        { "TileType": "Sand01", "Weight": 50 }
+      ]
+    },
+    {
+      "Name": "Beach South",
+      "X": 35,
+      "Y": 15,
+      "Width": 10,
+      "Height": 2,
+      "Shape": "rectangle",
+      "TileWeights": [
+        { "TileType": "Sand", "Weight": 50 },
+        { "TileType": "Sand01", "Weight": 50 }
+      ]
+    }
+  ],
+  "Paths": [
+    {
+      "Name": "North Path",
+      "StartX": 27,
+      "StartY": 15,
+      "EndX": 27,
+      "EndY": 20,
+      "Width": 2,
+      "TileWeights": [
+        { "TileType": "Dirt", "Weight": 33 },
+        { "TileType": "Dirt01", "Weight": 33 },
+        { "TileType": "Dirt02", "Weight": 34 }
+      ]
+    },
+    {
+      "Name": "South Path",
+      "StartX": 27,
+      "StartY": 35,
+      "EndX": 27,
+      "EndY": 40,
+      "Width": 2,
+      "TileWeights": [
+        { "TileType": "Dirt", "Weight": 33 },
+        { "TileType": "Dirt01", "Weight": 33 },
+        { "TileType": "Dirt02", "Weight": 34 }
+      ]
+    }
+  ]
+}
