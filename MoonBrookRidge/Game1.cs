@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MoonBrookRidge.Core.States;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge;
 
@@ -14,6 +15,8 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private StateManager _stateManager;
     private SpriteFont _defaultFont;
+    private AudioManager _audioManager;
+    private AchievementSystem _achievementSystem;
 
     public Game1()
     {
@@ -31,6 +34,13 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
+        // Initialize audio system
+        _audioManager = new AudioManager();
+        AudioHelper.Initialize(_audioManager);
+        
+        // Initialize achievement system
+        _achievementSystem = new AchievementSystem();
+        
         // Initialize state manager
         _stateManager = new StateManager(this);
         
@@ -74,4 +84,6 @@ public class Game1 : Game
     public SpriteBatch SpriteBatch => _spriteBatch;
     public SpriteFont DefaultFont => _defaultFont;
     public StateManager StateManager => _stateManager;
+    public AudioManager AudioManager => _audioManager;
+    public AchievementSystem AchievementSystem => _achievementSystem;
 }

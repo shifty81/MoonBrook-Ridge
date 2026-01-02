@@ -54,6 +54,12 @@ public class GameplayState : GameState
     private FishingManager _fishingManager;
     private BuildingManager _buildingManager;
     private BuildingMenu _buildingMenu;
+    private AchievementSystem _achievementSystem;
+    private AchievementNotification _achievementNotification;
+    private AchievementMenu _achievementMenu;
+    private SettingsMenu _settingsMenu;
+    // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
+    private Texture2D _pixelTexture;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
@@ -142,6 +148,20 @@ public class GameplayState : GameState
         
         // Initialize NPC manager
         _npcManager = new NPCManager();
+        
+        // Initialize achievement system from Game1
+        _achievementSystem = Game.AchievementSystem;
+        _achievementNotification = new AchievementNotification();
+        _achievementMenu = new AchievementMenu(_achievementSystem);
+        
+        // Subscribe to achievement unlocks
+        _achievementSystem.OnAchievementUnlocked += (achievement) =>
+        {
+            _achievementNotification.ShowNotification(achievement);
+        };
+        
+        // Initialize settings menu
+        _settingsMenu = new SettingsMenu(Game.AudioManager);
         
         // Initialize save system
         _saveSystem = new SaveSystem();
@@ -367,6 +387,15 @@ public class GameplayState : GameState
         // Create a test NPC
         CreateTestNPC();
         
+        // Create shared pixel texture for UI rendering
+        _pixelTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
+        _pixelTexture.SetData(new[] { Color.White });
+        
+        // Load achievement and settings UI
+        _achievementMenu.LoadContent(Game.DefaultFont, _pixelTexture);
+        _achievementNotification.LoadContent(Game.DefaultFont, _pixelTexture);
+        _settingsMenu.LoadContent(Game.DefaultFont, _pixelTexture);
+        
         // Initialize starter quests
         InitializeQuests();
     }
@@ -423,6 +452,22 @@ public class GameplayState : GameState
             return; // Don't update game while in building menu
         }
         
+        if (_achievementMenu.IsVisible)
+        {
+            var keyState = Keyboard.GetState();
+            _achievementMenu.Update(gameTime, keyState);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in achievement menu
+        }
+        
+        if (_settingsMenu.IsVisible)
+        {
+            var keyState = Keyboard.GetState();
+            _settingsMenu.Update(gameTime, keyState);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in settings menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -456,6 +501,22 @@ public class GameplayState : GameState
         if (keyboardState.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F))
         {
             _questMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for achievement menu (A key for "achievements") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.A) && !_previousKeyboardState.IsKeyDown(Keys.A))
+        {
+            _achievementMenu.IsVisible = true;
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for settings menu (O key for "options") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.O) && !_previousKeyboardState.IsKeyDown(Keys.O))
+        {
+            _settingsMenu.IsVisible = true;
             _previousKeyboardState = keyboardState;
             return;
         }
@@ -547,6 +608,9 @@ public class GameplayState : GameState
         
         // Update HUD
         _hud.Update(gameTime, _player, _timeSystem);
+        
+        // Update achievement notification
+        _achievementNotification.Update(gameTime);
         
         // Check for sleep time (player exhaustion at 2 AM)
         if (_timeSystem.TimeOfDay >= 26f && _player.Energy < 10f)
@@ -1010,8 +1074,21 @@ public class GameplayState : GameState
             _buildingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice, _player.Money);
         }
         
+        if (_achievementMenu.IsVisible)
+        {
+            _achievementMenu.Draw(spriteBatch, Game.GraphicsDevice);
+        }
+        
+        if (_settingsMenu.IsVisible)
+        {
+            _settingsMenu.Draw(spriteBatch, Game.GraphicsDevice);
+        }
+        
         // Draw event notification (on top of most UI but below menus)
         _eventNotification.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        
+        // Draw achievement notification (on top of events)
+        _achievementNotification.Draw(spriteBatch, Game.GraphicsDevice);
         
         // Draw pause indicator
         if (_isPaused)
@@ -1025,9 +1102,8 @@ public class GameplayState : GameState
     private void DrawPauseOverlay(SpriteBatch spriteBatch)
     {
         // Draw semi-transparent overlay
-        Texture2D pixel = CreatePixelTexture();
         Rectangle screen = new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
-        spriteBatch.Draw(pixel, screen, Color.Black * 0.5f);
+        spriteBatch.Draw(_pixelTexture, screen, Color.Black * 0.5f);
         
         // Draw "PAUSED" text
         if (Game.DefaultFont != null)
@@ -1044,13 +1120,6 @@ public class GameplayState : GameState
         }
     }
     
-    private Texture2D CreatePixelTexture()
-    {
-        Texture2D texture = new Texture2D(Game.GraphicsDevice, 1, 1);
-        texture.SetData(new[] { Color.White });
-        return texture;
-    }
-    
     private NPCCharacter GetNearbyNPC()
     {
         const float GIFT_DISTANCE = 64f; // Distance at which player can give gifts
@@ -1059,224 +1128,28 @@ public class GameplayState : GameState
     
     private void CreateTestNPC()
     {
-        // Create and add all NPCs
-        _npcManager.AddNPC(CreateEmma());
-        _npcManager.AddNPC(CreateMarcus());
-        _npcManager.AddNPC(CreateLily());
-        _npcManager.AddNPC(CreateOliver());
+        // NPC starting positions (in world coordinates)
+        // Positioned around the town/farm area to provide good coverage
+        const float EMMA_X = 600f, EMMA_Y = 400f;       // Emma (Farmer) - Farm area
+        const float MARCUS_X = 400f, MARCUS_Y = 600f;   // Marcus (Blacksmith) - Workshop area
+        const float LILY_X = 800f, LILY_Y = 350f;       // Lily (Merchant) - Shop area
+        const float OLIVER_X = 350f, OLIVER_Y = 250f;   // Oliver (Fisherman) - Near water
+        const float SARAH_X = 500f, SARAH_Y = 150f;     // Sarah (Doctor) - Clinic area
+        const float JACK_X = 700f, JACK_Y = 300f;       // Jack (Carpenter) - Workshop area
+        const float MAYA_X = 250f, MAYA_Y = 350f;       // Maya (Artist) - Art studio area
+        
+        // Create and add all NPCs using NPCFactory
+        _npcManager.AddNPC(NPCFactory.CreateEmma(new Vector2(EMMA_X, EMMA_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateMarcus(new Vector2(MARCUS_X, MARCUS_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateLily(new Vector2(LILY_X, LILY_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateOliver(new Vector2(OLIVER_X, OLIVER_Y)));
+        
+        // Add new NPCs from Phase 5
+        _npcManager.AddNPC(NPCFactory.CreateSarah(new Vector2(SARAH_X, SARAH_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateJack(new Vector2(JACK_X, JACK_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateMaya(new Vector2(MAYA_X, MAYA_Y)));
     }
     
-    private NPCCharacter CreateEmma()
-    {
-        // Create Emma - the farmer
-        var emma = new NPCCharacter("Emma", new Vector2(600, 400));
-        
-        // Add a daily schedule for Emma
-        emma.Schedule.AddScheduleEntry(6.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(600, 400), 
-            LocationName = "Home",
-            Activity = "Waking up"
-        });
-        emma.Schedule.AddScheduleEntry(9.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(700, 300), 
-            LocationName = "Town Square",
-            Activity = "Shopping"
-        });
-        emma.Schedule.AddScheduleEntry(14.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(500, 500), 
-            LocationName = "Farm",
-            Activity = "Working"
-        });
-        emma.Schedule.AddScheduleEntry(18.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(600, 400), 
-            LocationName = "Home",
-            Activity = "Relaxing"
-        });
-        
-        // Create Emma's dialogue tree
-        var emmaGreeting = new DialogueNode("Hello there! Welcome to MoonBrook Ridge!", "Emma");
-        var emmaOption1 = new DialogueNode("I'm Emma, I've been farming here for years. How can I help you?", "Emma");
-        var emmaOption2 = new DialogueNode("The weather has been great for crops lately!", "Emma");
-        
-        emmaGreeting.AddOption("Who are you?", emmaOption1);
-        emmaGreeting.AddOption("How's the farm?", emmaOption2);
-        
-        var emmaDialogue = new DialogueTree(emmaGreeting);
-        emma.AddDialogueTree("greeting", emmaDialogue);
-        
-        // Set Emma's gift preferences (she's a farmer who loves crops and flowers)
-        emma.SetGiftPreferences(
-            loved: new List<string> { "Sunflower", "Pumpkin", "Cauliflower" },
-            liked: new List<string> { "Wheat", "Carrot", "Potato", "Cabbage" },
-            disliked: new List<string> { "Stone", "Wood" },
-            hated: new List<string> { "Coal", "Copper Ore" }
-        );
-        
-        return emma;
-    }
-    
-    private NPCCharacter CreateMarcus()
-    {
-        // Create Marcus - the blacksmith/miner
-        var marcus = new NPCCharacter("Marcus", new Vector2(400, 600));
-        
-        // Marcus's schedule - focused on mining and metalwork
-        marcus.Schedule.AddScheduleEntry(7.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(400, 600), 
-            LocationName = "Workshop",
-            Activity = "Opening shop"
-        });
-        marcus.Schedule.AddScheduleEntry(10.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(300, 700), 
-            LocationName = "Mine",
-            Activity = "Mining"
-        });
-        marcus.Schedule.AddScheduleEntry(16.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(400, 600), 
-            LocationName = "Workshop",
-            Activity = "Smithing"
-        });
-        marcus.Schedule.AddScheduleEntry(20.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(450, 550), 
-            LocationName = "Tavern",
-            Activity = "Relaxing"
-        });
-        
-        // Create Marcus's dialogue tree
-        var marcusGreeting = new DialogueNode("Greetings, traveler. Need any tools repaired?", "Marcus");
-        var marcusOption1 = new DialogueNode("I'm Marcus, the town blacksmith. I also spend time in the mines gathering ore.", "Marcus");
-        var marcusOption2 = new DialogueNode("The mines have been yielding good ore lately. Dangerous though!", "Marcus");
-        
-        marcusGreeting.AddOption("Who are you?", marcusOption1);
-        marcusGreeting.AddOption("How's the mining?", marcusOption2);
-        
-        var marcusDialogue = new DialogueTree(marcusGreeting);
-        marcus.AddDialogueTree("greeting", marcusDialogue);
-        
-        // Marcus loves minerals and ores, dislikes farm produce
-        marcus.SetGiftPreferences(
-            loved: new List<string> { "Gold Ore", "Diamond", "Emerald" },
-            liked: new List<string> { "Copper Ore", "Iron Ore", "Coal", "Stone" },
-            disliked: new List<string> { "Wheat", "Carrot", "Cabbage" },
-            hated: new List<string> { "Sunflower" }
-        );
-        
-        return marcus;
-    }
-    
-    private NPCCharacter CreateLily()
-    {
-        // Create Lily - the merchant/shopkeeper
-        var lily = new NPCCharacter("Lily", new Vector2(800, 350));
-        
-        // Lily's schedule - manages the shop
-        lily.Schedule.AddScheduleEntry(8.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(800, 350), 
-            LocationName = "Shop",
-            Activity = "Opening shop"
-        });
-        lily.Schedule.AddScheduleEntry(12.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(750, 400), 
-            LocationName = "Market",
-            Activity = "Buying supplies"
-        });
-        lily.Schedule.AddScheduleEntry(15.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(800, 350), 
-            LocationName = "Shop",
-            Activity = "Managing shop"
-        });
-        lily.Schedule.AddScheduleEntry(19.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(850, 300), 
-            LocationName = "Home",
-            Activity = "Resting"
-        });
-        
-        // Create Lily's dialogue tree
-        var lilyGreeting = new DialogueNode("Welcome! Looking for anything special today?", "Lily");
-        var lilyOption1 = new DialogueNode("I'm Lily! I run the general store here. I sell all sorts of goods!", "Lily");
-        var lilyOption2 = new DialogueNode("Business is booming! Everyone needs seeds and supplies.", "Lily");
-        
-        lilyGreeting.AddOption("Who are you?", lilyOption1);
-        lilyGreeting.AddOption("How's business?", lilyOption2);
-        
-        var lilyDialogue = new DialogueTree(lilyGreeting);
-        lily.AddDialogueTree("greeting", lilyDialogue);
-        
-        // Lily loves valuable items and gems, likes crafted goods
-        lily.SetGiftPreferences(
-            loved: new List<string> { "Diamond", "Emerald", "Gold Ore" },
-            liked: new List<string> { "Copper Ore", "Fish", "Wood", "Stone" },
-            disliked: new List<string> { "Coal" },
-            hated: new List<string> { "Trash" }
-        );
-        
-        return lily;
-    }
-    
-    private NPCCharacter CreateOliver()
-    {
-        // Create Oliver - the fisherman
-        var oliver = new NPCCharacter("Oliver", new Vector2(350, 250));
-        
-        // Oliver's schedule - fishing focused
-        oliver.Schedule.AddScheduleEntry(5.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(350, 250), 
-            LocationName = "Dock",
-            Activity = "Preparing boat"
-        });
-        oliver.Schedule.AddScheduleEntry(6.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(300, 200), 
-            LocationName = "Lake",
-            Activity = "Fishing"
-        });
-        oliver.Schedule.AddScheduleEntry(13.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(350, 250), 
-            LocationName = "Dock",
-            Activity = "Sorting catch"
-        });
-        oliver.Schedule.AddScheduleEntry(17.0f, new ScheduleLocation 
-        { 
-            Position = new Vector2(400, 300), 
-            LocationName = "Beach",
-            Activity = "Relaxing"
-        });
-        
-        // Create Oliver's dialogue tree
-        var oliverGreeting = new DialogueNode("Ahoy! The fish are biting today!", "Oliver");
-        var oliverOption1 = new DialogueNode("Name's Oliver. Been fishing these waters my whole life.", "Oliver");
-        var oliverOption2 = new DialogueNode("The lake's been generous lately. Caught a huge bass yesterday!", "Oliver");
-        
-        oliverGreeting.AddOption("Who are you?", oliverOption1);
-        oliverGreeting.AddOption("How's the fishing?", oliverOption2);
-        
-        var oliverDialogue = new DialogueTree(oliverGreeting);
-        oliver.AddDialogueTree("greeting", oliverDialogue);
-        
-        // Oliver loves fish and seafood-related items, dislikes mining items
-        oliver.SetGiftPreferences(
-            loved: new List<string> { "Salmon", "Tuna", "Lobster" },
-            liked: new List<string> { "Fish", "Seaweed", "Crab" },
-            disliked: new List<string> { "Coal", "Stone", "Copper Ore" },
-            hated: new List<string> { "Iron Ore" }
-        );
-        
-        return oliver;
-    }
     
     private void InitializeQuests()
     {

@@ -48,11 +48,14 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **NPC Schedules**: NPCs follow daily routines and move around the world ✅
 - **Branching Dialogues**: Multiple conversation paths based on friendship level ✅
 - **Pathfinding**: NPCs automatically navigate to scheduled locations ✅
-- **Unique NPCs**: 4 NPCs with distinct personalities and gift preferences ✅ **NEW**
+- **Unique NPCs**: 7 NPCs with distinct personalities and gift preferences ✅ **EXPANDED!**
   - **Emma** (Farmer): Loves crops and flowers
   - **Marcus** (Blacksmith): Loves minerals and ores
   - **Lily** (Merchant): Loves gems and valuable items
   - **Oliver** (Fisherman): Loves fish and seafood
+  - **Sarah** (Doctor): Loves medicinal items and herbs ⭐ **NEW!**
+  - **Jack** (Carpenter): Loves wood and crafted materials ⭐ **NEW!**
+  - **Maya** (Artist): Loves flowers and beautiful things ⭐ **NEW!**
 
 ### Events & Festivals System ⭐ **NEW**
 - **8 Seasonal Festivals**:
@@ -105,8 +108,26 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Building Menu**: Construct and place buildings on your farm (H key) ⭐ **NEW**
 - **Gift Menu**: Give gifts to NPCs to build relationships (G key) ⭐ **NEW**
 - **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
+- **Achievement Menu**: View all 30 achievements and progress (A key) ⭐ **NEW!**
+- **Settings Menu**: Configure audio and game options (O key) ⭐ **NEW!**
 - **Event Notifications**: Visual notifications for festivals and special events ⭐ **NEW**
+- **Achievement Notifications**: Toast-style notifications for unlocked achievements ⭐ **NEW!**
 - **Dialogue System**: Interactive conversation interface with radial wheel
+
+### Achievement System ⭐ **NEW!**
+- **30 Achievements** across 8 categories: Farming, Fishing, Mining, Social, Crafting, Wealth, Exploration, Survival
+- **Progress Tracking**: Incremental achievements with visible progress bars
+- **Category Filtering**: View achievements by category or see all at once
+- **Toast Notifications**: Non-intrusive pop-ups when achievements are unlocked
+- **Completion Tracking**: See your overall achievement completion percentage
+
+### Audio System ⭐ **NEW!**
+- **Full Audio Management**: Complete system for music and sound effects
+- **Volume Control**: Separate volume sliders for music and SFX (0-100%)
+- **Audio Toggle**: Enable/disable music and sound effects independently
+- **22+ Sound Effects**: Predefined sounds for tools, UI, actions, world, and NPCs
+- **15+ Music Tracks**: Seasonal music, location themes, and event music
+- **Ready for Content**: Audio infrastructure complete, awaiting audio file integration
 
 ## 🎨 Art Assets
 
@@ -335,6 +356,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Open Shop Menu** ⭐ **NEW** | **B** |
 | **Open Building Menu** ⭐ **NEW** | **H** |
 | **Gift to NPC** ⭐ **NEW** | **G** |
+| **Open Achievement Menu** ⭐ **NEW!** | **A** |
+| **Open Settings Menu** ⭐ **NEW!** | **O** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
@@ -412,14 +435,14 @@ Comprehensive guides and references:
 - [x] **Building construction** ⭐ **IMPLEMENTED** - 8 building types available
 - [x] **Events and festivals** ⭐ **IMPLEMENTED** - 8 seasonal festivals with notifications
 
-### Phase 5: Polish & Content 🚧 **IN PROGRESS**
-- [ ] Sound effects and music
+### Phase 5: Polish & Content ✅ **COMPLETE!**
+- [x] **Audio system** ⭐ **IMPLEMENTED** - Complete audio management for music and SFX (ready for audio files)
 - [x] **Particle effects** ⭐ **IMPLEMENTED** - Visual effects for all tool actions
 - [x] **Weather effects** ⭐ **IMPLEMENTED** - Dynamic weather system with seasonal patterns
-- [ ] More crops, items, and recipes
-- [ ] Multiple NPCs with unique personalities
-- [ ] Marriage and family system
-- [ ] Achievements
+- [x] **More crops, items, and recipes** ⭐ **IMPLEMENTED** - 7 new crops, 17 new recipes, 12 new food items
+- [x] **Multiple NPCs with unique personalities** ⭐ **IMPLEMENTED** - 7 total NPCs (Emma, Marcus, Lily, Oliver, Sarah, Jack, Maya)
+- [x] **Achievements** ⭐ **IMPLEMENTED** - 30 achievements across 8 categories with notification system
+- [ ] Marriage and family system (deferred to future phase)
 
 ## 🤝 Contributing
 
