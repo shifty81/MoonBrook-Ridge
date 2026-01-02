@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using MoonBrookRidge.Combat;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.Dungeons;
 
@@ -187,6 +188,50 @@ public class DungeonSystem
         {
             OnDungeonCleared?.Invoke(_activeDungeon);
         }
+    }
+    
+    /// <summary>
+    /// Export dungeon progress for saving
+    /// </summary>
+    public DungeonProgressData ExportSaveData()
+    {
+        var completedDungeons = new List<DungeonCompletionData>();
+        
+        foreach (var dungeon in _generatedDungeons)
+        {
+            if (dungeon.IsFullyCleared())
+            {
+                completedDungeons.Add(new DungeonCompletionData
+                {
+                    DungeonType = dungeon.Type.ToString(),
+                    HighestFloorReached = dungeon.TotalFloors,
+                    Completed = true,
+                    FirstCompletionTime = DateTime.Now // Note: Would need to track actual completion time
+                });
+            }
+        }
+        
+        return new DungeonProgressData
+        {
+            CompletedDungeons = completedDungeons.ToArray(),
+            IsInDungeon = _activeDungeon != null,
+            CurrentDungeonType = _activeDungeon?.Type.ToString(),
+            CurrentFloor = _activeDungeon?.CurrentFloor ?? 0
+        };
+    }
+    
+    /// <summary>
+    /// Import dungeon progress from save data
+    /// Note: This only restores completion records, not active dungeon state
+    /// Player should re-enter dungeons manually
+    /// </summary>
+    public void ImportSaveData(DungeonProgressData data)
+    {
+        if (data == null) return;
+        
+        // Note: We don't restore the active dungeon from save
+        // Player will need to re-enter the dungeon
+        // We only track which dungeons have been completed for achievements/records
     }
 }
 

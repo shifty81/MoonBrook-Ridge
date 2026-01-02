@@ -1443,7 +1443,9 @@ public class GameplayState : GameState
             MaxEnergy = _player.MaxEnergy,
             Hunger = _player.Hunger,
             Thirst = _player.Thirst,
-            Money = _player.Money
+            Money = _player.Money,
+            Mana = _magicSystem.Mana,
+            MaxMana = _magicSystem.MaxMana
         };
         
         // Save time data
@@ -1476,6 +1478,12 @@ public class GameplayState : GameState
         // Note: World data (crops) not saved yet - would need WorldMap API changes
         saveData.World = new WorldSaveData { Crops = System.Array.Empty<CropSaveData>() };
         
+        // Save Phase 6 systems data
+        saveData.Magic = _magicSystem.ExportSaveData();
+        saveData.Skills = _skillSystem.ExportSaveData();
+        saveData.Pets = _petSystem.ExportSaveData();
+        saveData.DungeonProgress = _dungeonSystem.ExportSaveData();
+        
         return saveData;
     }
     
@@ -1498,6 +1506,12 @@ public class GameplayState : GameState
         System.Diagnostics.Debug.WriteLine($"Would load {saveData.Inventory.Slots.Length} inventory slots");
         
         // Note: Full load would also restore crops from World data
+        
+        // Load Phase 6 systems data
+        _magicSystem.ImportSaveData(saveData.Magic);
+        _skillSystem.ImportSaveData(saveData.Skills);
+        _petSystem.ImportSaveData(saveData.Pets);
+        _dungeonSystem.ImportSaveData(saveData.DungeonProgress);
     }
 
     public override void Draw(SpriteBatch spriteBatch)

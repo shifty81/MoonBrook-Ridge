@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.Skills;
 
@@ -211,6 +212,63 @@ public class SkillTreeSystem
     public int GetSkillLevel(SkillCategory category) => _skillLevels[category];
     
     public float GetSkillExperience(SkillCategory category) => _skillExperience[category];
+    
+    /// <summary>
+    /// Export skill tree state for saving
+    /// </summary>
+    public SkillsSaveData ExportSaveData()
+    {
+        var categories = new List<SkillCategorySaveData>();
+        
+        foreach (var category in _skillTrees.Keys)
+        {
+            var tree = _skillTrees[category];
+            categories.Add(new SkillCategorySaveData
+            {
+                CategoryName = category.ToString(),
+                Level = _skillLevels[category],
+                Experience = _skillExperience[category],
+                UnlockedSkillIds = tree.GetUnlockedSkills().Select(s => s.Id).ToArray()
+            });
+        }
+        
+        return new SkillsSaveData
+        {
+            AvailableSkillPoints = _availableSkillPoints,
+            Categories = categories.ToArray()
+        };
+    }
+    
+    /// <summary>
+    /// Import skill tree state from save data
+    /// </summary>
+    public void ImportSaveData(SkillsSaveData data)
+    {
+        if (data == null) return;
+        
+        _availableSkillPoints = data.AvailableSkillPoints;
+        
+        if (data.Categories != null)
+        {
+            foreach (var categoryData in data.Categories)
+            {
+                if (Enum.TryParse<SkillCategory>(categoryData.CategoryName, out var category))
+                {
+                    _skillLevels[category] = categoryData.Level;
+                    _skillExperience[category] = categoryData.Experience;
+                    
+                    if (categoryData.UnlockedSkillIds != null)
+                    {
+                        var tree = _skillTrees[category];
+                        foreach (var skillId in categoryData.UnlockedSkillIds)
+                        {
+                            tree.UnlockSkill(skillId);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// <summary>
