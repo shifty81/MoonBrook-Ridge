@@ -58,7 +58,8 @@ public class GameplayState : GameState
     private AchievementNotification _achievementNotification;
     private AchievementMenu _achievementMenu;
     private SettingsMenu _settingsMenu;
-    private Texture2D _pixelTexture; // Shared 1x1 white pixel texture for UI rendering
+    // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
+    private Texture2D _pixelTexture;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
@@ -1127,16 +1128,26 @@ public class GameplayState : GameState
     
     private void CreateTestNPC()
     {
+        // NPC starting positions (in world coordinates)
+        // Positioned around the town/farm area to provide good coverage
+        const float EMMA_X = 600f, EMMA_Y = 400f;       // Emma (Farmer) - Farm area
+        const float MARCUS_X = 400f, MARCUS_Y = 600f;   // Marcus (Blacksmith) - Workshop area
+        const float LILY_X = 800f, LILY_Y = 350f;       // Lily (Merchant) - Shop area
+        const float OLIVER_X = 350f, OLIVER_Y = 250f;   // Oliver (Fisherman) - Near water
+        const float SARAH_X = 500f, SARAH_Y = 150f;     // Sarah (Doctor) - Clinic area
+        const float JACK_X = 700f, JACK_Y = 300f;       // Jack (Carpenter) - Workshop area
+        const float MAYA_X = 250f, MAYA_Y = 350f;       // Maya (Artist) - Art studio area
+        
         // Create and add all NPCs using NPCFactory
-        _npcManager.AddNPC(NPCFactory.CreateEmma(new Vector2(600, 400)));
-        _npcManager.AddNPC(NPCFactory.CreateMarcus(new Vector2(400, 600)));
-        _npcManager.AddNPC(NPCFactory.CreateLily(new Vector2(800, 350)));
-        _npcManager.AddNPC(NPCFactory.CreateOliver(new Vector2(350, 250)));
+        _npcManager.AddNPC(NPCFactory.CreateEmma(new Vector2(EMMA_X, EMMA_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateMarcus(new Vector2(MARCUS_X, MARCUS_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateLily(new Vector2(LILY_X, LILY_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateOliver(new Vector2(OLIVER_X, OLIVER_Y)));
         
         // Add new NPCs from Phase 5
-        _npcManager.AddNPC(NPCFactory.CreateSarah(new Vector2(500, 150)));
-        _npcManager.AddNPC(NPCFactory.CreateJack(new Vector2(700, 300)));
-        _npcManager.AddNPC(NPCFactory.CreateMaya(new Vector2(250, 350)));
+        _npcManager.AddNPC(NPCFactory.CreateSarah(new Vector2(SARAH_X, SARAH_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateJack(new Vector2(JACK_X, JACK_Y)));
+        _npcManager.AddNPC(NPCFactory.CreateMaya(new Vector2(MAYA_X, MAYA_Y)));
     }
     
     
