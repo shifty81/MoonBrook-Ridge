@@ -57,6 +57,21 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
   - **Jack** (Carpenter): Loves wood and crafted materials ⭐ **NEW!**
   - **Maya** (Artist): Loves flowers and beautiful things ⭐ **NEW!**
 
+### Marriage and Family System ⭐ **NEW!**
+- **Marriage Proposal**: Propose to NPCs after reaching 10 hearts (max friendship)
+- **Wedding Ceremony**: Marry your favorite NPC and start a family
+- **Spouse Benefits**: Married spouses provide daily greetings and help with farm work
+  - 30% chance daily to help: Water crops, Feed animals, Repair fences, or Cook food
+- **Children**: Have up to 2 children after marriage
+  - Automatic pregnancy/adoption system (5% chance per day after 1 season married)
+  - Growth stages: Baby → Toddler → Child
+  - Each stage takes 28-56 days
+- **Child Interactions**: Play, Gift, Teach, or Hug your children
+  - Increase happiness and education stats
+  - Children can help with farm chores when old enough
+- **Family Management**: Family menu (Y key) to interact with spouse and children
+- **Marriage Proposal Menu**: Special UI for proposing (V key when near eligible NPC)
+
 ### Events & Festivals System ⭐ **NEW**
 - **8 Seasonal Festivals**:
   - **Spring**: Egg Festival (Day 13), Flower Dance (Day 24)
@@ -112,6 +127,8 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Settings Menu**: Configure audio and game options (O key) ⭐ **NEW!**
 - **Dungeon Map**: Navigate dungeon floors and rooms (D key in dungeons) ⭐ **NEW!**
 - **Faction Reputation**: View reputation with 6 factions (R key) ⭐ **NEW!**
+- **Marriage Proposal Menu**: Propose marriage to NPCs (V key near eligible NPC) ⭐ **NEW!**
+- **Family Menu**: Manage spouse and children (Y key) ⭐ **NEW!**
 - **Event Notifications**: Visual notifications for festivals and special events ⭐ **NEW**
 - **Achievement Notifications**: Toast-style notifications for unlocked achievements ⭐ **NEW!**
 - **Dialogue System**: Interactive conversation interface with radial wheel
@@ -390,6 +407,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Open Settings Menu** ⭐ **NEW!** | **O** |
 | **Open Dungeon Map** ⭐ **NEW!** | **D** (when in dungeon) |
 | **Open Faction Reputation** ⭐ **NEW!** | **R** |
+| **Propose Marriage** ⭐ **NEW!** | **V** (when near eligible NPC) |
+| **Open Family Menu** ⭐ **NEW!** | **Y** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
@@ -474,7 +493,7 @@ Comprehensive guides and references:
 - [x] **More crops, items, and recipes** ⭐ **IMPLEMENTED** - 7 new crops, 17 new recipes, 12 new food items
 - [x] **Multiple NPCs with unique personalities** ⭐ **IMPLEMENTED** - 7 total NPCs (Emma, Marcus, Lily, Oliver, Sarah, Jack, Maya)
 - [x] **Achievements** ⭐ **IMPLEMENTED** - 30 achievements across 8 categories with notification system
-- [ ] Marriage and family system (deferred to future phase)
+- [x] **Marriage and Family System** ⭐ **IMPLEMENTED** - Propose marriage, marry NPCs, have children, family interactions
 
 ### Phase 6: Advanced Game Systems ✅ **COMPLETE!**
 - [x] **Magic System** ⭐ **IMPLEMENTED** - 8 spells, mana resource, spell casting mechanics

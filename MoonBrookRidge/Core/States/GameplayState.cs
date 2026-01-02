@@ -26,6 +26,7 @@ using MoonBrookRidge.Pets;
 using MoonBrookRidge.Combat;
 using MoonBrookRidge.Dungeons;
 using MoonBrookRidge.Factions;
+using MoonBrookRidge.Characters;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -80,12 +81,18 @@ public class GameplayState : GameState
     private DungeonMenu _dungeonMenu;
     private Factions.FactionSystem _factionSystem;
     private FactionMenu _factionMenu;
+    // Marriage and Family System (Phase 5 deferred item)
+    private MarriageSystem _marriageSystem;
+    private FamilySystem _familySystem;
+    private MarriageProposalMenu _marriageProposalMenu;
+    private FamilyMenu _familyMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
     private GameEvent? _lastShownEvent;
+    private int _previousDay; // Track day changes for marriage/family system
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -207,6 +214,51 @@ public class GameplayState : GameState
         // Initialize Faction System
         _factionSystem = new Factions.FactionSystem();
         
+        // Initialize Marriage and Family System (Phase 5 deferred item)
+        _marriageSystem = new MarriageSystem();
+        _familySystem = new FamilySystem(_marriageSystem);
+        _marriageProposalMenu = new MarriageProposalMenu(_marriageSystem);
+        _familyMenu = new FamilyMenu(_marriageSystem, _familySystem);
+        
+        // Hook up marriage events
+        _marriageSystem.OnMarried += (spouse) =>
+        {
+            System.Console.WriteLine($"Congratulations! You married {spouse.Name}!");
+            // Marriage achievement can be tracked manually if needed
+        };
+        
+        _marriageSystem.OnProposalAccepted += (npc) =>
+        {
+            System.Console.WriteLine($"{npc.Name} accepted your proposal!");
+        };
+        
+        _marriageSystem.OnProposalRejected += (npc) =>
+        {
+            System.Console.WriteLine($"{npc.Name} rejected your proposal. You need 10 hearts!");
+        };
+        
+        // Hook up family events
+        _familySystem.OnChildBorn += (child) =>
+        {
+            System.Console.WriteLine($"A new child was born: {child.Name}!");
+            // Child achievement can be tracked manually if needed
+        };
+        
+        _familySystem.OnChildGrowth += (child, stage) =>
+        {
+            System.Console.WriteLine($"{child.Name} has grown to {stage} stage!");
+        };
+        
+        // Hook up marriage proposal menu events
+        _marriageProposalMenu.OnProposalDecision += (npc, accepted) =>
+        {
+            if (accepted)
+            {
+                // Schedule wedding ceremony (happens immediately for now)
+                _marriageSystem.MarryNPC(npc, _timeSystem.Day, (int)_timeSystem.CurrentSeason, _timeSystem.Year);
+            }
+        };
+        
         // Hook up faction events
         _factionSystem.OnReputationLevelChanged += (faction, level) =>
         {
@@ -323,6 +375,7 @@ public class GameplayState : GameState
         _saveSystem = new SaveSystem();
         
         _isPaused = false;
+        _previousDay = _timeSystem.Day; // Initialize day tracking for marriage/family
     }
     
     public override void LoadContent()
@@ -674,6 +727,20 @@ public class GameplayState : GameState
             return; // Don't update game while in faction menu
         }
         
+        if (_marriageProposalMenu.IsActive)
+        {
+            _marriageProposalMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in marriage proposal menu
+        }
+        
+        if (_familyMenu.IsActive)
+        {
+            _familyMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in family menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -787,6 +854,27 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for marriage proposal menu (V key for "vows") - with debouncing
+        // Only allow when near an NPC with 10 hearts and not married
+        if (keyboardState.IsKeyDown(Keys.V) && !_previousKeyboardState.IsKeyDown(Keys.V))
+        {
+            var nearbyNPC = GetNearbyNPC();
+            if (nearbyNPC != null && _marriageSystem.CanPropose(nearbyNPC))
+            {
+                _marriageProposalMenu.Show(nearbyNPC);
+                _previousKeyboardState = keyboardState;
+                return;
+            }
+        }
+        
+        // Check for family menu (Y key for "Your family") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.Y) && !_previousKeyboardState.IsKeyDown(Keys.Y))
+        {
+            _familyMenu.Toggle();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Check for pause
         if (_inputManager.IsOpenMenuPressed())
         {
@@ -811,6 +899,14 @@ public class GameplayState : GameState
         
         // Update time system
         _timeSystem.Update(gameTime);
+        
+        // Check if day has changed and update marriage/family systems
+        if (_timeSystem.Day != _previousDay)
+        {
+            _previousDay = _timeSystem.Day;
+            _marriageSystem.Update();
+            _familySystem.Update(_timeSystem.Day, (int)_timeSystem.CurrentSeason, _timeSystem.Year);
+        }
         
         // Update weather system
         _weatherSystem.Update(gameTime);
@@ -1645,6 +1741,16 @@ public class GameplayState : GameState
         if (_factionMenu.IsActive)
         {
             _factionMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_marriageProposalMenu.IsActive)
+        {
+            _marriageProposalMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_familyMenu.IsActive)
+        {
+            _familyMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         // Draw event notification (on top of most UI but below menus)

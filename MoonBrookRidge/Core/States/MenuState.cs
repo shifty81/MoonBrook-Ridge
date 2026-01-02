@@ -22,8 +22,10 @@ public class MenuState : GameState
         _menuOptions = new string[]
         {
             "New Game",
+            "Continue",
             "Load Game",
-            "Options",
+            "Settings",
+            "Mods",
             "Exit"
         };
         _selectedOption = 0;
@@ -46,7 +48,46 @@ public class MenuState : GameState
     {
         _inputManager.Update();
         
-        // Handle menu navigation
+        // Mouse support for menu
+        MouseState mouseState = Mouse.GetState();
+        Vector2 mousePos = new Vector2(mouseState.X, mouseState.Y);
+        
+        // Check if mouse is hovering over any menu option
+        Vector2 menuStart = new Vector2(
+            Game.GraphicsDevice.Viewport.Width / 2,
+            300
+        );
+        
+        for (int i = 0; i < _menuOptions.Length; i++)
+        {
+            if (Game.DefaultFont != null)
+            {
+                string option = _menuOptions[i];
+                Vector2 optionSize = Game.DefaultFont.MeasureString(option);
+                Vector2 optionPosition = menuStart + new Vector2(-optionSize.X / 2, i * 50);
+                
+                Rectangle optionBounds = new Rectangle(
+                    (int)optionPosition.X - 10,
+                    (int)optionPosition.Y,
+                    (int)optionSize.X + 20,
+                    (int)optionSize.Y
+                );
+                
+                if (optionBounds.Contains(mousePos))
+                {
+                    _selectedOption = i;
+                    
+                    // Click to select
+                    if (mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        HandleSelection();
+                        return;
+                    }
+                }
+            }
+        }
+        
+        // Handle menu navigation with keyboard
         if (_inputManager.IsMoveUpPressed())
         {
             _selectedOption--;
@@ -65,7 +106,7 @@ public class MenuState : GameState
             }
         }
         
-        // Handle selection
+        // Handle selection with keyboard
         if (_inputManager.IsUseToolPressed() || _inputManager.IsDoActionPressed())
         {
             HandleSelection();
@@ -79,13 +120,20 @@ public class MenuState : GameState
             case 0: // New Game
                 Game.StateManager.ChangeState(new GameplayState(Game));
                 break;
-            case 1: // Load Game
-                // TODO: Implement save/load system
+            case 1: // Continue (last save)
+                // TODO: Load most recent save
+                Game.StateManager.ChangeState(new GameplayState(Game));
                 break;
-            case 2: // Options
-                // TODO: Implement options menu
+            case 2: // Load Game
+                // TODO: Implement save/load selection menu
                 break;
-            case 3: // Exit
+            case 3: // Settings
+                // TODO: Implement settings menu
+                break;
+            case 4: // Mods
+                Game.StateManager.ChangeState(new ModsMenuState(Game));
+                break;
+            case 5: // Exit
                 Game.Exit();
                 break;
         }
@@ -141,7 +189,7 @@ public class MenuState : GameState
             }
             
             // Draw controls hint at bottom
-            string hint = "Arrow Keys: Navigate | C/X: Select | ESC: Exit";
+            string hint = "Arrow Keys/Mouse: Navigate | C/X/Click: Select | ESC: Exit";
             Vector2 hintSize = Game.DefaultFont.MeasureString(hint);
             Vector2 hintPosition = new Vector2(
                 (Game.GraphicsDevice.Viewport.Width - hintSize.X) / 2,
