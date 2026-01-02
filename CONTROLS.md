@@ -23,6 +23,7 @@
 |--------|------------|-----------------|
 | Use Tool / Place Item | C | Left Mouse Button |
 | Interact / Talk | X | Right Mouse Button |
+| **Attack (Combat)** ⭐ **NEW** | **Space** | - |
 | Open Menu / Inventory | E | Escape |
 | Open Journal / Quests | F | - |
 | Open Map | M | - |
@@ -291,6 +292,58 @@ Appear on left side when stats are critical:
 3. **Mining for Marcus** (Marcus): Collect 10 Copper Ore
 4. **Lily's Supply Run** (Lily): Collect 20 Wood & 15 Stone
 5. **The Big Catch** (Oliver): Catch 15 Fish
+
+## Combat System ⭐ **NEW**
+
+### Basic Combat
+- **Attack**: Press **Space** to attack nearby enemies
+- **Attack Range**: 64 pixels (4 tiles)
+- **Weapons**: 12 different weapons available
+- **Energy/Mana Cost**: Varies by weapon
+  - Melee/Ranged weapons use Energy
+  - Magic weapons use Mana
+
+### Weapons
+Weapons have different stats:
+- **Damage**: Base damage dealt to enemies
+- **Attack Speed**: How fast you can attack
+- **Cost**: Energy or Mana consumed per attack
+- **Type**: Melee, Ranged, or Magic
+
+**Starter Weapon:**
+- Rusty Sword: 10 damage, 1.0 speed, 5 energy cost
+
+**Available Weapons:**
+- **Melee**: Rusty Sword, Wooden Club, Iron Sword, Steel Sword, Golden Sword
+- **Ranged**: Wooden Bow, Crossbow, Longbow
+- **Magic**: Magic Staff, Fire Wand, Arcane Staff
+
+### Enemies
+Enemies spawn in mines and have different types:
+- **Common**: Slimes, Bats, Goblins, Skeletons, Spiders, Wolves
+- **Uncommon**: Ghosts, Zombies, Orcs
+- **Rare**: Fire Elementals, Demons
+- **Bosses**: Slime King, Skeleton Lord, Ancient Dragon, Arch Demon
+
+**Enemy Mechanics:**
+- Enemies pursue and attack the player
+- Each enemy has unique stats (HP, Damage, Speed, Defense)
+- Defeated enemies drop loot and gold
+- Boss enemies are larger and have more health
+
+### Combat Strategy
+- Keep your distance from groups of enemies
+- Use ranged weapons for safety
+- Magic weapons are powerful but use mana
+- Watch enemy health bars to gauge progress
+- Loot drops automatically added to inventory
+- Combat skill XP earned for defeating enemies
+
+### Mine Combat
+- Enemies only spawn in mines
+- Each mine level has more/stronger enemies
+- Deeper levels = better loot
+- Be prepared with food, water, and energy before entering
 
 ## Tips & Strategies
 

@@ -21,6 +21,7 @@ using MoonBrookRidge.Quests;
 using MoonBrookRidge.Magic;
 using MoonBrookRidge.Skills;
 using MoonBrookRidge.Pets;
+using MoonBrookRidge.Combat;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -70,6 +71,7 @@ public class GameplayState : GameState
     private SkillsMenu _skillsMenu;
     private PetSystem _petSystem;
     private PetMenu _petMenu;
+    private CombatSystem _combatSystem;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
@@ -187,6 +189,36 @@ public class GameplayState : GameState
         
         _petSystem = new PetSystem();
         _petMenu = new PetMenu(_petSystem);
+        
+        // Initialize Combat System
+        _combatSystem = new CombatSystem();
+        
+        // Hook up combat events
+        _combatSystem.OnEnemyDefeated += (enemy) =>
+        {
+            // Award XP to skill system
+            _skillSystem.AddExperience(SkillCategory.Combat, enemy.Experience);
+            
+            // Drop loot
+            var random = new System.Random();
+            foreach (var loot in enemy.LootTable)
+            {
+                if (random.NextDouble() <= loot.DropChance)
+                {
+                    int quantity = random.Next(loot.MinQuantity, loot.MaxQuantity + 1);
+                    var item = new Item(loot.ItemName, ItemType.Resource);
+                    _inventory.AddItem(item, quantity);
+                }
+            }
+            
+            // Add money if it's a coin drop
+            _player.AddMoney(50); // Base coin drop
+        };
+        
+        _combatSystem.OnPlayerDamaged += (damage) =>
+        {
+            _player.ModifyHealth(-damage);
+        };
         
         // Give player some starter spells for testing
         _magicSystem.LearnSpell("heal");
@@ -678,6 +710,7 @@ public class GameplayState : GameState
         // Update Phase 6 systems
         _magicSystem.Update(gameTime);
         _petSystem.Update(gameTime);
+        _combatSystem.Update(gameTime);
         
         // Update event system
         _eventSystem.Update(gameTime);
@@ -706,6 +739,9 @@ public class GameplayState : GameState
         
         // Handle mine entrance/exit interaction
         HandleMineInteraction();
+        
+        // Handle combat interactions
+        HandleCombat(gameTime);
         
         // Handle consumable usage input
         HandleConsumableInput();
@@ -874,6 +910,9 @@ public class GameplayState : GameState
                     // Enter the mine
                     Vector2 spawnPos = _miningManager.EnterMine(1);
                     _player.SetPosition(spawnPos);
+                    
+                    // Spawn enemies in the mine
+                    SpawnEnemiesInMine(1);
                 }
             }
         }
@@ -889,6 +928,9 @@ public class GameplayState : GameState
                 {
                     Vector2 spawnPos = _miningManager.DescendLevel();
                     _player.SetPosition(spawnPos);
+                    
+                    // Spawn enemies for the new level
+                    SpawnEnemiesInMine(_miningManager.CurrentLevel);
                 }
             }
             
@@ -911,6 +953,170 @@ public class GameplayState : GameState
                         _player.SetPosition(spawnPos);
                     }
                 }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Handle combat - enemy AI, attacks, and player attacking
+    /// </summary>
+    private void HandleCombat(GameTime gameTime)
+    {
+        if (!_miningManager.InMine)
+            return; // Only combat in mines for now
+        
+        var enemies = _combatSystem.GetActiveEnemies();
+        
+        // Enemy AI - move towards player and attack
+        foreach (var enemy in enemies)
+        {
+            Vector2 direction = _player.Position - enemy.Position;
+            float distance = direction.Length();
+            
+            if (distance > 0)
+            {
+                direction.Normalize();
+                
+                // Move towards player if not in attack range
+                if (distance > 32f) // Attack range is 32 pixels (2 tiles)
+                {
+                    float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    enemy.Position += direction * enemy.Speed * deltaTime;
+                }
+                // Attack player if in range and cooldown ready
+                else if (enemy.CanAttack())
+                {
+                    enemy.Attack();
+                    
+                    // Get defense modifier from skills
+                    float defenseBonus = 1.0f - _skillSystem.GetSkillBonus(SkillCategory.Combat, "defense");
+                    _combatSystem.PlayerTakeDamage(enemy.Damage, defenseBonus);
+                }
+            }
+        }
+        
+        // Player attack input - Space key
+        var keyboardState = Keyboard.GetState();
+        if (keyboardState.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
+        {
+            // Find nearest enemy in attack range
+            Enemy nearestEnemy = null;
+            float nearestDistance = float.MaxValue;
+            
+            foreach (var enemy in enemies)
+            {
+                float distance = Vector2.Distance(_player.Position, enemy.Position);
+                if (distance < 64f && distance < nearestDistance) // 64 pixel attack range (4 tiles)
+                {
+                    nearestEnemy = enemy;
+                    nearestDistance = distance;
+                }
+            }
+            
+            if (nearestEnemy != null)
+            {
+                // Get damage bonus from skills
+                float damageBonus = 1.0f + _skillSystem.GetSkillBonus(SkillCategory.Combat, "damage");
+                
+                // Check if weapon uses mana or energy
+                var weapon = _combatSystem.GetEquippedWeapon();
+                if (weapon != null)
+                {
+                    if (weapon.UsesMana)
+                    {
+                        if (_magicSystem.CurrentMana >= weapon.EnergyCost)
+                        {
+                            _magicSystem.ConsumeMana(weapon.EnergyCost);
+                            _combatSystem.AttackEnemy(nearestEnemy, damageBonus);
+                        }
+                    }
+                    else
+                    {
+                        if (_player.Stats.CurrentEnergy >= weapon.EnergyCost)
+                        {
+                            _player.Stats.ConsumeEnergy(weapon.EnergyCost);
+                            _combatSystem.AttackEnemy(nearestEnemy, damageBonus);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Spawn enemies appropriate for the mine level
+    /// </summary>
+    private void SpawnEnemiesInMine(int level)
+    {
+        // Clear existing enemies
+        var enemies = _combatSystem.GetActiveEnemies();
+        enemies.Clear();
+        
+        // Calculate number of enemies based on level (3-8 enemies)
+        var random = new System.Random();
+        int enemyCount = 3 + (level - 1) + random.Next(3);
+        
+        // Spawn enemies in random positions around the mine
+        for (int i = 0; i < enemyCount; i++)
+        {
+            // Random position offset from player spawn (200-400 pixels away)
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            float distance = 200 + (float)(random.NextDouble() * 200);
+            Vector2 offset = new Vector2((float)Math.Cos(angle) * distance, (float)Math.Sin(angle) * distance);
+            Vector2 spawnPosition = _player.Position + offset;
+            
+            // Spawn different enemy types based on level
+            Enemy enemy = null;
+            if (level <= 2)
+            {
+                // Easy enemies
+                int enemyType = random.Next(3);
+                enemy = enemyType switch
+                {
+                    0 => EnemyFactory.CreateSlime(spawnPosition),
+                    1 => EnemyFactory.CreateBat(spawnPosition),
+                    _ => EnemyFactory.CreateGoblin(spawnPosition)
+                };
+            }
+            else if (level <= 5)
+            {
+                // Medium enemies
+                int enemyType = random.Next(4);
+                enemy = enemyType switch
+                {
+                    0 => EnemyFactory.CreateSkeleton(spawnPosition),
+                    1 => EnemyFactory.CreateSpider(spawnPosition),
+                    2 => EnemyFactory.CreateWolf(spawnPosition),
+                    _ => EnemyFactory.CreateGoblin(spawnPosition)
+                };
+            }
+            else if (level <= 8)
+            {
+                // Hard enemies
+                int enemyType = random.Next(4);
+                enemy = enemyType switch
+                {
+                    0 => EnemyFactory.CreateGhost(spawnPosition),
+                    1 => EnemyFactory.CreateZombie(spawnPosition),
+                    2 => EnemyFactory.CreateOrc(spawnPosition),
+                    _ => EnemyFactory.CreateSkeleton(spawnPosition)
+                };
+            }
+            else
+            {
+                // Very hard enemies
+                int enemyType = random.Next(3);
+                enemy = enemyType switch
+                {
+                    0 => EnemyFactory.CreateFireElemental(spawnPosition),
+                    1 => EnemyFactory.CreateDemon(spawnPosition),
+                    _ => EnemyFactory.CreateOrc(spawnPosition)
+                };
+            }
+            
+            if (enemy != null)
+            {
+                _combatSystem.SpawnEnemy(enemy);
             }
         }
     }
@@ -1123,6 +1329,12 @@ public class GameplayState : GameState
         
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
+        
+        // Draw enemies and health bars (in world space with camera transform)
+        if (_miningManager.InMine)
+        {
+            DrawEnemies(spriteBatch);
+        }
         
         // Draw particle effects in world space (with camera transform)
         _particleSystem.Draw(spriteBatch, Game.GraphicsDevice);
@@ -1368,5 +1580,85 @@ public class GameplayState : GameState
         };
         quest5.Reward.Items.Add("Starter Pack", 1);
         _questSystem.AddAvailableQuest(quest5);
+    }
+    
+    /// <summary>
+    /// Draw enemies and their health bars
+    /// </summary>
+    private void DrawEnemies(SpriteBatch spriteBatch)
+    {
+        var enemies = _combatSystem.GetActiveEnemies();
+        
+        foreach (var enemy in enemies)
+        {
+            // Draw enemy as a colored circle (placeholder until we have sprites)
+            Color enemyColor = enemy.Type switch
+            {
+                EnemyType.Slime => Color.Green,
+                EnemyType.Bat => Color.DarkGray,
+                EnemyType.Skeleton => Color.White,
+                EnemyType.Goblin => Color.Brown,
+                EnemyType.Spider => Color.Purple,
+                EnemyType.Wolf => Color.Gray,
+                EnemyType.Ghost => Color.LightGray,
+                EnemyType.Zombie => Color.DarkGreen,
+                EnemyType.Orc => Color.Red,
+                EnemyType.Dragon => Color.OrangeRed,
+                EnemyType.Elemental => Color.Orange,
+                EnemyType.Demon => Color.DarkRed,
+                _ => Color.White
+            };
+            
+            // Draw enemy circle (16x16 pixels)
+            int enemySize = enemy.IsBoss ? 24 : 16;
+            DrawFilledCircle(spriteBatch, enemy.Position, enemySize / 2, enemyColor);
+            
+            // Draw health bar above enemy
+            int barWidth = 32;
+            int barHeight = 4;
+            Vector2 barPosition = enemy.Position - new Vector2(barWidth / 2, enemySize + 8);
+            
+            // Background (black)
+            spriteBatch.Draw(_pixelTexture, 
+                new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight),
+                Color.Black * 0.7f);
+            
+            // Health fill (red to green based on health percentage)
+            float healthPercent = enemy.Health / enemy.MaxHealth;
+            int fillWidth = (int)(barWidth * healthPercent);
+            Color healthColor = healthPercent > 0.5f ? Color.Green : (healthPercent > 0.25f ? Color.Yellow : Color.Red);
+            
+            spriteBatch.Draw(_pixelTexture, 
+                new Rectangle((int)barPosition.X, (int)barPosition.Y, fillWidth, barHeight),
+                healthColor);
+            
+            // Draw enemy name above health bar
+            if (enemy.IsBoss)
+            {
+                Vector2 nameSize = Game.DefaultFont.MeasureString(enemy.Name);
+                Vector2 namePosition = barPosition - new Vector2(nameSize.X / 2, nameSize.Y + 2);
+                spriteBatch.DrawString(Game.DefaultFont, enemy.Name, namePosition, Color.White);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Draw a filled circle (helper method for enemy rendering)
+    /// </summary>
+    private void DrawFilledCircle(SpriteBatch spriteBatch, Vector2 center, int radius, Color color)
+    {
+        // Simple approximation using rectangles
+        for (int x = -radius; x <= radius; x++)
+        {
+            for (int y = -radius; y <= radius; y++)
+            {
+                if (x * x + y * y <= radius * radius)
+                {
+                    spriteBatch.Draw(_pixelTexture,
+                        new Rectangle((int)center.X + x, (int)center.Y + y, 1, 1),
+                        color);
+                }
+            }
+        }
     }
 }
