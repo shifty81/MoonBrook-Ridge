@@ -81,6 +81,16 @@ public class Tile
             // Mine entrance
             TileType.MineEntrance => new Color(50, 50, 50),
             
+            // Dungeon entrances (distinct colors for each type)
+            TileType.DungeonEntranceSlime => new Color(100, 200, 100),      // Green
+            TileType.DungeonEntranceSkeleton => new Color(200, 200, 200),   // Light gray/white
+            TileType.DungeonEntranceSpider => new Color(100, 50, 100),      // Purple
+            TileType.DungeonEntranceGoblin => new Color(150, 100, 50),      // Brown
+            TileType.DungeonEntranceHaunted => new Color(80, 80, 120),      // Dark blue-gray
+            TileType.DungeonEntranceDragon => new Color(200, 50, 50),       // Red
+            TileType.DungeonEntranceDemon => new Color(150, 0, 0),          // Dark red
+            TileType.DungeonEntranceRuins => new Color(150, 150, 100),      // Sandy gray
+            
             _ => Color.Green
         };
     }
@@ -187,7 +197,17 @@ public enum TileType
     SlatesIce,
     
     // Mine/Cave entrance
-    MineEntrance
+    MineEntrance,
+    
+    // Dungeon entrances (8 types)
+    DungeonEntranceSlime,
+    DungeonEntranceSkeleton,
+    DungeonEntranceSpider,
+    DungeonEntranceGoblin,
+    DungeonEntranceHaunted,
+    DungeonEntranceDragon,
+    DungeonEntranceDemon,
+    DungeonEntranceRuins
 }
 
 /// <summary>

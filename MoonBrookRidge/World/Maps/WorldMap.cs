@@ -130,6 +130,40 @@ public class WorldMap
         // Place mine entrance at designated location
         _tiles[(int)MineEntranceGridPosition.X, (int)MineEntranceGridPosition.Y] = 
             new Tile(TileType.MineEntrance, MineEntranceGridPosition);
+        
+        // Place dungeon entrances around the map
+        // Place them away from farm area and in logical locations
+        PlaceDungeonEntrances();
+    }
+    
+    /// <summary>
+    /// Place dungeon entrances strategically around the world
+    /// </summary>
+    private void PlaceDungeonEntrances()
+    {
+        // Slime Cave - near water (top right)
+        _tiles[40, 10] = new Tile(TileType.DungeonEntranceSlime, new Vector2(40, 10));
+        
+        // Skeleton Crypt - in the north (top left)
+        _tiles[5, 5] = new Tile(TileType.DungeonEntranceSkeleton, new Vector2(5, 5));
+        
+        // Spider Nest - in the forest area (left side)
+        _tiles[5, 25] = new Tile(TileType.DungeonEntranceSpider, new Vector2(5, 25));
+        
+        // Goblin Warrens - bottom left corner
+        _tiles[5, 45] = new Tile(TileType.DungeonEntranceGoblin, new Vector2(5, 45));
+        
+        // Haunted Manor - top middle area
+        _tiles[25, 5] = new Tile(TileType.DungeonEntranceHaunted, new Vector2(25, 5));
+        
+        // Dragon Lair - far right side
+        _tiles[45, 25] = new Tile(TileType.DungeonEntranceDragon, new Vector2(45, 25));
+        
+        // Demon Realm - bottom right corner
+        _tiles[45, 45] = new Tile(TileType.DungeonEntranceDemon, new Vector2(45, 45));
+        
+        // Ancient Ruins - bottom middle
+        _tiles[25, 45] = new Tile(TileType.DungeonEntranceRuins, new Vector2(25, 45));
     }
     
     public void LoadContent(Dictionary<TileType, Texture2D> tileTextures, Dictionary<string, Texture2D[]> cropTextures = null)

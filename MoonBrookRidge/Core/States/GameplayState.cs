@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,6 +24,8 @@ using MoonBrookRidge.Magic;
 using MoonBrookRidge.Skills;
 using MoonBrookRidge.Pets;
 using MoonBrookRidge.Combat;
+using MoonBrookRidge.Dungeons;
+using MoonBrookRidge.Factions;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -73,6 +76,10 @@ public class GameplayState : GameState
     private PetSystem _petSystem;
     private PetMenu _petMenu;
     private CombatSystem _combatSystem;
+    private Dungeons.DungeonSystem _dungeonSystem;
+    private DungeonMenu _dungeonMenu;
+    private Factions.FactionSystem _factionSystem;
+    private FactionMenu _factionMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
@@ -193,6 +200,67 @@ public class GameplayState : GameState
         
         // Initialize Combat System
         _combatSystem = new CombatSystem();
+        
+        // Initialize Dungeon System
+        _dungeonSystem = new Dungeons.DungeonSystem();
+        
+        // Initialize Faction System
+        _factionSystem = new Factions.FactionSystem();
+        
+        // Hook up faction events
+        _factionSystem.OnReputationLevelChanged += (faction, level) =>
+        {
+            System.Console.WriteLine($"Reputation with {faction.Name} reached {level}!");
+        };
+        
+        _factionSystem.OnRewardUnlocked += (faction, reward) =>
+        {
+            System.Console.WriteLine($"Unlocked {reward.Name} from {faction.Name}!");
+        };
+        
+        // Hook up quest choice system to faction system
+        _questSystem.OnChoiceMade += (choice, consequence) =>
+        {
+            // Apply faction reputation changes from choice
+            foreach (var factionChange in consequence.FactionChanges)
+            {
+                _factionSystem.ChangeReputation(factionChange.Key, factionChange.Value);
+            }
+        };
+        
+        // Hook up dungeon events
+        _dungeonSystem.OnDungeonEntered += (dungeon) =>
+        {
+            // Clear any existing enemies by killing them all
+            var enemies = _combatSystem.GetActiveEnemies();
+            foreach (var enemy in enemies.ToList())
+            {
+                enemy.TakeDamage(enemy.Health); // Kill all enemies
+            }
+            
+            // Enter first room
+            var firstRoom = dungeon.GetCurrentFloor()[0];
+            _dungeonSystem.EnterRoom(firstRoom);
+        };
+        
+        _dungeonSystem.OnRoomEntered += (room) =>
+        {
+            // Spawn room enemies
+            foreach (var enemy in room.Enemies)
+            {
+                if (!enemy.IsDead)
+                {
+                    _combatSystem.SpawnEnemy(enemy);
+                }
+            }
+        };
+        
+        _dungeonSystem.OnDungeonCleared += (dungeon) =>
+        {
+            // Reward player for clearing dungeon
+            int reward = 1000 * dungeon.Difficulty;
+            _player.AddMoney(reward);
+        };
         
         // Hook up combat events
         _combatSystem.OnEnemyDefeated += (enemy) =>
@@ -484,6 +552,12 @@ public class GameplayState : GameState
         _achievementNotification.LoadContent(Game.DefaultFont, _pixelTexture);
         _settingsMenu.LoadContent(Game.DefaultFont, _pixelTexture);
         
+        // Initialize dungeon menu
+        _dungeonMenu = new DungeonMenu(Game.DefaultFont, _pixelTexture, _dungeonSystem);
+        
+        // Initialize faction menu
+        _factionMenu = new FactionMenu(Game.DefaultFont, _pixelTexture, _factionSystem);
+        
         // Initialize starter quests
         InitializeQuests();
     }
@@ -584,6 +658,22 @@ public class GameplayState : GameState
             return; // Don't update game while in pet menu
         }
         
+        if (_dungeonMenu.IsOpen)
+        {
+            var mouseState = Mouse.GetState();
+            _dungeonMenu.Update(keyboardState, _previousKeyboardState, mouseState, _previousMouseState);
+            _previousKeyboardState = keyboardState;
+            _previousMouseState = mouseState;
+            return; // Don't update game while in dungeon menu
+        }
+        
+        if (_factionMenu.IsActive)
+        {
+            _factionMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in faction menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -677,6 +767,26 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for dungeon menu (D key for "dungeon") - with debouncing
+        // Only available when in a dungeon
+        if (keyboardState.IsKeyDown(Keys.D) && !_previousKeyboardState.IsKeyDown(Keys.D))
+        {
+            if (_dungeonSystem.ActiveDungeon != null)
+            {
+                _dungeonMenu.Toggle();
+                _previousKeyboardState = keyboardState;
+                return;
+            }
+        }
+        
+        // Check for faction menu (R key for "reputation") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
+        {
+            _factionMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Check for pause
         if (_inputManager.IsOpenMenuPressed())
         {
@@ -740,6 +850,9 @@ public class GameplayState : GameState
         
         // Handle mine entrance/exit interaction
         HandleMineInteraction();
+        
+        // Handle dungeon entrance interaction
+        HandleDungeonInteraction();
         
         // Handle combat interactions
         HandleCombat(gameTime);
@@ -963,12 +1076,89 @@ public class GameplayState : GameState
     }
     
     /// <summary>
+    /// Handle dungeon entrance interaction
+    /// </summary>
+    private void HandleDungeonInteraction()
+    {
+        // Only check for dungeon entrances when not in mine or dungeon
+        if (_miningManager.InMine || _dungeonSystem.ActiveDungeon != null)
+            return;
+        
+        Vector2 gridPos = WorldToGridPosition(_player.Position);
+        var tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
+        
+        if (tile == null) return;
+        
+        // Check if player is standing on a dungeon entrance
+        DungeonType? dungeonType = GetDungeonTypeFromTile(tile.Type);
+        
+        if (dungeonType.HasValue)
+        {
+            // Check for interact key to enter dungeon
+            if (_inputManager.IsDoActionPressed())
+            {
+                // Generate and enter dungeon
+                int floors = 3; // Default 3 floors
+                int difficulty = 1; // Default difficulty 1
+                
+                var dungeon = _dungeonSystem.GenerateDungeon(dungeonType.Value, floors, difficulty);
+                _dungeonSystem.EnterDungeon(dungeon);
+                
+                // Move player to dungeon start position
+                _player.SetPosition(new Vector2(400, 300));
+                
+                // Show dungeon entered message
+                System.Console.WriteLine($"Entered {GetDungeonName(dungeonType.Value)}!");
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Get dungeon type from tile type
+    /// </summary>
+    private DungeonType? GetDungeonTypeFromTile(TileType tileType)
+    {
+        return tileType switch
+        {
+            TileType.DungeonEntranceSlime => DungeonType.SlimeCave,
+            TileType.DungeonEntranceSkeleton => DungeonType.SkeletonCrypt,
+            TileType.DungeonEntranceSpider => DungeonType.SpiderNest,
+            TileType.DungeonEntranceGoblin => DungeonType.GoblinWarrens,
+            TileType.DungeonEntranceHaunted => DungeonType.HauntedManor,
+            TileType.DungeonEntranceDragon => DungeonType.DragonLair,
+            TileType.DungeonEntranceDemon => DungeonType.DemonRealm,
+            TileType.DungeonEntranceRuins => DungeonType.AncientRuins,
+            _ => null
+        };
+    }
+    
+    /// <summary>
+    /// Get dungeon name from type
+    /// </summary>
+    private string GetDungeonName(DungeonType type)
+    {
+        return type switch
+        {
+            DungeonType.SlimeCave => "Slime Cave",
+            DungeonType.SkeletonCrypt => "Skeleton Crypt",
+            DungeonType.SpiderNest => "Spider Nest",
+            DungeonType.GoblinWarrens => "Goblin Warrens",
+            DungeonType.HauntedManor => "Haunted Manor",
+            DungeonType.DragonLair => "Dragon Lair",
+            DungeonType.DemonRealm => "Demon Realm",
+            DungeonType.AncientRuins => "Ancient Ruins",
+            _ => "Unknown Dungeon"
+        };
+    }
+    
+    /// <summary>
     /// Handle combat - enemy AI, attacks, and player attacking
     /// </summary>
     private void HandleCombat(GameTime gameTime)
     {
-        if (!_miningManager.InMine)
-            return; // Only combat in mines for now
+        // Combat active in mines or dungeons
+        if (!_miningManager.InMine && _dungeonSystem.ActiveDungeon == null)
+            return;
         
         var enemies = _combatSystem.GetActiveEnemies();
         
@@ -1433,6 +1623,16 @@ public class GameplayState : GameState
         if (_petMenu.IsActive)
         {
             _petMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_dungeonMenu.IsOpen)
+        {
+            _dungeonMenu.Draw(spriteBatch, Game.GraphicsDevice);
+        }
+        
+        if (_factionMenu.IsActive)
+        {
+            _factionMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         // Draw event notification (on top of most UI but below menus)
