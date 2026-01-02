@@ -192,6 +192,52 @@ public class GameplayState : GameState
         _magicSystem.LearnSpell("heal");
         _magicSystem.LearnSpell("light");
         
+        // Hook up spell effects
+        _magicSystem.OnSpellCast += (spell) =>
+        {
+            // Apply spell effects based on type
+            if (spell.Id == "heal")
+            {
+                _player.ModifyHealth(spell.EffectValue);
+            }
+            else if (spell.Id == "speed")
+            {
+                // Speed buff would be applied here (needs player buff system)
+            }
+            else if (spell.Id == "growth")
+            {
+                // Grow crops in 3x3 area around player
+                Vector2 playerTile = new Vector2(
+                    (int)(_player.Position.X / GameConstants.TILE_SIZE),
+                    (int)(_player.Position.Y / GameConstants.TILE_SIZE)
+                );
+                _worldMap.GrowCropsInArea(playerTile, 1); // 1 tile radius = 3x3
+            }
+            else if (spell.Id == "water")
+            {
+                // Water all crops on the farm
+                _worldMap.WaterAllCrops();
+            }
+        };
+        
+        // Hook up alchemy brewing
+        _alchemySystem.OnPotionBrewed += (potion) =>
+        {
+            // Potion is already added to inventory by AlchemySystem
+        };
+        
+        // Hook up skill unlocks
+        _skillSystem.OnSkillUnlocked += (skill) =>
+        {
+            // Skill unlocked notification could go here
+        };
+        
+        // Hook up pet taming
+        _petSystem.OnPetTamed += (pet) =>
+        {
+            // Pet tamed notification could go here
+        };
+        
         // Initialize save system
         _saveSystem = new SaveSystem();
         
