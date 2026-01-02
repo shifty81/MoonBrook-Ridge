@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -206,7 +207,7 @@ public class GameplayState : GameState
                 if (random.NextDouble() <= loot.DropChance)
                 {
                     int quantity = random.Next(loot.MinQuantity, loot.MaxQuantity + 1);
-                    var item = new Item(loot.ItemName, ItemType.Resource);
+                    var item = new Item(loot.ItemName, ItemType.Crafting);
                     _inventory.AddItem(item, quantity);
                 }
             }
@@ -945,12 +946,16 @@ public class GameplayState : GameState
                     if (!_miningManager.InMine)
                     {
                         // Exited mine - return to mine entrance in overworld
+                        // Clear all enemies
+                        _combatSystem.GetActiveEnemies().Clear();
                         Vector2 entrancePixelPos = _worldMap.MineEntranceGridPosition * GameConstants.TILE_SIZE;
                         _player.SetPosition(entrancePixelPos);
                     }
                     else
                     {
                         _player.SetPosition(spawnPos);
+                        // Spawn enemies for the level we ascended to
+                        SpawnEnemiesInMine(_miningManager.CurrentLevel);
                     }
                 }
             }
@@ -987,10 +992,7 @@ public class GameplayState : GameState
                 else if (enemy.CanAttack())
                 {
                     enemy.Attack();
-                    
-                    // Get defense modifier from skills
-                    float defenseBonus = 1.0f - _skillSystem.GetSkillBonus(SkillCategory.Combat, "defense");
-                    _combatSystem.PlayerTakeDamage(enemy.Damage, defenseBonus);
+                    _combatSystem.PlayerTakeDamage(enemy.Damage);
                 }
             }
         }
@@ -1015,27 +1017,24 @@ public class GameplayState : GameState
             
             if (nearestEnemy != null)
             {
-                // Get damage bonus from skills
-                float damageBonus = 1.0f + _skillSystem.GetSkillBonus(SkillCategory.Combat, "damage");
-                
                 // Check if weapon uses mana or energy
                 var weapon = _combatSystem.GetEquippedWeapon();
                 if (weapon != null)
                 {
                     if (weapon.UsesMana)
                     {
-                        if (_magicSystem.CurrentMana >= weapon.EnergyCost)
+                        if (_magicSystem.Mana >= weapon.EnergyCost)
                         {
-                            _magicSystem.ConsumeMana(weapon.EnergyCost);
-                            _combatSystem.AttackEnemy(nearestEnemy, damageBonus);
+                            _combatSystem.AttackEnemy(nearestEnemy);
+                            // Mana consumption is handled in combat system
                         }
                     }
                     else
                     {
-                        if (_player.Stats.CurrentEnergy >= weapon.EnergyCost)
+                        if (_player.Energy >= weapon.EnergyCost)
                         {
                             _player.Stats.ConsumeEnergy(weapon.EnergyCost);
-                            _combatSystem.AttackEnemy(nearestEnemy, damageBonus);
+                            _combatSystem.AttackEnemy(nearestEnemy);
                         }
                     }
                 }
