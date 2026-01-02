@@ -110,9 +110,35 @@ A farming and life simulation game inspired by Stardew Valley with enhanced NPC 
 - **Quest Journal**: Track objectives and manage quests (F key) ⭐ **NEW**
 - **Achievement Menu**: View all 30 achievements and progress (A key) ⭐ **NEW!**
 - **Settings Menu**: Configure audio and game options (O key) ⭐ **NEW!**
+- **Dungeon Map**: Navigate dungeon floors and rooms (D key in dungeons) ⭐ **NEW!**
+- **Faction Reputation**: View reputation with 6 factions (R key) ⭐ **NEW!**
 - **Event Notifications**: Visual notifications for festivals and special events ⭐ **NEW**
 - **Achievement Notifications**: Toast-style notifications for unlocked achievements ⭐ **NEW!**
 - **Dialogue System**: Interactive conversation interface with radial wheel
+
+### Advanced Quest System ⭐ **NEW!**
+- **Moral Choices**: Quests with Good, Neutral, or Evil alignment options
+- **Branching Paths**: Different objectives and rewards based on player choices
+- **Karma Tracking**: Player karma affects alignment (Good/Neutral/Evil)
+- **Quest Consequences**: Track impact of all quest decisions
+- **Faction Integration**: Quest choices affect reputation with factions
+
+### Faction System ⭐ **NEW!**
+- **6 Unique Factions**: Farmers' Guild, Adventurers' League, Merchants' Coalition, Arcane Order, Nature's Keepers, Shadow Syndicate
+- **Reputation Levels**: 8 levels from Hated to Exalted (−3000 to +3000 reputation)
+- **Faction Rewards**: 3 unique rewards per faction unlocked at different reputation levels
+- **Faction Types**: Economic, Combat, Mystical, Environmental, Underground
+- **Integrated with Quests**: Quest moral choices affect faction reputation
+
+### Dungeon System ⭐ **NEW!**
+- **8 Dungeon Types**: Slime Cave, Skeleton Crypt, Spider Nest, Goblin Warrens, Haunted Manor, Dragon Lair, Demon Realm, Ancient Ruins
+- **Dungeon Entrances**: Strategically placed around the world map
+- **Procedural Generation**: Random layouts with 6-11 rooms per floor
+- **Room Types**: Entrance, Combat, Treasure, Boss, Puzzle, Shop, Shrine, Exit
+- **Multi-Floor Dungeons**: 1-10 floors with increasing difficulty
+- **Dungeon Map UI**: Visual floor navigation showing room types and progress
+- **Boss Encounters**: Unique boss enemies at the end of each floor
+- **Treasure Rewards**: Loot chests with gold and rare items
 
 ### Achievement System ⭐ **NEW!**
 - **30 Achievements** across 8 categories: Farming, Fishing, Mining, Social, Crafting, Wealth, Exploration, Survival
@@ -362,6 +388,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Gift to NPC** ⭐ **NEW** | **G** |
 | **Open Achievement Menu** ⭐ **NEW!** | **A** |
 | **Open Settings Menu** ⭐ **NEW!** | **O** |
+| **Open Dungeon Map** ⭐ **NEW!** | **D** (when in dungeon) |
+| **Open Faction Reputation** ⭐ **NEW!** | **R** |
 | Switch Tool | Tab |
 | Hotbar Slots (Consume) | 1-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
@@ -458,9 +486,9 @@ Comprehensive guides and references:
 - [x] **Biome System** ⭐ **IMPLEMENTED** - 12 unique biomes with resources and creatures
 - [x] UI integration for new systems (magic, alchemy, skills, pets)
 - [x] Combat integration into game loop ⭐ **INTEGRATED** - Enemies spawn in mines, real-time combat with Space key
-- [ ] Dungeon integration (separate from mines with themed enemies)
-- [ ] Advanced quest system with moral choices and branching
-- [ ] Faction system
+- [x] **Dungeon integration** ⭐ **INTEGRATED** - 8 dungeon entrances, dungeon map UI, separate from mines
+- [x] **Advanced quest system** ⭐ **IMPLEMENTED** - Moral choices, branching paths, karma tracking, consequences
+- [x] **Faction system** ⭐ **IMPLEMENTED** - 6 factions, reputation levels, rewards, quest integration
 
 See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.
 
