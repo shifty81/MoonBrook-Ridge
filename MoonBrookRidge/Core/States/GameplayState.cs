@@ -25,6 +25,7 @@ using MoonBrookRidge.Skills;
 using MoonBrookRidge.Pets;
 using MoonBrookRidge.Combat;
 using MoonBrookRidge.Dungeons;
+using MoonBrookRidge.Factions;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -77,6 +78,8 @@ public class GameplayState : GameState
     private CombatSystem _combatSystem;
     private Dungeons.DungeonSystem _dungeonSystem;
     private DungeonMenu _dungeonMenu;
+    private Factions.FactionSystem _factionSystem;
+    private FactionMenu _factionMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
@@ -200,6 +203,30 @@ public class GameplayState : GameState
         
         // Initialize Dungeon System
         _dungeonSystem = new Dungeons.DungeonSystem();
+        
+        // Initialize Faction System
+        _factionSystem = new Factions.FactionSystem();
+        
+        // Hook up faction events
+        _factionSystem.OnReputationLevelChanged += (faction, level) =>
+        {
+            System.Console.WriteLine($"Reputation with {faction.Name} reached {level}!");
+        };
+        
+        _factionSystem.OnRewardUnlocked += (faction, reward) =>
+        {
+            System.Console.WriteLine($"Unlocked {reward.Name} from {faction.Name}!");
+        };
+        
+        // Hook up quest choice system to faction system
+        _questSystem.OnChoiceMade += (choice, consequence) =>
+        {
+            // Apply faction reputation changes from choice
+            foreach (var factionChange in consequence.FactionChanges)
+            {
+                _factionSystem.ChangeReputation(factionChange.Key, factionChange.Value);
+            }
+        };
         
         // Hook up dungeon events
         _dungeonSystem.OnDungeonEntered += (dungeon) =>
@@ -528,6 +555,9 @@ public class GameplayState : GameState
         // Initialize dungeon menu
         _dungeonMenu = new DungeonMenu(Game.DefaultFont, _pixelTexture, _dungeonSystem);
         
+        // Initialize faction menu
+        _factionMenu = new FactionMenu(Game.DefaultFont, _pixelTexture, _factionSystem);
+        
         // Initialize starter quests
         InitializeQuests();
     }
@@ -637,6 +667,13 @@ public class GameplayState : GameState
             return; // Don't update game while in dungeon menu
         }
         
+        if (_factionMenu.IsActive)
+        {
+            _factionMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in faction menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -740,6 +777,14 @@ public class GameplayState : GameState
                 _previousKeyboardState = keyboardState;
                 return;
             }
+        }
+        
+        // Check for faction menu (R key for "reputation") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
+        {
+            _factionMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
         }
         
         // Check for pause
@@ -1583,6 +1628,11 @@ public class GameplayState : GameState
         if (_dungeonMenu.IsOpen)
         {
             _dungeonMenu.Draw(spriteBatch, Game.GraphicsDevice);
+        }
+        
+        if (_factionMenu.IsActive)
+        {
+            _factionMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         // Draw event notification (on top of most UI but below menus)
