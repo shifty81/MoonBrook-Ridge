@@ -197,8 +197,7 @@ public class PlayerSaveData
     public float Hunger { get; set; }
     public float Thirst { get; set; }
     public int Money { get; set; }
-    public float Mana { get; set; }
-    public float MaxMana { get; set; }
+    // Note: Mana is saved in MagicSaveData, not here
 }
 
 public class TimeSaveData

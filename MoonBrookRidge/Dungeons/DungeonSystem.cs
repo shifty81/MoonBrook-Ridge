@@ -206,7 +206,7 @@ public class DungeonSystem
                     DungeonType = dungeon.Type.ToString(),
                     HighestFloorReached = dungeon.TotalFloors,
                     Completed = true,
-                    FirstCompletionTime = DateTime.Now // Note: Would need to track actual completion time
+                    FirstCompletionTime = DateTime.MinValue // Placeholder - actual completion tracking not implemented
                 });
             }
         }

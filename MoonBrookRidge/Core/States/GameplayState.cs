@@ -1443,9 +1443,7 @@ public class GameplayState : GameState
             MaxEnergy = _player.MaxEnergy,
             Hunger = _player.Hunger,
             Thirst = _player.Thirst,
-            Money = _player.Money,
-            Mana = _magicSystem.Mana,
-            MaxMana = _magicSystem.MaxMana
+            Money = _player.Money
         };
         
         // Save time data

@@ -489,8 +489,11 @@ Comprehensive guides and references:
 - [x] **Dungeon integration** ⭐ **INTEGRATED** - 8 dungeon entrances, dungeon map UI, separate from mines
 - [x] **Advanced quest system** ⭐ **IMPLEMENTED** - Moral choices, branching paths, karma tracking, consequences
 - [x] **Faction system** ⭐ **IMPLEMENTED** - 6 factions, reputation levels, rewards, quest integration
+- [x] **Save/Load for Phase 6** ⭐ **INTEGRATED** - All Phase 6 systems persist across sessions
+- [x] **Phase 6 Quest Integration** ⭐ **INTEGRATED** - 5 quests for dungeons, pets, skills, and magic
 
-See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.
+See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.  
+See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](PHASE_6_SAVE_AND_QUEST_INTEGRATION.md) for integration details.
 
 ## 🤝 Contributing
 
