@@ -116,6 +116,7 @@ The game combines assets from multiple high-quality pixel art packs for visual v
 1. **Sunnyside World** ⭐ **MAIN TILESET** - 16x16px tileset and asset pack for characters, buildings, and terrain (4,096 tiles)
 2. **16x16 Tilemap Collection** - Ground tiles and terrain (legacy/fallback)
 3. **Custom Generated Tileset** - Combined ground tileset (legacy/fallback)
+4. **Textured Placeholder Tiles** ⭐ **NEW!** - Procedurally generated textured tiles (grass, dirt, water, etc.) - See [VISUAL_IMPROVEMENTS.md](VISUAL_IMPROVEMENTS.md)
 
 ### Asset Categories
 - **Terrain**: Sunnyside World tileset with grass, dirt, stone, water, sand, and varied tiles
@@ -158,7 +159,8 @@ Assets are now extensively integrated through MonoGame's Content Pipeline:
 See [ASSET_STATUS_SUMMARY.md](ASSET_STATUS_SUMMARY.md) for complete current status.  
 See [TILESET_GUIDE.md](TILESET_GUIDE.md) for details on the custom ground tileset.  
 See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
-See [ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md) for comprehensive status of what's loaded and what's available.
+See [ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md) for comprehensive status of what's loaded and what's available.  
+See [VISUAL_IMPROVEMENTS.md](VISUAL_IMPROVEMENTS.md) ⭐ **NEW!** for details on textured placeholder tiles.
 
 ### Sprite Categories
 ```
