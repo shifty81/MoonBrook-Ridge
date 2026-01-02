@@ -106,6 +106,24 @@ public class AchievementMenu
             RefreshDisplayedAchievements();
             _scrollOffset = 0;
         }
+        if (keyState.IsKeyDown(Keys.D6) && !_previousKeyState.IsKeyDown(Keys.D6))
+        {
+            _filterCategory = AchievementCategory.Wealth;
+            RefreshDisplayedAchievements();
+            _scrollOffset = 0;
+        }
+        if (keyState.IsKeyDown(Keys.D7) && !_previousKeyState.IsKeyDown(Keys.D7))
+        {
+            _filterCategory = AchievementCategory.Exploration;
+            RefreshDisplayedAchievements();
+            _scrollOffset = 0;
+        }
+        if (keyState.IsKeyDown(Keys.D8) && !_previousKeyState.IsKeyDown(Keys.D8))
+        {
+            _filterCategory = AchievementCategory.Survival;
+            RefreshDisplayedAchievements();
+            _scrollOffset = 0;
+        }
         if (keyState.IsKeyDown(Keys.D0) && !_previousKeyState.IsKeyDown(Keys.D0))
         {
             _filterCategory = null; // Show all
@@ -149,7 +167,7 @@ public class AchievementMenu
         // Filter info
         string filterText = _filterCategory.HasValue 
             ? $"Filter: {_filterCategory.Value}" 
-            : "Filter: All (Press 1-5 to filter, 0 for all)";
+            : "Filter: All (Press 1-8 to filter, 0 for all)";
         Vector2 filterPos = new Vector2(menuX + 10, menuY + 60);
         spriteBatch.DrawString(_font, filterText, filterPos, Color.LightGray * 0.8f);
         

@@ -195,9 +195,10 @@ public class AudioManager
                 MediaPlayer.Play(song);
                 _currentMusicTrack = musicName;
             }
-            catch (Exception)
+            catch (InvalidOperationException ex)
             {
-                // Music playback may fail on some systems, handle gracefully
+                // Music playback may fail on some systems (e.g., no audio device)
+                System.Diagnostics.Debug.WriteLine($"Failed to play music '{musicName}': {ex.Message}");
             }
         }
     }
