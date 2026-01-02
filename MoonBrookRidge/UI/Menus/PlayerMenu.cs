@@ -425,7 +425,7 @@ public class PlayerMenu : TabbedMenu
             bool isUnlocked = skillTree.IsSkillUnlocked(skill.Id);
             Color skillColor = isUnlocked ? Color.LightGreen : Color.Gray;
             
-            string skillText = $"{skill.Name} (Tier {skill.RequiredLevel})";
+            string skillText = $"{skill.Name} (Req Lv {skill.RequiredLevel})";
             spriteBatch.DrawString(font, skillText, new Vector2(x, skillY), skillColor);
             
             skillY += 30;
