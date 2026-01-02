@@ -181,8 +181,10 @@ public static class MineGenConfigApplier
     
     private static void CreateRoom(Tile[,] tiles, int startX, int startY, int width, int height, TileType floorType)
     {
-        int maxX = System.Math.Min(startX + width, tiles.GetLength(0));
-        int maxY = System.Math.Min(startY + height, tiles.GetLength(1));
+        int tilesWidth = tiles.GetLength(0);
+        int tilesHeight = tiles.GetLength(1);
+        int maxX = System.Math.Min(startX + width, tilesWidth);
+        int maxY = System.Math.Min(startY + height, tilesHeight);
         
         for (int x = System.Math.Max(0, startX); x < maxX; x++)
         {
@@ -195,6 +197,8 @@ public static class MineGenConfigApplier
     
     private static void CreateTunnel(Tile[,] tiles, int x1, int y1, int x2, int y2, int width, TileType floorType)
     {
+        int tilesWidth = tiles.GetLength(0);
+        int tilesHeight = tiles.GetLength(1);
         int x = x1;
         int y = y1;
         
@@ -203,7 +207,7 @@ public static class MineGenConfigApplier
         {
             for (int w = 0; w < width; w++)
             {
-                if (x >= 0 && x < tiles.GetLength(0) && y + w >= 0 && y + w < tiles.GetLength(1))
+                if (x >= 0 && x < tilesWidth && y + w >= 0 && y + w < tilesHeight)
                 {
                     tiles[x, y + w] = new Tile(floorType, new Microsoft.Xna.Framework.Vector2(x, y + w));
                 }
@@ -216,7 +220,7 @@ public static class MineGenConfigApplier
         {
             for (int w = 0; w < width; w++)
             {
-                if (x + w >= 0 && x + w < tiles.GetLength(0) && y >= 0 && y < tiles.GetLength(1))
+                if (x + w >= 0 && x + w < tilesWidth && y >= 0 && y < tilesHeight)
                 {
                     tiles[x + w, y] = new Tile(floorType, new Microsoft.Xna.Framework.Vector2(x + w, y));
                 }

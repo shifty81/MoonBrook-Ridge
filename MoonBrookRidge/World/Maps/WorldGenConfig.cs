@@ -181,13 +181,14 @@ public static class WorldGenConfigApplier
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;
         int err = dx - dy;
+        int halfWidth = path.Width / 2;
         
         while (true)
         {
             // Draw path with width
-            for (int wx = -path.Width / 2; wx <= path.Width / 2; wx++)
+            for (int wx = -halfWidth; wx <= halfWidth; wx++)
             {
-                for (int wy = -path.Width / 2; wy <= path.Width / 2; wy++)
+                for (int wy = -halfWidth; wy <= halfWidth; wy++)
                 {
                     int px = x0 + wx;
                     int py = y0 + wy;
