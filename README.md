@@ -352,7 +352,9 @@ Comprehensive guides and references:
 - **[CONTROLS.md](CONTROLS.md)** - Complete control reference
 
 ### Game Development
-- **[TILE_SIZE_GUIDE.md](TILE_SIZE_GUIDE.md)** ⭐ **NEW!** - Why 16×16 is the ideal tile size for the game
+- **[WORLDGEN_ASSET_GUIDE.md](WORLDGEN_ASSET_GUIDE.md)** ⭐ **NEW!** - Asset-driven world generation configuration guide
+- **[WORLDGEN_INTEGRATION_EXAMPLE.md](WORLDGEN_INTEGRATION_EXAMPLE.md)** ⭐ **NEW!** - How to integrate JSON world configs
+- **[TILE_SIZE_GUIDE.md](TILE_SIZE_GUIDE.md)** - Why 16×16 is the ideal tile size for the game
 - **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
 - **[ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
 - **[TILESET_GUIDE.md](TILESET_GUIDE.md)** - Guide to using the custom ground tileset
