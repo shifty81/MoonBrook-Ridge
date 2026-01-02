@@ -537,6 +537,49 @@ public class WorldMap
         return texture;
     }
     
+    /// <summary>
+    /// Grow crops in an area around a center tile (for magic spell)
+    /// </summary>
+    public void GrowCropsInArea(Vector2 centerTile, int radius)
+    {
+        int startX = Math.Max(0, (int)centerTile.X - radius);
+        int endX = Math.Min(_width - 1, (int)centerTile.X + radius);
+        int startY = Math.Max(0, (int)centerTile.Y - radius);
+        int endY = Math.Min(_height - 1, (int)centerTile.Y + radius);
+        
+        for (int x = startX; x <= endX; x++)
+        {
+            for (int y = startY; y <= endY; y++)
+            {
+                var tile = GetTile(x, y);
+                if (tile != null && tile.Crop != null)
+                {
+                    // Advance crop growth by 24 game hours (1 full day)
+                    tile.Crop.UpdateGrowth(24f);
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Water all crops on the entire map (for magic spell)
+    /// </summary>
+    public void WaterAllCrops()
+    {
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var tile = GetTile(x, y);
+                if (tile != null && tile.Crop != null)
+                {
+                    // Mark tile as watered
+                    tile.Water();
+                }
+            }
+        }
+    }
+    
     public int Width => _width;
     public int Height => _height;
 }

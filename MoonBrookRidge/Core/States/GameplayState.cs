@@ -18,6 +18,9 @@ using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Items.Crafting;
 using MoonBrookRidge.Items.Shop;
 using MoonBrookRidge.Quests;
+using MoonBrookRidge.Magic;
+using MoonBrookRidge.Skills;
+using MoonBrookRidge.Pets;
 
 namespace MoonBrookRidge.Core.States;
 
@@ -58,6 +61,15 @@ public class GameplayState : GameState
     private AchievementNotification _achievementNotification;
     private AchievementMenu _achievementMenu;
     private SettingsMenu _settingsMenu;
+    // Phase 6 Systems
+    private MagicSystem _magicSystem;
+    private MagicMenu _magicMenu;
+    private AlchemySystem _alchemySystem;
+    private AlchemyMenu _alchemyMenu;
+    private SkillTreeSystem _skillSystem;
+    private SkillsMenu _skillsMenu;
+    private PetSystem _petSystem;
+    private PetMenu _petMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
@@ -162,6 +174,49 @@ public class GameplayState : GameState
         
         // Initialize settings menu
         _settingsMenu = new SettingsMenu(Game.AudioManager);
+        
+        // Initialize Phase 6 systems
+        _magicSystem = new MagicSystem(100f); // Start with 100 max mana
+        _magicMenu = new MagicMenu(_magicSystem);
+        
+        _alchemySystem = new AlchemySystem();
+        _alchemyMenu = new AlchemyMenu(_alchemySystem, _inventory);
+        
+        _skillSystem = new SkillTreeSystem();
+        _skillsMenu = new SkillsMenu(_skillSystem);
+        
+        _petSystem = new PetSystem();
+        _petMenu = new PetMenu(_petSystem);
+        
+        // Give player some starter spells for testing
+        _magicSystem.LearnSpell("heal");
+        _magicSystem.LearnSpell("light");
+        
+        // Hook up spell effects
+        _magicSystem.OnSpellCast += (spell) =>
+        {
+            // Apply spell effects based on type
+            if (spell.Id == "heal")
+            {
+                _player.ModifyHealth(spell.EffectValue);
+            }
+            else if (spell.Id == "growth")
+            {
+                // Grow crops in 3x3 area around player
+                Vector2 playerTile = new Vector2(
+                    (int)(_player.Position.X / GameConstants.TILE_SIZE),
+                    (int)(_player.Position.Y / GameConstants.TILE_SIZE)
+                );
+                _worldMap.GrowCropsInArea(playerTile, 1); // 1 tile radius = 3x3
+            }
+            else if (spell.Id == "water")
+            {
+                // Water all crops on the farm
+                _worldMap.WaterAllCrops();
+            }
+            // Other spells (speed, light, fireball, teleport, summon) will be implemented
+            // when their required systems are added (buff system, lighting, combat, etc.)
+        };
         
         // Initialize save system
         _saveSystem = new SaveSystem();
@@ -468,6 +523,34 @@ public class GameplayState : GameState
             return; // Don't update game while in settings menu
         }
         
+        if (_magicMenu.IsActive)
+        {
+            _magicMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in magic menu
+        }
+        
+        if (_alchemyMenu.IsActive)
+        {
+            _alchemyMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in alchemy menu
+        }
+        
+        if (_skillsMenu.IsActive)
+        {
+            _skillsMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in skills menu
+        }
+        
+        if (_petMenu.IsActive)
+        {
+            _petMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in pet menu
+        }
+        
         // Check for crafting menu (K key) - with debouncing
         if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
         {
@@ -529,6 +612,38 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for magic menu (M key for "magic") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
+        {
+            _magicMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for alchemy menu (L key for "alchemy/lab") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.L) && !_previousKeyboardState.IsKeyDown(Keys.L))
+        {
+            _alchemyMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for skills menu (J key for "skills/jobs") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.J) && !_previousKeyboardState.IsKeyDown(Keys.J))
+        {
+            _skillsMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for pet menu (P key for "pets") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
+        {
+            _petMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Check for pause
         if (_inputManager.IsOpenMenuPressed())
         {
@@ -559,6 +674,10 @@ public class GameplayState : GameState
         
         // Update particle system
         _particleSystem.Update(gameTime);
+        
+        // Update Phase 6 systems
+        _magicSystem.Update(gameTime);
+        _petSystem.Update(gameTime);
         
         // Update event system
         _eventSystem.Update(gameTime);
@@ -1082,6 +1201,27 @@ public class GameplayState : GameState
         if (_settingsMenu.IsVisible)
         {
             _settingsMenu.Draw(spriteBatch, Game.GraphicsDevice);
+        }
+        
+        // Draw Phase 6 menus
+        if (_magicMenu.IsActive)
+        {
+            _magicMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_alchemyMenu.IsActive)
+        {
+            _alchemyMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_skillsMenu.IsActive)
+        {
+            _skillsMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_petMenu.IsActive)
+        {
+            _petMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         // Draw event notification (on top of most UI but below menus)

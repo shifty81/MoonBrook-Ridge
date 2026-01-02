@@ -351,8 +351,11 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Plant Seed / Interact | X |
 | Open Menu/Inventory | E or Esc |
 | Open Journal/Quests | F |
-| Open Map | M |
-| **Open Crafting Menu** ⭐ **NEW** | **K** |
+| **Open Magic Spell Book** ⭐ **NEW!** | **M** |
+| **Open Alchemy Lab** ⭐ **NEW!** | **L** |
+| **Open Skills Menu** ⭐ **NEW!** | **J** |
+| **Open Pet Menu** ⭐ **NEW!** | **P** |
+| **Open Crafting Menu** ⭐ | **K** |
 | **Open Shop Menu** ⭐ **NEW** | **B** |
 | **Open Building Menu** ⭐ **NEW** | **H** |
 | **Gift to NPC** ⭐ **NEW** | **G** |
