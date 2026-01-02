@@ -348,6 +348,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Move Right | D or → |
 | Run | Hold Shift |
 | Use Tool | C |
+| **Attack (Combat)** ⭐ **NEW!** | **Space** |
 | Plant Seed / Interact | X |
 | Open Menu/Inventory | E or Esc |
 | Open Journal/Quests | F |
@@ -455,8 +456,9 @@ Comprehensive guides and references:
 - [x] **Pet/Companion System** ⭐ **IMPLEMENTED** - 10 pet types with taming, abilities, and management
 - [x] **Dungeon System** ⭐ **IMPLEMENTED** - Procedural generation, multi-floor dungeons, 8 dungeon types
 - [x] **Biome System** ⭐ **IMPLEMENTED** - 12 unique biomes with resources and creatures
-- [ ] UI integration for new systems (magic, alchemy, skills, pets)
-- [ ] Combat integration into game loop
+- [x] UI integration for new systems (magic, alchemy, skills, pets)
+- [x] Combat integration into game loop ⭐ **INTEGRATED** - Enemies spawn in mines, real-time combat with Space key
+- [ ] Dungeon integration (separate from mines with themed enemies)
 - [ ] Advanced quest system with moral choices and branching
 - [ ] Faction system
 
