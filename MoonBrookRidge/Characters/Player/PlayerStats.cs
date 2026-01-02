@@ -13,6 +13,8 @@ public class PlayerStats
     private float _maxHealth;
     private float _energy;
     private float _maxEnergy;
+    private float _mana;
+    private float _maxMana;
     
     // Survival stats (0-100%)
     private float _hunger;
@@ -44,6 +46,8 @@ public class PlayerStats
         _health = _maxHealth;
         _maxEnergy = 100f;
         _energy = _maxEnergy;
+        _maxMana = 100f;
+        _mana = _maxMana;
         
         // Start with full hunger and thirst
         _hunger = 100f;
@@ -192,12 +196,15 @@ public class PlayerStats
     public float MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public float Energy { get => _energy; set => _energy = MathHelper.Clamp(value, 0, _maxEnergy); }
     public float MaxEnergy { get => _maxEnergy; set => _maxEnergy = value; }
+    public float Mana { get => _mana; set => _mana = MathHelper.Clamp(value, 0, _maxMana); }
+    public float MaxMana { get => _maxMana; set => _maxMana = value; }
     public float Hunger { get => _hunger; set => _hunger = MathHelper.Clamp(value, 0, 100f); }
     public float Thirst { get => _thirst; set => _thirst = MathHelper.Clamp(value, 0, 100f); }
     public int Money { get => _money; set => _money = Math.Max(0, value); }
     
     public void ModifyHealth(float amount) => Health += amount;
     public void ModifyEnergy(float amount) => Energy += amount;
+    public void ModifyMana(float amount) => Mana += amount;
     public void ModifyMoney(int amount) => Money += amount;
     
     /// <summary>
