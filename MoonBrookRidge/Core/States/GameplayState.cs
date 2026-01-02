@@ -200,10 +200,6 @@ public class GameplayState : GameState
             {
                 _player.ModifyHealth(spell.EffectValue);
             }
-            else if (spell.Id == "speed")
-            {
-                // Speed buff would be applied here (needs player buff system)
-            }
             else if (spell.Id == "growth")
             {
                 // Grow crops in 3x3 area around player
@@ -218,24 +214,8 @@ public class GameplayState : GameState
                 // Water all crops on the farm
                 _worldMap.WaterAllCrops();
             }
-        };
-        
-        // Hook up alchemy brewing
-        _alchemySystem.OnPotionBrewed += (potion) =>
-        {
-            // Potion is already added to inventory by AlchemySystem
-        };
-        
-        // Hook up skill unlocks
-        _skillSystem.OnSkillUnlocked += (skill) =>
-        {
-            // Skill unlocked notification could go here
-        };
-        
-        // Hook up pet taming
-        _petSystem.OnPetTamed += (pet) =>
-        {
-            // Pet tamed notification could go here
+            // Other spells (speed, light, fireball, teleport, summon) will be implemented
+            // when their required systems are added (buff system, lighting, combat, etc.)
         };
         
         // Initialize save system
