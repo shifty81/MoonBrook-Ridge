@@ -371,6 +371,147 @@ public class GameplayState : GameState
             // when their required systems are added (buff system, lighting, combat, etc.)
         };
         
+        // Hook up quest tracking events for Phase 6 objectives
+        
+        // Track dungeon entry
+        _dungeonSystem.OnDungeonEntered += (dungeon) =>
+        {
+            // Update all active quests that require entering this dungeon type
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.EnterDungeon && 
+                        objective.TargetId == dungeon.Type.ToString() && 
+                        !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track room clearing
+        _dungeonSystem.OnRoomCleared += (room) =>
+        {
+            // Update all active quests that require clearing rooms
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.ClearRooms && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track dungeon completion
+        _dungeonSystem.OnDungeonCleared += (dungeon) =>
+        {
+            // Update all active quests that require completing a dungeon
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.CompleteDungeon && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track pet taming
+        _petSystem.OnPetTamed += (pet) =>
+        {
+            // Update all active quests that require taming a pet
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.TamePet && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track skill level ups
+        _skillSystem.OnSkillLevelUp += (category, level) =>
+        {
+            // Update all active quests that require reaching a skill level
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.ReachSkillLevel && !objective.IsCompleted)
+                    {
+                        // Check if this is the right category and level
+                        if (objective.TargetId == category.ToString() && level >= objective.RequiredProgress)
+                        {
+                            objective.CurrentProgress = level;
+                            objective.IsCompleted = true;
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Track skill unlocking
+        _skillSystem.OnSkillUnlocked += (skill) =>
+        {
+            // Update all active quests that require unlocking a skill
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.UnlockSkill && !objective.IsCompleted)
+                    {
+                        // For now, we track any skill unlock (can be enhanced later to track specific categories)
+                        if (objective.TargetId == "Any")
+                        {
+                            _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Track spell learning
+        _magicSystem.OnSpellLearned += (spell) =>
+        {
+            // Update all active quests that require learning a spell
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.LearnSpell && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track spell casting (already has OnSpellCast event handler above)
+        _magicSystem.OnSpellCast += (spell) =>
+        {
+            // Update all active quests that require casting spells
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.CastSpell && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
         // Initialize save system
         _saveSystem = new SaveSystem();
         
