@@ -31,6 +31,20 @@ public class Camera2D
                Matrix.CreateScale(_zoom, _zoom, 1);
     }
     
+    /// <summary>
+    /// Converts screen coordinates to world coordinates
+    /// </summary>
+    public Vector2 ScreenToWorld(Vector2 screenPosition)
+    {
+        // Inverse transform: screen -> world
+        // First undo scaling, then undo translation
+        Vector2 worldPos = new Vector2(
+            screenPosition.X / _zoom + _position.X,
+            screenPosition.Y / _zoom + _position.Y
+        );
+        return worldPos;
+    }
+    
     public Vector2 Position
     {
         get => _position;

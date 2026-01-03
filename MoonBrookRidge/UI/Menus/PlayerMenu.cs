@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -225,9 +226,9 @@ public class PlayerMenu : TabbedMenu
                 HandleCraftButtonClick(mouseState))
             {
                 var selectedRecipe = recipes[_selectedCraftingRecipe];
-                if (_craftingSystem.CanCraft(selectedRecipe, _inventory))
+                if (_craftingSystem.CanCraft(selectedRecipe.Name, _inventory))
                 {
-                    _craftingSystem.Craft(selectedRecipe, _inventory);
+                    _craftingSystem.Craft(selectedRecipe.Name, _inventory);
                 }
             }
         }
@@ -381,8 +382,8 @@ public class PlayerMenu : TabbedMenu
                 new Vector2(x + PADDING + 10, categoryY + i * 60 + 15), textColor);
             
             // Draw level and XP
-            int level = _skillSystem.GetLevel(category);
-            float xp = _skillSystem.GetExperience(category);
+            int level = _skillSystem.GetSkillLevel(category);
+            float xp = _skillSystem.GetSkillExperience(category);
             spriteBatch.DrawString(font, $"Lv {level}", 
                 new Vector2(x + PADDING + 150, categoryY + i * 60 + 15), Color.LightGreen);
         }
@@ -393,10 +394,11 @@ public class PlayerMenu : TabbedMenu
     
     private void DrawSkillCategoryDetails(SpriteBatch spriteBatch, SpriteFont font, int x, int y, int maxWidth)
     {
-        int level = _skillSystem.GetLevel(_selectedSkillCategory);
-        float currentXP = _skillSystem.GetExperience(_selectedSkillCategory);
-        float xpForNextLevel = _skillSystem.GetExperienceForLevel(level + 1);
-        int skillPoints = _skillSystem.SkillPoints;
+        var skillTree = _skillSystem.GetSkillTree(_selectedSkillCategory);
+        int level = _skillSystem.GetSkillLevel(_selectedSkillCategory);
+        float currentXP = _skillSystem.GetSkillExperience(_selectedSkillCategory);
+        float xpForNextLevel = GetRequiredExperienceForLevel(level + 1);
+        int skillPoints = _skillSystem.AvailableSkillPoints;
         
         spriteBatch.DrawString(font, $"Level: {level}", new Vector2(x, y), Color.White);
         spriteBatch.DrawString(font, $"XP: {(int)currentXP} / {(int)xpForNextLevel}", new Vector2(x, y + 30), Color.LightBlue);
@@ -412,7 +414,7 @@ public class PlayerMenu : TabbedMenu
         DrawBorder(spriteBatch, x, y + 100, barWidth, barHeight, 2, Color.White);
         
         // List skills for this category
-        var skills = _skillSystem.GetSkillsForCategory(_selectedSkillCategory);
+        var skills = skillTree.GetAllSkills();
         int skillY = y + 140;
         int displayedSkills = 0;
         
@@ -420,15 +422,21 @@ public class PlayerMenu : TabbedMenu
         {
             if (displayedSkills >= 6) break; // Limit display
             
-            bool isUnlocked = _skillSystem.IsSkillUnlocked(skill.Id);
+            bool isUnlocked = skillTree.IsSkillUnlocked(skill.Id);
             Color skillColor = isUnlocked ? Color.LightGreen : Color.Gray;
             
-            string skillText = $"{skill.Name} (Tier {skill.Tier})";
+            string skillText = $"{skill.Name} (Req Lv {skill.RequiredLevel})";
             spriteBatch.DrawString(font, skillText, new Vector2(x, skillY), skillColor);
             
             skillY += 30;
             displayedSkills++;
         }
+    }
+    
+    // Helper method to calculate required XP for a level (matches SkillTreeSystem formula)
+    private float GetRequiredExperienceForLevel(int level)
+    {
+        return 100f * MathF.Pow(level, 1.5f);
     }
     
     private void DrawSocialTab(SpriteBatch spriteBatch, SpriteFont font, int x, int y, int width, int height)
@@ -514,7 +522,7 @@ public class PlayerMenu : TabbedMenu
         for (int i = 0; i < displayCount; i++)
         {
             bool isSelected = (i == _selectedCraftingRecipe);
-            bool canCraft = _craftingSystem.CanCraft(recipes[i], _inventory);
+            bool canCraft = _craftingSystem.CanCraft(recipes[i].Name, _inventory);
             
             Color bgColor = isSelected ? new Color(80, 70, 60) : new Color(50, 45, 40);
             spriteBatch.Draw(_pixelTexture, 
@@ -523,7 +531,7 @@ public class PlayerMenu : TabbedMenu
             Color textColor = canCraft ? Color.White : Color.Gray;
             if (isSelected) textColor = Color.Yellow;
             
-            spriteBatch.DrawString(font, recipes[i].OutputItem.Name, 
+            spriteBatch.DrawString(font, recipes[i].OutputName, 
                 new Vector2(x + PADDING + 10, recipeY + i * 45 + 10), textColor);
         }
         
@@ -537,7 +545,7 @@ public class PlayerMenu : TabbedMenu
             spriteBatch.DrawString(font, "Recipe Details:", new Vector2(detailX, detailY), Color.White);
             detailY += 40;
             
-            spriteBatch.DrawString(font, $"Output: {recipe.OutputItem.Name}", 
+            spriteBatch.DrawString(font, $"Output: {recipe.OutputName} x{recipe.OutputQuantity}", 
                 new Vector2(detailX, detailY), Color.LightGreen);
             detailY += 40;
             
@@ -546,16 +554,16 @@ public class PlayerMenu : TabbedMenu
             
             foreach (var ingredient in recipe.Ingredients)
             {
-                int owned = _inventory.GetItemCount(ingredient.Item.Name);
-                Color ingredColor = (owned >= ingredient.Quantity) ? Color.LightGreen : Color.Red;
+                int owned = _inventory.GetItemCount(ingredient.Key);
+                Color ingredColor = (owned >= ingredient.Value) ? Color.LightGreen : Color.Red;
                 
-                spriteBatch.DrawString(font, $"  {ingredient.Item.Name} x{ingredient.Quantity} ({owned})", 
+                spriteBatch.DrawString(font, $"  {ingredient.Key} x{ingredient.Value} ({owned})", 
                     new Vector2(detailX, detailY), ingredColor);
                 detailY += 25;
             }
             
             // Craft button
-            bool canCraft = _craftingSystem.CanCraft(recipe, _inventory);
+            bool canCraft = _craftingSystem.CanCraft(recipe.Name, _inventory);
             Rectangle craftButton = new Rectangle(
                 x + width - PADDING - 150,
                 y + height - PADDING - 50,
