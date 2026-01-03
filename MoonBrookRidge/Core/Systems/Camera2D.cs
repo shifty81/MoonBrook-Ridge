@@ -56,4 +56,28 @@ public class Camera2D
         get => _zoom;
         set => _zoom = MathHelper.Clamp(value, 0.5f, 4f);
     }
+    
+    /// <summary>
+    /// Check if a world position is visible in the camera view
+    /// </summary>
+    public bool IsInView(Vector2 worldPosition, int objectWidth, int objectHeight)
+    {
+        // Calculate visible bounds
+        Rectangle viewBounds = new Rectangle(
+            (int)_position.X,
+            (int)_position.Y,
+            (int)(_viewport.Width / _zoom),
+            (int)(_viewport.Height / _zoom)
+        );
+        
+        // Check if object intersects with view bounds
+        Rectangle objectBounds = new Rectangle(
+            (int)worldPosition.X,
+            (int)worldPosition.Y,
+            objectWidth,
+            objectHeight
+        );
+        
+        return viewBounds.Intersects(objectBounds);
+    }
 }
