@@ -15,6 +15,7 @@ public class Minimap
     private readonly int _minimapSize = 150; // Size in pixels
     private readonly int _viewRadius = 10; // How many tiles to show around player
     private Texture2D? _minimapTexture;
+    private Texture2D? _pixelTexture;
     private bool _isVisible;
     private Vector2 _position;
     
@@ -37,6 +38,8 @@ public class Minimap
     public void Initialize(GraphicsDevice graphicsDevice)
     {
         _minimapTexture = new Texture2D(graphicsDevice, _minimapSize, _minimapSize);
+        _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
+        _pixelTexture.SetData(new[] { Color.White });
     }
     
     /// <summary>
@@ -151,7 +154,7 @@ public class Minimap
         
         // Draw label
         var labelPos = new Vector2(_position.X, _position.Y + _minimapSize + 5);
-        spriteBatch.DrawString(font, "Map (M to toggle)", labelPos, Color.White);
+        spriteBatch.DrawString(font, "Map (Tab to toggle)", labelPos, Color.White);
     }
     
     /// <summary>
@@ -159,9 +162,10 @@ public class Minimap
     /// </summary>
     private void DrawRectangle(SpriteBatch spriteBatch, Rectangle rect, Color color)
     {
-        var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
-        spriteBatch.Draw(pixel, rect, color);
+        if (_pixelTexture != null)
+        {
+            spriteBatch.Draw(_pixelTexture, rect, color);
+        }
     }
     
     /// <summary>

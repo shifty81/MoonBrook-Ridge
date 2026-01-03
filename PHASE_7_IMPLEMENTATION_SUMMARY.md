@@ -228,7 +228,7 @@ Direct tool selection via number keys.
 - **Fast Travel**: Increased movement speed
 - **Types**: Horse, Griffin, Dragon (progressively faster)
 - **Stamina**: Mounts have stamina that depletes
-- **召唤**: Whistle to summon mount
+- **Summon**: Whistle to summon mount
 
 ### New Dungeon Types (3 planned)
 - **Crystal Caverns**: Ice-themed with gem rewards

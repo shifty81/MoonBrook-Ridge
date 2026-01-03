@@ -800,6 +800,8 @@ public class GameplayState : GameState
         
         // Initialize Phase 7 UI components
         _minimap.Initialize(Game.GraphicsDevice);
+        _performanceMonitor.Initialize(_pixelTexture);
+        _notificationSystem.Initialize(_pixelTexture);
         
         // Initialize starter quests
         InitializeQuests();

@@ -22,6 +22,7 @@ public class PerformanceMonitor
     private long _currentMemory;
     private double _updateTime;
     private double _drawTime;
+    private Texture2D? _pixelTexture;
     
     public bool IsVisible { get; set; }
     public double FPS => _fps;
@@ -35,6 +36,14 @@ public class PerformanceMonitor
         _fpsHistory = new Queue<double>(HistorySize);
         _memoryHistory = new Queue<long>(HistorySize);
         IsVisible = false;
+    }
+    
+    /// <summary>
+    /// Initialize with a shared pixel texture
+    /// </summary>
+    public void Initialize(Texture2D pixelTexture)
+    {
+        _pixelTexture = pixelTexture;
     }
     
     /// <summary>
@@ -89,7 +98,7 @@ public class PerformanceMonitor
     /// </summary>
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, int screenWidth, int screenHeight)
     {
-        if (!IsVisible) return;
+        if (!IsVisible || _pixelTexture == null) return;
         
         var position = new Vector2(10, screenHeight - 120);
         var bgColor = new Color(0, 0, 0, 180);
@@ -97,7 +106,7 @@ public class PerformanceMonitor
         
         // Draw background
         var bgRect = new Rectangle((int)position.X - 5, (int)position.Y - 5, 250, 110);
-        DrawRectangle(spriteBatch, bgRect, bgColor);
+        spriteBatch.Draw(_pixelTexture, bgRect, bgColor);
         
         // Draw FPS
         spriteBatch.DrawString(font, $"FPS: {_fps:F1} (Avg: {_averageFps:F1})", position, textColor);
@@ -127,15 +136,5 @@ public class PerformanceMonitor
         {
             spriteBatch.DrawString(font, "⚠ Moderate FPS", position, Color.Yellow);
         }
-    }
-    
-    /// <summary>
-    /// Helper to draw a filled rectangle
-    /// </summary>
-    private void DrawRectangle(SpriteBatch spriteBatch, Rectangle rect, Color color)
-    {
-        var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
-        spriteBatch.Draw(pixel, rect, color);
     }
 }

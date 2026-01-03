@@ -14,12 +14,21 @@ public class NotificationSystem
     private readonly int _maxNotifications = 5;
     private readonly int _screenWidth;
     private readonly int _screenHeight;
+    private Texture2D? _pixelTexture;
     
     public NotificationSystem(int screenWidth, int screenHeight)
     {
         _activeNotifications = new List<Notification>();
         _screenWidth = screenWidth;
         _screenHeight = screenHeight;
+    }
+    
+    /// <summary>
+    /// Initialize with a shared pixel texture
+    /// </summary>
+    public void Initialize(Texture2D pixelTexture)
+    {
+        _pixelTexture = pixelTexture;
     }
     
     /// <summary>
@@ -59,13 +68,15 @@ public class NotificationSystem
     /// </summary>
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)
     {
+        if (_pixelTexture == null) return;
+        
         var yOffset = _screenHeight - 200;
         
         for (int i = 0; i < _activeNotifications.Count; i++)
         {
             var notification = _activeNotifications[i];
             var position = new Vector2(10, yOffset - (i * 40));
-            notification.Draw(spriteBatch, font, position);
+            notification.Draw(spriteBatch, font, position, _pixelTexture);
         }
     }
     
@@ -91,7 +102,7 @@ public class NotificationSystem
             _elapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Vector2 position)
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Vector2 position, Texture2D pixelTexture)
         {
             // Calculate fade out alpha
             var fadeStart = _duration - 0.5f;
@@ -116,10 +127,10 @@ public class NotificationSystem
                 (int)textSize.X + padding * 2,
                 (int)textSize.Y + padding
             );
-            DrawRectangle(spriteBatch, bgRect, bgColor);
+            spriteBatch.Draw(pixelTexture, bgRect, bgColor);
             
             // Draw border
-            DrawRectangleBorder(spriteBatch, bgRect, GetBorderColor(_type) * alpha, 2);
+            DrawRectangleBorder(spriteBatch, bgRect, GetBorderColor(_type) * alpha, 2, pixelTexture);
             
             // Draw text
             spriteBatch.DrawString(font, _message, position + new Vector2(padding, padding / 2), textColor);
@@ -149,26 +160,16 @@ public class NotificationSystem
             };
         }
         
-        private void DrawRectangle(SpriteBatch spriteBatch, Rectangle rect, Color color)
+        private void DrawRectangleBorder(SpriteBatch spriteBatch, Rectangle rect, Color color, int thickness, Texture2D pixelTexture)
         {
-            var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-            pixel.SetData(new[] { Color.White });
-            spriteBatch.Draw(pixel, rect, color);
-        }
-        
-        private void DrawRectangleBorder(SpriteBatch spriteBatch, Rectangle rect, Color color, int thickness)
-        {
-            var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-            pixel.SetData(new[] { Color.White });
-            
             // Top
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
+            spriteBatch.Draw(pixelTexture, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
             // Bottom
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y + rect.Height - thickness, rect.Width, thickness), color);
+            spriteBatch.Draw(pixelTexture, new Rectangle(rect.X, rect.Y + rect.Height - thickness, rect.Width, thickness), color);
             // Left
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
+            spriteBatch.Draw(pixelTexture, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
             // Right
-            spriteBatch.Draw(pixel, new Rectangle(rect.X + rect.Width - thickness, rect.Y, thickness, rect.Height), color);
+            spriteBatch.Draw(pixelTexture, new Rectangle(rect.X + rect.Width - thickness, rect.Y, thickness, rect.Height), color);
         }
     }
 }
