@@ -78,6 +78,7 @@ public class GameplayState : GameState
     private PetMenu _petMenu;
     private List<WildPet> _wildPets;
     private CombatSystem _combatSystem;
+    private AutoFireSystem _autoFireSystem; // Phase 8: Auto-shooter combat
     private ProjectileSystem _projectileSystem;
     private Dungeons.DungeonSystem _dungeonSystem;
     private DungeonMenu _dungeonMenu;
@@ -222,6 +223,73 @@ public class GameplayState : GameState
         
         // Initialize Combat System
         _combatSystem = new CombatSystem();
+        
+        // Initialize Auto-Fire System (Phase 8)
+        _autoFireSystem = new AutoFireSystem();
+        _autoFireSystem.IsAutoFireEnabled = true; // Auto-fire on by default
+        _autoFireSystem.SetFiringPattern(FiringPattern.Circle360); // Target nearest enemy
+        
+        // Hook up auto-fire to projectile system
+        _autoFireSystem.OnAutoFire += (position, damage, weaponId) =>
+        {
+            // Find target direction
+            var enemies = _combatSystem.GetActiveEnemies();
+            Enemy nearestEnemy = null;
+            float nearestDistance = float.MaxValue;
+            
+            foreach (var enemy in enemies)
+            {
+                float distance = Vector2.Distance(position, enemy.Position);
+                if (distance < nearestDistance)
+                {
+                    nearestEnemy = enemy;
+                    nearestDistance = distance;
+                }
+            }
+            
+            if (nearestEnemy != null)
+            {
+                Vector2 direction = nearestEnemy.Position - position;
+                if (direction.Length() > 0)
+                    direction.Normalize();
+                
+                // Get the weapon for energy/mana cost
+                var currentWeapon = _combatSystem.GetEquippedWeapon();
+                if (currentWeapon != null)
+                {
+                    // Consume energy or mana
+                    if (currentWeapon.UsesMana)
+                    {
+                        _magicSystem.ConsumeMana(currentWeapon.EnergyCost);
+                    }
+                    else
+                    {
+                        _player.Stats.ConsumeEnergy(currentWeapon.EnergyCost);
+                    }
+                }
+                
+                // Determine projectile type based on weapon
+                ProjectileType projType = weaponId switch
+                {
+                    "wooden_bow" or "longbow" => ProjectileType.Arrow,
+                    "crossbow" => ProjectileType.Bolt,
+                    "magic_staff" or "fire_wand" or "arcane_staff" => ProjectileType.Fireball,
+                    _ => ProjectileType.Arrow
+                };
+                
+                // Spawn auto-fire projectile
+                float projectileSpeed = 300f;
+                Vector2 velocity = direction * projectileSpeed;
+                _projectileSystem.SpawnProjectile(
+                    position,
+                    velocity,
+                    projType,
+                    damage,
+                    3.0f, // 3 second lifetime
+                    "player"
+                );
+            }
+        };
         
         // Initialize Projectile System (Phase 7.4)
         _projectileSystem = new ProjectileSystem();
@@ -1507,6 +1575,41 @@ public class GameplayState : GameState
                     enemy.Attack();
                     _combatSystem.PlayerTakeDamage(enemy.Damage);
                 }
+            }
+        }
+        
+        // Auto-fire system - automatically shoots at nearby enemies (Phase 8)
+        var autoFireWeapon = _combatSystem.GetEquippedWeapon();
+        if (autoFireWeapon != null && _autoFireSystem.IsAutoFireEnabled)
+        {
+            // Calculate player facing angle (0 = right, 90 = down, 180 = left, 270 = up)
+            float playerFacing = _player.Facing switch
+            {
+                Direction.Right => 0f,
+                Direction.Down => 90f,
+                Direction.Left => 180f,
+                Direction.Up => 270f,
+                _ => 0f
+            };
+            
+            // Check energy/mana requirements for auto-fire
+            bool canAutoFire = false;
+            if (autoFireWeapon.UsesMana)
+            {
+                canAutoFire = _magicSystem.Mana >= autoFireWeapon.EnergyCost;
+            }
+            else
+            {
+                canAutoFire = _player.Energy >= autoFireWeapon.EnergyCost;
+            }
+            
+            if (canAutoFire)
+            {
+                // Update auto-fire system
+                _autoFireSystem.Update(gameTime, _player.Position, autoFireWeapon, enemies, playerFacing);
+                
+                // Note: Energy/mana consumption happens in the OnAutoFire event handler
+                // We should consume resources when firing
             }
         }
         
