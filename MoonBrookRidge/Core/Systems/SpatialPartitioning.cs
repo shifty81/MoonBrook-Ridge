@@ -147,19 +147,14 @@ public class Quadtree
                 Split();
             }
             
-            // Move objects to children if possible
-            int i = 0;
-            while (i < _objects.Count)
+            // Move objects to children if possible (use reverse loop for efficient removal)
+            for (int i = _objects.Count - 1; i >= 0; i--)
             {
                 int index = GetIndex(_objects[i].GetBounds());
                 if (index != -1)
                 {
                     _nodes[index].Insert(_objects[i]);
                     _objects.RemoveAt(i);
-                }
-                else
-                {
-                    i++;
                 }
             }
         }

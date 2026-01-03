@@ -49,7 +49,7 @@ public class EntityFrustumCulling
     }
     
     /// <summary>
-    /// Checks if an entity should be rendered (is visible on screen)
+    /// Checks if an entity should be rendered (is within visible bounds including buffer)
     /// </summary>
     /// <param name="position">Entity position</param>
     /// <returns>True if entity should be rendered</returns>
@@ -59,7 +59,7 @@ public class EntityFrustumCulling
     }
     
     /// <summary>
-    /// Checks if an entity should be rendered (with custom bounds)
+    /// Checks if an entity should be rendered (with custom bounds including buffer)
     /// </summary>
     /// <param name="bounds">Entity bounds</param>
     /// <returns>True if entity should be rendered</returns>
@@ -69,7 +69,7 @@ public class EntityFrustumCulling
     }
     
     /// <summary>
-    /// Checks if an entity should be updated (is near the viewport)
+    /// Checks if an entity should be updated (is within update bounds including buffer)
     /// </summary>
     /// <param name="position">Entity position</param>
     /// <returns>True if entity should be updated</returns>
