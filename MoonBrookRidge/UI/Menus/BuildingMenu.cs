@@ -227,7 +227,7 @@ public class BuildingMenu
                 DrawTextWithShadow(spriteBatch, font, materialsText, materialsPos, materialsColor, 0.7f);
                 
                 // Draw affordability status
-                string status = canAfford ? "✓ Can Build" : "✗ Insufficient Resources";
+                string status = canAfford ? "[X] Can Build" : "[ ] Insufficient Resources";
                 Vector2 statusSize = font.MeasureString(status);
                 Vector2 statusPos = new Vector2(buildingRect.Right - statusSize.X - 10, 
                                                buildingRect.Y + 10);
@@ -237,7 +237,7 @@ public class BuildingMenu
         }
         
         // Draw controls hint at bottom
-        string hint = "↑↓: Navigate | Enter: Build | Esc: Close";
+        string hint = "Up/Down: Navigate | Enter: Build | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);

@@ -122,29 +122,29 @@ public class HUDManager
         
         if (player.Stats.IsHungerCritical())
         {
-            DrawTextWithShadow(spriteBatch, font, "⚠ STARVING!", warningPos, Color.Red);
+            DrawTextWithShadow(spriteBatch, font, "[!] STARVING!", warningPos, Color.Red);
             warningPos.Y += 20;
         }
         else if (player.Stats.IsHungerLow())
         {
-            DrawTextWithShadow(spriteBatch, font, "⚠ Hungry", warningPos, Color.Orange);
+            DrawTextWithShadow(spriteBatch, font, "[!] Hungry", warningPos, Color.Orange);
             warningPos.Y += 20;
         }
         
         if (player.Stats.IsThirstCritical())
         {
-            DrawTextWithShadow(spriteBatch, font, "⚠ DEHYDRATED!", warningPos, Color.Red);
+            DrawTextWithShadow(spriteBatch, font, "[!] DEHYDRATED!", warningPos, Color.Red);
             warningPos.Y += 20;
         }
         else if (player.Stats.IsThirstLow())
         {
-            DrawTextWithShadow(spriteBatch, font, "⚠ Thirsty", warningPos, Color.Orange);
+            DrawTextWithShadow(spriteBatch, font, "[!] Thirsty", warningPos, Color.Orange);
             warningPos.Y += 20;
         }
         
         if (player.Energy < 20f)
         {
-            DrawTextWithShadow(spriteBatch, font, "⚠ Exhausted", warningPos, Color.Yellow);
+            DrawTextWithShadow(spriteBatch, font, "[!] Exhausted", warningPos, Color.Yellow);
         }
     }
     

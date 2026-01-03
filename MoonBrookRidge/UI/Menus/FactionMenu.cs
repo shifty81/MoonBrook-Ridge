@@ -170,7 +170,7 @@ public class FactionMenu
         }
         
         // Instructions
-        string instructions = "↑↓: Navigate | R/ESC: Close";
+        string instructions = "Up/Down: Navigate | R/ESC: Close";
         Vector2 instructionsSize = font.MeasureString(instructions);
         spriteBatch.DrawString(font, instructions, 
             new Vector2(menuX + menuWidth / 2 - instructionsSize.X / 2, menuY + menuHeight - 30), 
@@ -211,7 +211,7 @@ public class FactionMenu
         {
             bool isUnlocked = reward.RequiredLevel <= currentLevel;
             Color rewardColor = isUnlocked ? _unlockedColor : _lockedColor;
-            string prefix = isUnlocked ? "✓" : "✗";
+            string prefix = isUnlocked ? "[X]" : "[ ]";
             string rewardText = $"{prefix} [{GetReputationLevelText(reward.RequiredLevel)}] {reward.Name}";
             
             spriteBatch.DrawString(font, rewardText, 

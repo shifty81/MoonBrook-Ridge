@@ -216,7 +216,7 @@ public class GiftMenu
         }
         
         // Instructions
-        string instructions = "↑↓: Select | Enter/X: Give | Esc/G: Close";
+        string instructions = "Up/Down: Select | Enter/X: Give | Esc/G: Close";
         Vector2 instructSize = font.MeasureString(instructions);
         spriteBatch.DrawString(font, instructions,
             new Vector2(menuX + MENU_WIDTH / 2 - instructSize.X / 2, menuY + PADDING + 60),

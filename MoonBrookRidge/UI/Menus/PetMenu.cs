@@ -214,7 +214,7 @@ public class PetMenu
                                   Color.Cyan * 0.9f);
                 
                 // Draw status
-                string status = isActive ? "✓ Active" : "○ Inactive";
+                string status = isActive ? "[X] Active" : "[ ] Inactive";
                 Vector2 statusSize = font.MeasureString(status);
                 Vector2 statusPos = new Vector2(petRect.Right - statusSize.X - 10, 
                                                 petRect.Y + (petRect.Height - statusSize.Y) / 2);
@@ -224,7 +224,7 @@ public class PetMenu
         }
         
         // Draw controls hint at bottom
-        string hint = "↑↓: Navigate | Enter: Summon/Dismiss | Space: Interact | Esc: Close";
+        string hint = "Up/Down: Navigate | Enter: Summon/Dismiss | Space: Interact | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);
@@ -257,10 +257,10 @@ public class PetMenu
     {
         return type switch
         {
-            PetType.Companion => "♥",
-            PetType.FarmHelper => "⚒",
-            PetType.Combat => "⚔",
-            PetType.Magical => "★",
+            PetType.Companion => "&",
+            PetType.FarmHelper => "#",
+            PetType.Combat => "!",
+            PetType.Magical => "*",
             _ => "?"
         };
     }

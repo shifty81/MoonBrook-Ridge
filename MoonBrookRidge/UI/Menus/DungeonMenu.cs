@@ -237,7 +237,7 @@ public class DungeonMenu
         textY += 25;
         
         // Room status
-        string status = room.IsCleared ? "✓ Cleared" : "⚔ Active";
+        string status = room.IsCleared ? "[X] Cleared" : "[!] Active";
         Color statusColor = room.IsCleared ? _roomClearedColor : Color.Orange;
         spriteBatch.DrawString(_font, status, 
             new Vector2(textX, textY), statusColor);
@@ -297,15 +297,15 @@ public class DungeonMenu
     {
         return type switch
         {
-            RoomType.Entrance => "►",
-            RoomType.Combat => "⚔",
-            RoomType.Treasure => "◆",
-            RoomType.Boss => "☠",
+            RoomType.Entrance => ">",
+            RoomType.Combat => "!",
+            RoomType.Treasure => "*",
+            RoomType.Boss => "X",
             RoomType.Puzzle => "?",
             RoomType.Shop => "$",
             RoomType.Shrine => "+",
-            RoomType.Exit => "↓",
-            _ => "■"
+            RoomType.Exit => "v",
+            _ => "#"
         };
     }
     

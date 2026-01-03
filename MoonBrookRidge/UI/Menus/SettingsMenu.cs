@@ -281,7 +281,7 @@ public class SettingsMenu
             _audioManager.SfxVolume, uiScale);
         
         // Controls hint
-        string hint = "↑/↓: Navigate | ←/→: Adjust | Enter: Select/Toggle | ESC: Close";
+        string hint = "Up/Down: Navigate | Left/Right: Adjust | Enter: Select/Toggle | ESC: Close";
         Vector2 hintSize = _font.MeasureString(hint) * uiScale;
         Vector2 hintPos = new Vector2(menuX + scaledMenuWidth / 2 - hintSize.X / 2, 
             menuY + scaledMenuHeight - 35 * uiScale);

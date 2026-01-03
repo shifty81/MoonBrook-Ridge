@@ -130,11 +130,11 @@ public class PerformanceMonitor
         // Draw performance warning
         if (_fps < 30)
         {
-            spriteBatch.DrawString(font, "⚠ Low FPS", position, Color.Red);
+            spriteBatch.DrawString(font, "[!] Low FPS", position, Color.Red);
         }
         else if (_fps < 50)
         {
-            spriteBatch.DrawString(font, "⚠ Moderate FPS", position, Color.Yellow);
+            spriteBatch.DrawString(font, "[!] Moderate FPS", position, Color.Yellow);
         }
     }
 }

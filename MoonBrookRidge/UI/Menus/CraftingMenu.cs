@@ -174,7 +174,7 @@ public class CraftingMenu
                                   canCraft ? Color.LightGreen : Color.Red);
                 
                 // Draw craftability status
-                string status = canCraft ? "✓ Can Craft" : "✗ Missing Items";
+                string status = canCraft ? "[X] Can Craft" : "[ ] Missing Items";
                 Vector2 statusSize = font.MeasureString(status);
                 Vector2 statusPos = new Vector2(recipeRect.Right - statusSize.X - 10, 
                                                recipeRect.Y + (recipeRect.Height - statusSize.Y) / 2);
@@ -184,7 +184,7 @@ public class CraftingMenu
         }
         
         // Draw controls hint at bottom
-        string hint = "↑↓: Navigate | Enter: Craft | Esc: Close";
+        string hint = "Up/Down: Navigate | Enter: Craft | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);

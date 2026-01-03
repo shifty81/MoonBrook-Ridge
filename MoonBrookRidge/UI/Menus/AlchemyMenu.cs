@@ -185,7 +185,7 @@ public class AlchemyMenu
                                   canBrew ? Color.LightGreen : Color.OrangeRed);
                 
                 // Draw brewability status
-                string status = canBrew ? "✓ Can Brew" : "✗ Missing Items";
+                string status = canBrew ? "[X] Can Brew" : "[ ] Missing Items";
                 Vector2 statusSize = font.MeasureString(status);
                 Vector2 statusPos = new Vector2(recipeRect.Right - statusSize.X - 10, 
                                                 recipeRect.Y + (recipeRect.Height - statusSize.Y) / 2);
@@ -195,7 +195,7 @@ public class AlchemyMenu
         }
         
         // Draw controls hint at bottom
-        string hint = "↑↓: Navigate | Enter: Brew Potion | Esc: Close";
+        string hint = "Up/Down: Navigate | Enter: Brew Potion | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);
@@ -217,15 +217,15 @@ public class AlchemyMenu
     {
         return effect switch
         {
-            PotionEffect.Health => "❤",
-            PotionEffect.Mana => "✦",
-            PotionEffect.Energy => "⚡",
-            PotionEffect.SpeedBuff => "➤",
-            PotionEffect.StrengthBuff => "⚒",
-            PotionEffect.LuckBuff => "☆",
-            PotionEffect.NightVision => "◉",
+            PotionEffect.Health => "+",
+            PotionEffect.Mana => "*",
+            PotionEffect.Energy => "!",
+            PotionEffect.SpeedBuff => ">",
+            PotionEffect.StrengthBuff => "#",
+            PotionEffect.LuckBuff => "$",
+            PotionEffect.NightVision => "O",
             PotionEffect.WaterBreathing => "~",
-            _ => "○"
+            _ => "o"
         };
     }
     
