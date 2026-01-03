@@ -1,10 +1,57 @@
-# MoonBrook Ridge 🌾
+# MoonBrook Ridge 🌾⚔️
 
-A farming and life simulation game inspired by Stardew Valley with enhanced NPC interaction systems similar to The Sims 4, **plus survival mechanics** (hunger and thirst). Built with MonoGame (C#).
+An **auto-shooter roguelite** farming and life simulation game combining peaceful village life with intense underground combat. Built with MonoGame (C#).
+
+## 🎮 Game Concept
+
+**MoonBrook Valley** is a unique blend of farming simulation and auto-shooter roguelite. By day, you're a peaceful farmer tending crops, fishing, and building relationships with villagers across multiple biomes. By night, you descend into procedurally generated caves beneath the valley to fight endless waves of alien-like creatures with **automatically firing weapons** while your **pet companion** provides support.
+
+### The Secret of MoonBrook Valley
+The quaint villages scattered across MoonBrook Valley hide a dark secret: beneath the idyllic landscape lies a network of dangerous caves filled with relentless creatures. You're the only one who knows the truth, and it's up to you to defend the unsuspecting villagers above—one cave descent at a time.
+
+## 🌟 Core Features
+
+### Auto-Shooter Combat System ⚔️ **NEW!**
+- **Automatic Weapon Fire**: Your weapons shoot and reload automatically—focus on positioning, not aiming
+- **Strategic Positioning**: Success comes from smart movement and build choices, not twitch reflexes
+- **Weapon Synergies**: Combine forward/backward/360° firing patterns for complete coverage
+- **Damage Types**: Mix kinetic, fire, cryo, electric, and acid damage for crowd control
+- **Manual Grenades**: Trigger powerful AoE abilities (explosive, cryo, mining, neurotoxin)
+- **Cave-Only Combat**: Overworld is peaceful—combat restricted to underground caves
+
+### Pet Companion System 🐾 **NEW!**
+- **Automated Support**: Pets fight alongside you with their own AI
+- **Pet Types**: Combat (Wolf, Hawk), Support (Fairy, Spirit), Utility (Dog, Cat, Owl)
+- **Leveling & Skills**: Pets level up with unique skill trees (Offensive/Defensive/Utility)
+- **Pet Charms**: Equip charms to enhance pet capabilities and weapon synergies
+- **Taming System**: Find and tame wild pets in different biomes
+- **Pet Abilities**: Each pet provides passive bonuses and active attack abilities
 
 ## 🎮 Game Features
 
-### Survival Mechanics ⭐ NEW
+### Multi-Village World 🏘️ **NEW!**
+- **8 Biome Villages**: Each biome has its own village with unique culture and NPCs
+  - **MoonBrook Valley** (Grassland): Your home, farming community
+  - **Pinewood Village** (Forest): Lumberjacks, hunters, nature magic
+  - **Stonehelm Village** (Mountain): Dwarven miners, master blacksmiths
+  - **Sandshore Village** (Desert): Trading outpost, fire mages, treasure hunters
+  - **Frostpeak Village** (Frozen): Ice fishing, cold-weather survival
+  - **Marshwood Village** (Swamp): Alchemists, poison experts, healers
+  - **Crystalgrove Village** (Crystal Cave): Magical academy, enchanters
+  - **Ruinwatch Village** (Ruins): Archaeological expedition, lore keepers
+- **Village Reputation**: Build reputation with each village for discounts and rewards
+- **Inter-Village Relations**: Villages have allies and rivals affecting quest availability
+- **Fast Travel**: Unlock fast travel between discovered villages
+
+### Quest System 📜 **NEW!**
+- **Cave Quests**: Extermination, boss hunting, resource gathering, exploration
+- **Farm Quests**: Crop delivery, animal products, quality challenges
+- **Trading Quests**: Buy/sell orders, arbitrage between villages
+- **Courier Quests**: Package delivery, escort missions between villages
+- **Hybrid Quests**: Multi-step quests combining multiple types
+- **Village-Specific**: Each village offers unique quests based on its biome and culture
+
+### Survival Mechanics ⭐
 - **Hunger System**: Depletes over time, faster during strenuous activities
 - **Thirst System**: Depletes faster than hunger, critical for survival
 - **Activity-Based Decay**: Running, mining, and tool use drain stats faster
