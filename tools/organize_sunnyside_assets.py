@@ -108,8 +108,12 @@ def get_user_confirmation() -> bool:
     """
     Prompt user for confirmation to proceed with file operations.
     
+    Interactively prompts the user to confirm whether to proceed with copying files.
+    Accepts 'yes', 'y', 'no', or 'n' (case-insensitive). Will continue to prompt
+    until a valid response is provided.
+    
     Returns:
-        bool: True if user confirms, False otherwise
+        bool: True if user confirms (yes/y), False if user declines (no/n)
     """
     print("\n" + "=" * 80)
     print("⚠️  This script will copy files from sprites/ to Content/Textures/")
@@ -152,14 +156,16 @@ def print_directory_tree(directory: Path, prefix="", is_last=True, max_depth=Non
     
     # Get all entries in directory
     try:
-        entries = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower()))
+        entries = list(directory.iterdir())
+        # Separate directories and files first to avoid redundant is_dir() calls during sorting
+        dirs = sorted([e for e in entries if e.is_dir()], key=lambda x: x.name.lower())
+        files = sorted([e for e in entries if e.is_file()], key=lambda x: x.name.lower())
     except PermissionError:
         print(f"{prefix}    [Permission Denied]")
         return
     
-    # Separate directories and files
-    dirs = [e for e in entries if e.is_dir()]
-    files = [e for e in entries if e.is_file()]
+    # Combine sorted directories and files
+    entries = dirs + files
     
     # Prepare prefix for children
     if current_depth == 0:
@@ -428,7 +434,7 @@ def main():
     
     if not dry_run:
         print(f"\nNext steps:")
-        print(f"1. Review the organized assets in {CONTENT_DIR}")
+        print(f"1. Review the organized assets in {str(CONTENT_DIR)}")
         print("2. Update Content.mgcb to include new assets")
         print("3. Update asset loading code to use the new structure")
     else:
