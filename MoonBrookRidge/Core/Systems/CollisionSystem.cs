@@ -30,11 +30,25 @@ public class CollisionSystem
         
         // Check tile walkability
         Vector2 gridPos = WorldToGridPosition(position);
-        Tile tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
+        
+        // Add safety check for grid position bounds
+        int gridX = (int)gridPos.X;
+        int gridY = (int)gridPos.Y;
+        
+        // Make sure grid position is valid before calling GetTile
+        if (gridX < 0 || gridX >= _worldMap.Width || gridY < 0 || gridY >= _worldMap.Height)
+        {
+            return false;
+        }
+        
+        Tile tile = _worldMap.GetTile(gridX, gridY);
         
         if (tile == null)
         {
-            return false;
+            // If tile is null for some reason, log it but allow movement
+            // This prevents the player from getting stuck
+            System.Console.WriteLine($"Warning: Tile at ({gridX}, {gridY}) is null, allowing movement");
+            return true; // Allow movement instead of blocking it
         }
         
         if (!IsTileWalkable(tile))

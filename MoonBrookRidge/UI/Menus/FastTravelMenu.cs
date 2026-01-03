@@ -408,21 +408,21 @@ public class FastTravelMenu
     
     /// <summary>
     /// Gets a visual icon for the waypoint type
-    /// Note: Uses Unicode emojis as text fallback icons.
-    /// For production, consider replacing with sprite assets for better cross-platform support.
+    /// Note: Uses ASCII text icons for SpriteFont compatibility.
+    /// For production, consider replacing with sprite assets for better visual quality.
     /// </summary>
     private string GetWaypointIcon(WaypointType type)
     {
         return type switch
         {
-            WaypointType.Farm => "🏡",
-            WaypointType.Village => "🏘",
-            WaypointType.DungeonEntrance => "⚔",
-            WaypointType.MineshaftEntrance => "⛏",
-            WaypointType.Landmark => "📍",
-            WaypointType.ShopDistrict => "🏪",
-            WaypointType.Custom => "⭐",
-            _ => "📍"
+            WaypointType.Farm => "[F]",
+            WaypointType.Village => "[V]",
+            WaypointType.DungeonEntrance => "[D]",
+            WaypointType.MineshaftEntrance => "[M]",
+            WaypointType.Landmark => "[L]",
+            WaypointType.ShopDistrict => "[S]",
+            WaypointType.Custom => "[*]",
+            _ => "[?]"
         };
     }
     
