@@ -593,6 +593,27 @@ See [PHASE_7.2_COMPLETION_SUMMARY.md](PHASE_7.2_COMPLETION_SUMMARY.md) for Phase
 See [PHASE_7.3_COMPLETION_SUMMARY.md](PHASE_7.3_COMPLETION_SUMMARY.md) for Phase 7.3 details.  
 See [PHASE_7.4_COMPLETION_SUMMARY.md](PHASE_7.4_COMPLETION_SUMMARY.md) for Phase 7.4 details.
 
+### Phase 8: Auto-Shooter Combat System ✅ **COMPLETE!**
+- [x] **Auto-Fire System** ⭐ **PHASE 8** - Automatic weapon firing with multiple patterns (Circle360, Forward, Backward, etc.)
+- [x] **Smart Target Acquisition** ⭐ **PHASE 8** - Automatic enemy targeting within 200px range
+- [x] **Fire Rate Management** ⭐ **PHASE 8** - Respects weapon attack speed (1.0-2.0 attacks/sec)
+- [x] **Resource Management** ⭐ **PHASE 8** - Energy/mana consumption per shot
+- [x] **Toggle Control** ⭐ **PHASE 8** - N key to enable/disable auto-fire
+- [x] **Inventory Sorting** ⭐ **PHASE 8** - I key to sort inventory by type and name
+- [x] **Phase 7.4 Integration** ⭐ **PHASE 8** - Spatial partitioning, entity culling, and waypoint discovery
+
+See [PHASE_8_COMPLETION_SUMMARY.md](PHASE_8_COMPLETION_SUMMARY.md) for Phase 8 details.
+
+### Phase 9: Fast Travel UI & Quality-of-Life ✅ **COMPLETE!**
+- [x] **Fast Travel Menu** ⭐ **PHASE 9** - Full UI for waypoint selection and fast travel (W key)
+- [x] **Time Advancement** ⭐ **PHASE 9** - TimeSystem.AdvanceTime() method for fast travel time passage
+- [x] **Waypoint Display** ⭐ **PHASE 9** - Shows all discovered waypoints with icons, costs, and descriptions
+- [x] **Travel Confirmation** ⭐ **PHASE 9** - Confirmation prompt before traveling with cost preview
+- [x] **Discovery Notifications** ⭐ **PHASE 9** - Toast notifications when discovering new waypoints
+- [x] **Visual Feedback** ⭐ **PHASE 9** - Color-coded waypoint icons and affordability indicators
+
+See [PHASE_9_COMPLETION_SUMMARY.md](PHASE_9_COMPLETION_SUMMARY.md) for Phase 9 details.
+
 ## 🤝 Contributing
 
 We welcome contributions to MoonBrook Ridge! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:

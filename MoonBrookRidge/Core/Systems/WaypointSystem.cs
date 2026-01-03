@@ -281,6 +281,20 @@ public class WaypointSystem
     /// Gets the time cost for fast travel in game hours
     /// </summary>
     public float GetTimeCost() => TIME_COST_HOURS;
+    
+    /// <summary>
+    /// Gets the gold cost to travel to a specific waypoint without attempting travel
+    /// </summary>
+    /// <param name="waypointId">ID of the waypoint to check</param>
+    /// <returns>Gold cost, or -1 if waypoint not found</returns>
+    public int GetTravelCost(string waypointId)
+    {
+        if (_waypoints.TryGetValue(waypointId, out var waypoint))
+        {
+            return CalculateTravelCost(waypoint);
+        }
+        return -1;
+    }
 }
 
 /// <summary>
