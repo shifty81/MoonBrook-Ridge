@@ -420,6 +420,4 @@ public class MapMenu : TabbedMenu
         _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
         _pixelTexture.SetData(new[] { Color.White });
     }
-    
-    public new bool IsActive => _isActive;
 }

@@ -187,11 +187,11 @@ public class WorldMap
         // Dragon Lair - east side
         _tiles[centerX + 100, centerY] = new Tile(TileType.DungeonEntranceDragon, new Vector2(centerX + 100, centerY));
         
-        // Demon Realm - bottom right corner
-        _tiles[45, 45] = new Tile(TileType.DungeonEntranceDemon, new Vector2(45, 45));
+        // Demon Realm - southeast
+        _tiles[centerX + 80, centerY + 90] = new Tile(TileType.DungeonEntranceDemon, new Vector2(centerX + 80, centerY + 90));
         
-        // Ancient Ruins - bottom middle
-        _tiles[25, 45] = new Tile(TileType.DungeonEntranceRuins, new Vector2(25, 45));
+        // Ancient Ruins - south
+        _tiles[centerX, centerY + 100] = new Tile(TileType.DungeonEntranceRuins, new Vector2(centerX, centerY + 100));
     }
     
     public void LoadContent(Dictionary<TileType, Texture2D> tileTextures, Dictionary<string, Texture2D[]> cropTextures = null)
