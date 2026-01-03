@@ -1187,7 +1187,7 @@ public class GameplayState : GameState
         HandleConsumableInput();
         
         // Update player with input and collision
-        _player.Update(gameTime, _inputManager, _collisionSystem);
+        _player.Update(gameTime, _inputManager, _collisionSystem, _biomeSystem);
         
         // Update NPCs
         _npcManager.Update(gameTime, _timeSystem, _player.Position, _inputManager.IsDoActionPressed());
