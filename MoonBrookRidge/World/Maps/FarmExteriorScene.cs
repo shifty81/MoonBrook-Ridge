@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.Core.Scenes;
+using MoonBrookRidge.Core;
 using System;
 
 namespace MoonBrookRidge.World.Maps;

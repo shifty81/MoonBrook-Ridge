@@ -4,6 +4,7 @@ using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.World.Buildings;
 using MoonBrookRidge.Characters.NPCs;
 using MoonBrookRidge.Core.Systems;
+using MoonBrookRidge.Core;
 using System;
 using System.Collections.Generic;
 
@@ -36,7 +37,7 @@ public class DungeonOverworldScene : ExteriorScene
     {
         _dungeonName = dungeonName;
         _playerBuildings = new List<Building>();
-        _fauna = new List<NPC>();
+        _fauna = new List<NPCCharacter>();
         _canBuild = true;
         _isGateOpen = false;
         Type = SceneType.DungeonOverworld; // Override to DungeonOverworld type
@@ -222,7 +223,7 @@ public class DungeonOverworldScene : ExteriorScene
             string[] faunaTypes = { "Deer", "Rabbit", "Bird", "Squirrel", "Fox" };
             string faunaType = faunaTypes[random.Next(faunaTypes.Length)];
             
-            var fauna = new NPCCharacter($"{faunaType}_{i}", position, faunaType);
+            var fauna = new NPCCharacter($"{faunaType}_{i}", position);
             _fauna.Add(fauna);
             
             // Add as scene object
@@ -311,10 +312,12 @@ public class DungeonOverworldScene : ExteriorScene
         base.Update(gameTime);
         
         // Update fauna movement
-        foreach (var animal in _fauna)
+        // Note: Fauna require TimeSystem for schedule updates, which may not be available in dungeon overworld
+        // TODO: Implement proper fauna behavior without schedule dependency
+        /*foreach (var animal in _fauna)
         {
             animal.Update(gameTime);
-        }
+        }*/
         
         // Update boring machine
         _boringMachine?.Update(gameTime);
@@ -421,11 +424,13 @@ public class DungeonOverworldScene : ExteriorScene
         }
         
         // Draw player buildings
+        // Note: Building rendering needs proper texture loading - using placeholder for now
         foreach (var building in _playerBuildings)
         {
-            if (camera.IsInView(building.Position, building.Width * GameConstants.TILE_SIZE, building.Height * GameConstants.TILE_SIZE))
+            if (camera.IsInView(building.Position, building.Width, building.Height))
             {
-                building.Draw(spriteBatch);
+                // TODO: Load and pass proper building textures
+                building.Draw(spriteBatch, null, Color.White);
             }
         }
         

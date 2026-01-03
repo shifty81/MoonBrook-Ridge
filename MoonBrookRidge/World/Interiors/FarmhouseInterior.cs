@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.Core.Scenes;
+using MoonBrookRidge.Core;
 
 namespace MoonBrookRidge.World.Interiors;
 
@@ -34,7 +35,7 @@ public class FarmhouseInterior : InteriorScene
         base.Initialize();
         
         // Clear door position (no wall at door)
-        SetTile(7, 11, new Tile(TileType.WoodFloor, new Vector2(7, 11)));
+        SetTile(7, 11, new Tile(TileType.WoodenFloor, new Vector2(7, 11)));
         
         AddFurniture();
     }
