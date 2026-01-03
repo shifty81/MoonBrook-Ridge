@@ -82,6 +82,7 @@ public class GameplayState : GameState
     private DungeonMenu _dungeonMenu;
     private Factions.FactionSystem _factionSystem;
     private FactionMenu _factionMenu;
+    private Biomes.BiomeSystem _biomeSystem;
     // Marriage and Family System (Phase 5 deferred item)
     private MarriageSystem _marriageSystem;
     private FamilySystem _familySystem;
@@ -218,6 +219,9 @@ public class GameplayState : GameState
         
         // Initialize Faction System
         _factionSystem = new Factions.FactionSystem();
+        
+        // Initialize Biome System
+        _biomeSystem = new Biomes.BiomeSystem();
         
         // Initialize Marriage and Family System (Phase 5 deferred item)
         _marriageSystem = new MarriageSystem();
@@ -1073,6 +1077,9 @@ public class GameplayState : GameState
         _petSystem.Update(gameTime);
         _combatSystem.Update(gameTime);
         
+        // Update biome based on player position
+        UpdateBiomeFromPosition();
+        
         // Update wild pets
         UpdateWildPets(gameTime);
         
@@ -1849,9 +1856,34 @@ public class GameplayState : GameState
         
         spriteBatch.End();
         
+        // Draw biome screen tint overlay (between world and UI)
+        spriteBatch.Begin();
+        var currentBiomeDef = _biomeSystem.GetBiome(_biomeSystem.CurrentBiome);
+        if (currentBiomeDef != null)
+        {
+            // Draw semi-transparent overlay with biome tint color
+            Color tintColor = currentBiomeDef.TintColor * 0.15f; // 15% opacity
+            spriteBatch.Draw(_pixelTexture, 
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                tintColor);
+        }
+        spriteBatch.End();
+        
         // Draw HUD (no camera transform)
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _hud.DrawPlayerStats(spriteBatch, Game.DefaultFont, _player, _timeSystem);
+        
+        // Draw current biome name in upper right
+        if (currentBiomeDef != null)
+        {
+            string biomeText = $"Biome: {currentBiomeDef.Name}";
+            Vector2 biomeTextSize = Game.DefaultFont.MeasureString(biomeText);
+            Vector2 biomeTextPos = new Vector2(
+                Game.GraphicsDevice.Viewport.Width - biomeTextSize.X - 10,
+                10
+            );
+            spriteBatch.DrawString(Game.DefaultFont, biomeText, biomeTextPos, Color.White);
+        }
         
         // Draw NPC UI (dialogue wheel)
         _npcManager.DrawUI(spriteBatch, Game.DefaultFont);
@@ -2291,6 +2323,69 @@ public class GameplayState : GameState
                     return;
                 }
             }
+        }
+    }
+    
+    /// <summary>
+    /// Determine the biome based on player position and update if changed
+    /// </summary>
+    private void UpdateBiomeFromPosition()
+    {
+        // Convert player position to tile coordinates
+        int tileX = (int)(_player.Position.X / GameConstants.TILE_SIZE);
+        int tileY = (int)(_player.Position.Y / GameConstants.TILE_SIZE);
+        
+        // Simple position-based biome determination
+        // This is a basic implementation - can be enhanced with tile-based biome data
+        Biomes.BiomeType newBiome = Biomes.BiomeType.Farm; // Default
+        
+        // In mines or dungeons, use cave biomes
+        if (_miningManager.InMine)
+        {
+            int depth = _miningManager.CurrentLevel;
+            if (depth >= 10)
+                newBiome = Biomes.BiomeType.DeepCave;
+            else if (depth >= 5)
+                newBiome = Biomes.BiomeType.Cave;
+            else
+                newBiome = Biomes.BiomeType.Cave;
+        }
+        else if (_dungeonSystem.ActiveDungeon != null)
+        {
+            // Dungeon-specific biomes based on dungeon type
+            newBiome = _dungeonSystem.ActiveDungeon.Type switch
+            {
+                Dungeons.DungeonType.SlimeCave => Biomes.BiomeType.Cave,
+                Dungeons.DungeonType.SkeletonCrypt => Biomes.BiomeType.HauntedForest,
+                Dungeons.DungeonType.SpiderNest => Biomes.BiomeType.Cave,
+                Dungeons.DungeonType.GoblinWarrens => Biomes.BiomeType.Cave,
+                Dungeons.DungeonType.HauntedManor => Biomes.BiomeType.HauntedForest,
+                Dungeons.DungeonType.DragonLair => Biomes.BiomeType.Volcanic,
+                Dungeons.DungeonType.DemonRealm => Biomes.BiomeType.Volcanic,
+                Dungeons.DungeonType.AncientRuins => Biomes.BiomeType.MagicalMeadow,
+                _ => Biomes.BiomeType.Cave
+            };
+        }
+        else
+        {
+            // Overworld position-based biomes
+            // Simple quadrant-based system for demonstration
+            if (tileX < 20 && tileY < 20)
+                newBiome = Biomes.BiomeType.Farm; // Northwest = Farm
+            else if (tileX >= 30 && tileY < 20)
+                newBiome = Biomes.BiomeType.Forest; // Northeast = Forest
+            else if (tileX < 20 && tileY >= 30)
+                newBiome = Biomes.BiomeType.Swamp; // Southwest = Swamp
+            else if (tileX >= 30 && tileY >= 30)
+                newBiome = Biomes.BiomeType.Desert; // Southeast = Desert
+            else
+                newBiome = Biomes.BiomeType.Farm; // Center = Farm
+        }
+        
+        // Update biome if it changed
+        if (newBiome != _biomeSystem.CurrentBiome)
+        {
+            _biomeSystem.ChangeBiome(newBiome);
         }
     }
 }
