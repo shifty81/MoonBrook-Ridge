@@ -101,6 +101,13 @@ public class GameplayState : GameState
     private EntityFrustumCulling _entityCulling;
     private WaypointSystem _waypointSystem;
     private World.Villages.VillageSystem _villageSystem; // Phase 10: Multi-village system
+    // Phase 10 Systems - Multi-Village, Advanced Building, Enhanced Relationships, Underground Progression
+    private World.Buildings.FurnitureSystem _furnitureSystem;
+    private UI.Menus.FurnitureMenu _furnitureMenu;
+    private Characters.DatingSystem _datingSystem;
+    private World.Mining.UndergroundCraftingSystem _undergroundCraftingSystem;
+    private World.Mining.AutomationSystem _automationSystem;
+    private World.Mining.ExpandedOreSystem _expandedOreSystem;
     private FastTravelMenu _fastTravelMenu; // Legacy - kept for backwards compatibility
     private MapMenu _mapMenu; // New consolidated map interface (M key)
     // Unified Player Menu - consolidates all character-related menus into one tabbed interface
@@ -697,6 +704,38 @@ public class GameplayState : GameState
             _notificationSystem?.Show($"{village.Name} reputation: {level}", NotificationType.Info, 2.0f);
         };
         
+        // Initialize Phase 10 systems
+        _furnitureSystem = new World.Buildings.FurnitureSystem();
+        _furnitureMenu = new UI.Menus.FurnitureMenu(_furnitureSystem);
+        
+        _datingSystem = new Characters.DatingSystem();
+        _datingSystem.OnRelationshipChanged += (npc, stage) =>
+        {
+            _notificationSystem?.Show($"{npc}: Relationship now {stage}", NotificationType.Info, 2.5f);
+        };
+        _datingSystem.OnJealousyIncreased += (npc, level) =>
+        {
+            if (level >= 80)
+            {
+                _notificationSystem?.Show($"{npc} is very jealous!", NotificationType.Warning, 3.0f);
+            }
+        };
+        
+        _undergroundCraftingSystem = new World.Mining.UndergroundCraftingSystem();
+        _undergroundCraftingSystem.OnTierUnlocked += (tier) =>
+        {
+            _notificationSystem?.Show($"Workbench Tier {tier} Unlocked!", NotificationType.Success, 3.0f);
+        };
+        
+        _automationSystem = new World.Mining.AutomationSystem();
+        _automationSystem.OnItemHarvested += (device, itemName) =>
+        {
+            // Optional: Show notification for automation harvests
+            // Can be disabled if too spammy
+        };
+        
+        _expandedOreSystem = new World.Mining.ExpandedOreSystem();
+        
         // Initialize fast travel menu (legacy)
         _fastTravelMenu = new FastTravelMenu(_waypointSystem, _timeSystem, _player);
         _fastTravelMenu.OnFastTravel += (destination, cost) =>
@@ -1223,6 +1262,20 @@ public class GameplayState : GameState
             return;
         }
         
+        // Furniture menu (U key) - Phase 10
+        // TODO: Implement building interior detection to show furniture menu only when inside a building
+        /*if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
+        {
+            // Need to detect which building player is in
+            Building currentBuilding = DetectPlayerBuilding();
+            if (currentBuilding != null)
+            {
+                _furnitureMenu.Toggle(currentBuilding);
+            }
+            _previousKeyboardState = keyboardState;
+            return;
+        }*/
+        
         // Check for map menu (M key) - opens tabbed menu with World Map, Waypoints, and Fast Travel
         if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
         {
@@ -1316,6 +1369,10 @@ public class GameplayState : GameState
         // Check for village discovery (Phase 10)
         _villageSystem.CheckForDiscovery(_player.Position);
         
+        // Update Phase 10 systems
+        _automationSystem.Update(gameTime);
+        // DatingSystem doesn't need frame-by-frame updates - it's updated when NPC friendship changes
+        
         // Update event system
         _eventSystem.Update(gameTime);
         
@@ -1358,6 +1415,18 @@ public class GameplayState : GameState
         
         // Update NPCs
         _npcManager.Update(gameTime, _timeSystem, _player.Position, _inputManager.IsDoActionPressed());
+        
+        // Update dating stages based on NPC friendship (Phase 10)
+        // Update dating stages for known NPCs
+        string[] knownNPCs = { "Emma", "Marcus", "Lily", "Oliver", "Sarah", "Jack", "Maya" };
+        foreach (var npcName in knownNPCs)
+        {
+            var npc = _npcManager.GetNPC(npcName);
+            if (npc != null)
+            {
+                _datingSystem.UpdateDatingStage(npc, npc.FriendshipLevel);
+            }
+        }
         
         // Update fishing manager
         if (_fishingManager.IsFishing)
