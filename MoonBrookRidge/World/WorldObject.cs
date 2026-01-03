@@ -29,7 +29,9 @@ public class WorldObject
         Position = position;
         Texture = texture;
         SourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
-        Origin = Vector2.Zero;
+        
+        // Set origin to bottom-center for proper ground alignment
+        Origin = new Vector2(texture.Width / 2f, texture.Height);
     }
     
     /// <summary>
@@ -44,7 +46,10 @@ public class WorldObject
         Position = position;
         Texture = spriteInfo.Texture;
         SourceRectangle = spriteInfo.SourceRectangle;
-        Origin = Vector2.Zero;
+        
+        // Set origin to bottom-center for better alignment with ground
+        // This is especially important for tall objects like trees
+        Origin = new Vector2(SourceRectangle.Width / 2f, SourceRectangle.Height);
     }
     
     public void Draw(SpriteBatch spriteBatch)
