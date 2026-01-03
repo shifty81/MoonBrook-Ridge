@@ -85,7 +85,8 @@ public class NPCManager
     
     public void Update(GameTime gameTime, TimeSystem timeSystem, Vector2 playerPosition, bool interactPressed)
     {
-        // Update all NPCs
+        // Update all NPCs (always simulated, even when off-screen - Phase 7.4)
+        // This ensures NPCs follow their daily schedules and can be found by players
         foreach (var npc in _npcs)
         {
             npc.Update(gameTime, timeSystem);
@@ -193,6 +194,8 @@ public class NPCManager
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, Rectangle? visibleBounds = null)
     {
         // Draw all NPCs (with optional frustum culling - Phase 7.4)
+        // NOTE: NPCs are ALWAYS updated in Update() regardless of visibility
+        // Culling here only affects rendering, not simulation/schedules
         foreach (var npc in _npcs)
         {
             // If viewport bounds provided, check if NPC is visible
