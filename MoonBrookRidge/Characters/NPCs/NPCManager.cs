@@ -190,15 +190,32 @@ public class NPCManager
         _interactingNPC = null;
     }
     
-    public void Draw(SpriteBatch spriteBatch, SpriteFont font)
+    public void Draw(SpriteBatch spriteBatch, SpriteFont font, Rectangle? visibleBounds = null)
     {
-        // Draw all NPCs
+        // Draw all NPCs (with optional frustum culling - Phase 7.4)
         foreach (var npc in _npcs)
         {
+            // If viewport bounds provided, check if NPC is visible
+            if (visibleBounds.HasValue)
+            {
+                // Simple visibility check - NPC position within viewport bounds
+                // Add buffer around viewport to prevent pop-in
+                Rectangle npcBounds = new Rectangle(
+                    (int)npc.Position.X - 32,
+                    (int)npc.Position.Y - 32,
+                    64, 64
+                );
+                
+                if (!visibleBounds.Value.Intersects(npcBounds))
+                {
+                    continue; // Skip NPCs outside visible area
+                }
+            }
+            
             npc.Draw(spriteBatch);
         }
         
-        // Draw chat bubble
+        // Draw chat bubble (always visible when active)
         _chatBubble.Draw(spriteBatch, font);
     }
     

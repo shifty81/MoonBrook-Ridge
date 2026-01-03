@@ -2056,7 +2056,7 @@ public class GameplayState : GameState
         }
         
         _player.Draw(spriteBatch);
-        _npcManager.Draw(spriteBatch, Game.DefaultFont);
+        _npcManager.Draw(spriteBatch, Game.DefaultFont, viewportBounds);
         
         // Draw wild pets (simple colored circles for now)
         foreach (var wildPet in _wildPets)
@@ -2092,7 +2092,7 @@ public class GameplayState : GameState
         // Draw enemies and health bars (in world space with camera transform)
         if (_miningManager.InMine)
         {
-            DrawEnemies(spriteBatch);
+            DrawEnemies(spriteBatch, viewportBounds);
         }
         
         // Draw projectiles (Phase 7.4 - in world space with camera transform)
@@ -2475,12 +2475,27 @@ public class GameplayState : GameState
     /// <summary>
     /// Draw enemies and their health bars
     /// </summary>
-    private void DrawEnemies(SpriteBatch spriteBatch)
+    private void DrawEnemies(SpriteBatch spriteBatch, Rectangle? visibleBounds = null)
     {
         var enemies = _combatSystem.GetActiveEnemies();
         
         foreach (var enemy in enemies)
         {
+            // Frustum culling for enemies (Phase 7.4)
+            if (visibleBounds.HasValue)
+            {
+                Rectangle enemyBounds = new Rectangle(
+                    (int)enemy.Position.X - 32,
+                    (int)enemy.Position.Y - 32,
+                    64, 64
+                );
+                
+                if (!visibleBounds.Value.Intersects(enemyBounds))
+                {
+                    continue; // Skip enemies outside visible area
+                }
+            }
+            
             // Draw enemy as a colored circle (placeholder until we have sprites)
             Color enemyColor = enemy.Type switch
             {
