@@ -295,6 +295,19 @@ public class GameplayState : GameState
             }
         };
         
+        // Hook up quest progress notifications
+        _questSystem.OnObjectiveUpdated += (quest, objective) =>
+        {
+            string message = $"{quest.Title}: {objective.Description} ({objective.CurrentProgress}/{objective.RequiredProgress})";
+            _notificationSystem?.Show(message, NotificationType.Quest, 3.0f);
+        };
+        
+        _questSystem.OnQuestCompleted += (quest) =>
+        {
+            string message = $"Quest Complete: {quest.Title}";
+            _notificationSystem?.Show(message, NotificationType.Success, 4.0f);
+        };
+        
         // Hook up dungeon events
         _dungeonSystem.OnDungeonEntered += (dungeon) =>
         {
@@ -1187,7 +1200,7 @@ public class GameplayState : GameState
         HandleConsumableInput();
         
         // Update player with input and collision
-        _player.Update(gameTime, _inputManager, _collisionSystem);
+        _player.Update(gameTime, _inputManager, _collisionSystem, _biomeSystem);
         
         // Update NPCs
         _npcManager.Update(gameTime, _timeSystem, _player.Position, _inputManager.IsDoActionPressed());

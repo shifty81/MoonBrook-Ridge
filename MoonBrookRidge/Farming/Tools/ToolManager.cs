@@ -76,8 +76,8 @@ public class ToolManager
         }
         else if (_currentTool is Axe)
         {
-            // TODO: Implement tree chopping
-            toolUsed = false;
+            // Try to chop trees in the overworld
+            toolUsed = UseChopTree(worldPosition);
         }
         else if (_currentTool is Pickaxe)
         {
@@ -88,8 +88,8 @@ public class ToolManager
             }
             else
             {
-                // TODO: Implement rock breaking in overworld
-                toolUsed = false;
+                // Try to break rocks in the overworld
+                toolUsed = UseBreakRock(worldPosition);
             }
         }
         else if (_currentTool is Scythe)
@@ -198,5 +198,73 @@ public class ToolManager
             (int)(worldPosition.X / GameConstants.TILE_SIZE),
             (int)(worldPosition.Y / GameConstants.TILE_SIZE)
         );
+    }
+    
+    /// <summary>
+    /// Chop down a tree with an axe
+    /// </summary>
+    private bool UseChopTree(Vector2 worldPosition)
+    {
+        // Find a tree near the player's action position
+        WorldObject obj = _worldMap.GetWorldObjectAt(worldPosition, 24f); // Slightly larger radius for trees
+        
+        if (obj is ChoppableTree tree)
+        {
+            // Hit the tree
+            bool destroyed = tree.Hit(out Item[] drops);
+            
+            if (destroyed)
+            {
+                // Add drops to inventory
+                if (_inventory != null && drops != null)
+                {
+                    foreach (var drop in drops)
+                    {
+                        _inventory.AddItem(drop, 1);
+                    }
+                }
+                
+                // Remove the tree from the world
+                _worldMap.RemoveWorldObject(tree);
+            }
+            
+            return true; // Tool was used successfully
+        }
+        
+        return false;
+    }
+    
+    /// <summary>
+    /// Break a rock with a pickaxe in the overworld
+    /// </summary>
+    private bool UseBreakRock(Vector2 worldPosition)
+    {
+        // Find a rock near the player's action position
+        WorldObject obj = _worldMap.GetWorldObjectAt(worldPosition, 20f);
+        
+        if (obj is BreakableRock rock)
+        {
+            // Hit the rock
+            bool destroyed = rock.Hit(out Item[] drops);
+            
+            if (destroyed)
+            {
+                // Add drops to inventory
+                if (_inventory != null && drops != null)
+                {
+                    foreach (var drop in drops)
+                    {
+                        _inventory.AddItem(drop, 1);
+                    }
+                }
+                
+                // Remove the rock from the world
+                _worldMap.RemoveWorldObject(rock);
+            }
+            
+            return true; // Tool was used successfully
+        }
+        
+        return false;
     }
 }

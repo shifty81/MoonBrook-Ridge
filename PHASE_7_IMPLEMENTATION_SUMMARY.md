@@ -157,7 +157,7 @@ Direct tool selection via number keys.
 
 ---
 
-## Phase 7.2: Gameplay Enhancements 🔧 **PARTIAL**
+## Phase 7.2: Gameplay Enhancements ✅ **COMPLETE**
 
 ### Completed Enhancements ✅
 
@@ -174,42 +174,59 @@ Direct tool selection via number keys.
 - **Warnings**: "Can't eat/drink when full" messages
 - **Slot Mapping**: Keys 7-9, 0, -, = for consumable slots (6-11)
 
-**Resolved TODOs:**
+#### 3. Tree Chopping in Overworld ✅
+- **Status**: COMPLETE
+- **Implementation**: ChoppableTree class with hit tracking
+- **Functionality**: Axe can chop trees anywhere in overworld
+- **Drops**: 2-4 wood items per tree
+- **Visual Feedback**: Trees fade as they take damage
+
+#### 4. Rock Breaking in Overworld ✅
+- **Status**: COMPLETE
+- **Implementation**: BreakableRock class with hit tracking
+- **Functionality**: Pickaxe can break decorative rocks on farm
+- **Drops**: 1-3 stone items per rock
+- **Visual Feedback**: Rocks turn gray when damaged
+
+#### 5. Biome Movement Modifiers ✅
+- **Status**: COMPLETE
+- **Implementation**: BiomeSystem integration with PlayerCharacter
+- **Functionality**: Player speed changes based on current biome
+- **Speed Modifiers**:
+  - Farm: 1.0x (normal)
+  - Forest: 0.9x (slightly slower)
+  - Haunted Forest: 0.8x (slow)
+  - Swamp: 0.7x (very slow in mud)
+  - Underwater: 0.6x (very slow without water breathing)
+  - Floating Islands: 1.2x (faster movement)
+
+#### 6. Quest Progress Notifications ✅
+- **Status**: COMPLETE
+- **Implementation**: QuestSystem events hooked to NotificationSystem
+- **Functionality**: Toast notifications for quest updates
+- **Features**:
+  - Objective updates show progress (e.g., "Till 5 plots (3/5)")
+  - Quest completion notifications
+  - Color-coded quest notification type
+
+**All Phase 7.2 TODOs Resolved:**
 - ~~Add hotkey switching between tools (1-9 keys)~~
 - ~~Add visual/audio feedback for item consumption~~
 - ~~Add "can't eat/drink when full" message~~
+- ~~Implement tree chopping in overworld~~
+- ~~Implement rock breaking in overworld~~
+- ~~Apply biome movement modifiers~~
+- ~~Add quest progress notifications~~
 
-### Remaining Enhancements 📋
-
-#### Tree Chopping in Overworld
-- **Status**: TODO
-- **Current**: Tree chopping only works in specific contexts
-- **Goal**: Enable tree chopping anywhere in overworld
-- **Required**: Update `ToolManager.UseTool()` for Axe
-
-#### Rock Breaking in Overworld
-- **Status**: TODO
-- **Current**: Rock breaking limited to mines
-- **Goal**: Allow breaking decorative rocks on farm
-- **Required**: WorldObject detection for rocks
-
-#### Biome Movement Modifiers
-- **Status**: TODO
-- **Goal**: Apply movement speed changes based on biome
-- **Example**: Slower in swamp (0.7x), faster in floating islands (1.2x)
+### Future Enhancements (Phase 7.3+) 📋
 
 #### Biome Resource Spawning
-- **Status**: TODO
+- **Status**: PLANNED
 - **Goal**: Spawn biome-specific resources and creatures
 - **Example**: Oak trees in Forest, cacti in Desert
 
-#### Quest Progress Notifications
-- **Status**: TODO
-- **Goal**: Show toast notifications when quest objectives update
-- **Integration**: Hook into `QuestSystem.UpdateQuestProgress()`
-
 #### Quest Waypoints
-- **Status**: TODO
+- **Status**: PLANNED
 - **Goal**: Visual indicators showing quest objective locations
 - **Implementation**: Arrows or markers on HUD/minimap
 

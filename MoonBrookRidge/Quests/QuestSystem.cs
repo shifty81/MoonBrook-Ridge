@@ -20,6 +20,7 @@ public class QuestSystem
     public event Action<Quest> OnQuestCompleted;
     public event Action<QuestChoice, QuestConsequence> OnChoiceMade;
     public event Action<int> OnKarmaChanged;
+    public event Action<Quest, QuestObjective> OnObjectiveUpdated;
     
     public QuestSystem()
     {
@@ -109,7 +110,14 @@ public class QuestSystem
         var quest = _activeQuests.Find(q => q.Id == questId);
         if (quest != null)
         {
+            var objective = quest.GetObjective(objectiveId);
             quest.UpdateObjective(objectiveId, progress);
+            
+            // Trigger objective update event
+            if (objective != null)
+            {
+                OnObjectiveUpdated?.Invoke(quest, objective);
+            }
             
             // Check if quest is complete
             if (quest.IsComplete())
@@ -223,6 +231,11 @@ public class Quest
                 objective.IsCompleted = true;
             }
         }
+    }
+    
+    public QuestObjective GetObjective(string objectiveId)
+    {
+        return Objectives.Find(o => o.Id == objectiveId);
     }
     
     public bool IsComplete()

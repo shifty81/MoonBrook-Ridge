@@ -107,9 +107,9 @@ public class PlayerCharacter
         _animationController.Play("idle");
     }
     
-    public void Update(GameTime gameTime, InputManager input, CollisionSystem collision = null)
+    public void Update(GameTime gameTime, InputManager input, CollisionSystem collision = null, Biomes.BiomeSystem biomeSystem = null)
     {
-        HandleInput(gameTime, input);
+        HandleInput(gameTime, input, biomeSystem);
         UpdatePosition(gameTime, collision);
         UpdateActivity();
         UpdateAnimations();
@@ -180,7 +180,7 @@ public class PlayerCharacter
         }
     }
     
-    private void HandleInput(GameTime gameTime, InputManager input)
+    private void HandleInput(GameTime gameTime, InputManager input, Biomes.BiomeSystem biomeSystem = null)
     {
         Vector2 movement = Vector2.Zero;
         
@@ -218,6 +218,13 @@ public class PlayerCharacter
         
         // Apply hunger debuff to speed
         speed *= _stats.GetMovementSpeedMultiplier();
+        
+        // Apply biome movement modifier
+        if (biomeSystem != null)
+        {
+            float biomeModifier = biomeSystem.GetMovementModifier(biomeSystem.CurrentBiome);
+            speed *= biomeModifier;
+        }
         
         // Drain energy when running
         if (isRunning && movement != Vector2.Zero)

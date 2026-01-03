@@ -523,16 +523,19 @@ See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete 
 See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](PHASE_6_SAVE_AND_QUEST_INTEGRATION.md) for integration details.
 
 ### Phase 7: Performance & Polish ⚙️ **IN PROGRESS!**
-- [x] **Performance Monitoring** ⭐ **NEW!** - Real-time FPS, memory, and timing metrics (F3 to toggle)
-- [x] **Auto-Save System** ⭐ **NEW!** - Automatic background saves every 5 minutes
-- [x] **Minimap** ⭐ **NEW!** - Real-time 150px world overview in top-right corner (Tab to toggle)
-- [x] **Notification System** ⭐ **NEW!** - Toast-style messages for game events
-- [x] **Tool Hotkeys** ⭐ **NEW!** - Direct tool selection with number keys 1-6
-- [x] **Enhanced Feedback** ⭐ **NEW!** - Visual/audio feedback for item consumption
+- [x] **Performance Monitoring** ⭐ **PHASE 7.1** - Real-time FPS, memory, and timing metrics (F3 to toggle)
+- [x] **Auto-Save System** ⭐ **PHASE 7.1** - Automatic background saves every 5 minutes
+- [x] **Minimap** ⭐ **PHASE 7.1** - Real-time 150px world overview in top-right corner (Tab to toggle)
+- [x] **Notification System** ⭐ **PHASE 7.1** - Toast-style messages for game events
+- [x] **Tool Hotkeys** ⭐ **PHASE 7.1** - Direct tool selection with number keys 1-6
+- [x] **Enhanced Feedback** ⭐ **PHASE 7.1** - Visual/audio feedback for item consumption
+- [x] **Tree Chopping** ⭐ **PHASE 7.2** - Chop trees anywhere in overworld for wood (2-4 per tree)
+- [x] **Rock Breaking** ⭐ **PHASE 7.2** - Break decorative rocks on farm for stone (1-3 per rock)
+- [x] **Biome Movement Modifiers** ⭐ **PHASE 7.2** - Speed changes based on biome (0.6x to 1.2x)
+- [x] **Quest Progress Notifications** ⭐ **PHASE 7.2** - Toast notifications for quest objective updates
 - [ ] Rendering optimizations (spatial partitioning, frustum culling)
 - [ ] Object pooling for particles and projectiles
 - [ ] Biome-specific resources and creatures
-- [ ] Quest progress notifications
 - [ ] Additional quality-of-life features
 
 See [PHASE_7_IMPLEMENTATION_SUMMARY.md](PHASE_7_IMPLEMENTATION_SUMMARY.md) for complete Phase 7 documentation.

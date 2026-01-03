@@ -193,6 +193,30 @@ public class BiomeSystem
     {
         return new List<BiomeType>(_biomes.Keys);
     }
+    
+    /// <summary>
+    /// Detect biome at a given world position
+    /// For now, returns the current biome. Can be enhanced with spatial biome detection.
+    /// </summary>
+    public BiomeType DetectBiomeAtPosition(Vector2 worldPosition)
+    {
+        // Simple implementation: return current biome
+        // In the future, this could use world coordinates to determine biome
+        // based on spatial zones, temperature, altitude, etc.
+        return _currentBiome;
+    }
+    
+    /// <summary>
+    /// Get movement speed modifier for a specific biome
+    /// </summary>
+    public float GetMovementModifier(BiomeType biome)
+    {
+        if (_biomes.TryGetValue(biome, out BiomeDefinition definition))
+        {
+            return definition.MovementModifier;
+        }
+        return 1.0f; // Default no modifier
+    }
 }
 
 /// <summary>
