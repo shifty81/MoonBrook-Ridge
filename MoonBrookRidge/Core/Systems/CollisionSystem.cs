@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.World.Maps;
@@ -36,7 +37,18 @@ public class CollisionSystem
             return false;
         }
         
-        return IsTileWalkable(tile);
+        if (!IsTileWalkable(tile))
+        {
+            return false;
+        }
+        
+        // Check collision with world objects (trees, rocks, buildings, etc.)
+        if (CollidesWithWorldObjects(position))
+        {
+            return false;
+        }
+        
+        return true;
     }
     
     /// <summary>
@@ -65,8 +77,64 @@ public class CollisionSystem
         }
         
         // All other tile types are walkable
-        // TODO: Add checks for buildings, rocks, trees when implemented
         return true;
+    }
+    
+    /// <summary>
+    /// Check if a position collides with any world objects
+    /// </summary>
+    private bool CollidesWithWorldObjects(Vector2 position)
+    {
+        try
+        {
+            var worldObjects = _worldMap.GetWorldObjects();
+            if (worldObjects == null)
+            {
+                return false;
+            }
+            
+            // Create player collision bounds
+            Rectangle playerBounds = GetPlayerBounds(position);
+            
+            // Check collision with each world object
+            foreach (var obj in worldObjects)
+            {
+                if (obj == null)
+                    continue;
+                
+                try
+                {
+                    Rectangle objBounds = obj.GetBounds();
+                    
+                    // Shrink object bounds slightly to allow player to walk closer
+                    // This prevents the player from being blocked too far away from objects
+                    int margin = 4; // 4 pixel margin
+                    Rectangle shrunkBounds = new Rectangle(
+                        objBounds.X + margin,
+                        objBounds.Y + margin,
+                        Math.Max(1, objBounds.Width - (margin * 2)),
+                        Math.Max(1, objBounds.Height - (margin * 2))
+                    );
+                    
+                    if (playerBounds.Intersects(shrunkBounds))
+                    {
+                        return true; // Collision detected
+                    }
+                }
+                catch
+                {
+                    // Skip objects that cause errors (null texture, invalid bounds, etc.)
+                    continue;
+                }
+            }
+            
+            return false; // No collision
+        }
+        catch
+        {
+            // If any error occurs, assume no collision to prevent crashes
+            return false;
+        }
     }
     
     /// <summary>

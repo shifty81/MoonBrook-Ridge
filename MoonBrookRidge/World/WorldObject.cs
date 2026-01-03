@@ -70,11 +70,25 @@ public class WorldObject
     /// </summary>
     public Rectangle GetBounds()
     {
-        return new Rectangle(
-            (int)Position.X,
-            (int)Position.Y,
-            (int)(SourceRectangle.Width * Scale),
-            (int)(SourceRectangle.Height * Scale)
-        );
+        try
+        {
+            if (Texture == null || SourceRectangle.Width <= 0 || SourceRectangle.Height <= 0)
+            {
+                // Return a minimal 1x1 rectangle at the position if texture is invalid
+                return new Rectangle((int)Position.X, (int)Position.Y, 1, 1);
+            }
+            
+            return new Rectangle(
+                (int)Position.X,
+                (int)Position.Y,
+                (int)(SourceRectangle.Width * Scale),
+                (int)(SourceRectangle.Height * Scale)
+            );
+        }
+        catch
+        {
+            // Fallback to minimal rectangle if any error occurs
+            return new Rectangle((int)Position.X, (int)Position.Y, 1, 1);
+        }
     }
 }

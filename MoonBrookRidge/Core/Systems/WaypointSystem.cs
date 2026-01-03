@@ -71,7 +71,7 @@ public class WaypointSystem
         var farmWaypoint = new Waypoint(
             "farm_home",
             "Home Farm",
-            "Your cozy farm in MoonBrook Valley",
+            "Your cozy farm in MoonBrook Ridge",
             new Vector2(27.5f * 16, 27.5f * 16), // Center of farm area
             WaypointType.Farm
         );
