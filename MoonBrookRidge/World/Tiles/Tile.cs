@@ -47,6 +47,7 @@ public class Tile
             TileType.Water or TileType.Water01 => Color.Blue,
             TileType.Sand or TileType.Sand01 => Color.SandyBrown,
             TileType.WoodenFloor or TileType.Flooring => new Color(139, 90, 43),
+            TileType.Wall => new Color(100, 100, 100), // Gray wall
             
             // Slates grass variants
             TileType.SlatesGrassBasic or TileType.SlatesGrassMedium => new Color(34, 139, 34),
@@ -156,6 +157,43 @@ public class Tile
         get => _spriteId;
         set => _spriteId = value;
     }
+    
+    /// <summary>
+    /// Check if this tile has a sprite ID set
+    /// </summary>
+    public bool HasSpriteId()
+    {
+        return _spriteId >= 0;
+    }
+    
+    /// <summary>
+    /// Get sprite ID or return -1 if not set
+    /// </summary>
+    public int GetSpriteId()
+    {
+        return _spriteId;
+    }
+    
+    /// <summary>
+    /// Check if this tile blocks movement
+    /// </summary>
+    public bool IsBlocking()
+    {
+        return _type == TileType.Rock || 
+               _type == TileType.Stone || 
+               _type == TileType.Wall ||
+               _type == TileType.SlatesStoneWall ||
+               _type == TileType.MineEntrance;
+    }
+    
+    /// <summary>
+    /// Set blocking state (for dynamic tiles)
+    /// </summary>
+    public void SetBlocking(bool blocking)
+    {
+        // Can be extended to support dynamic blocking
+        // For now, just update type if needed
+    }
 }
 
 public enum TileType
@@ -180,6 +218,7 @@ public enum TileType
     Sand01,
     WoodenFloor,
     Flooring,
+    Wall, // Interior wall
     
     // Slates tileset types - Grass variants
     SlatesGrassBasic,

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.World.Buildings;
 using MoonBrookRidge.Characters.NPCs;
+using MoonBrookRidge.Core.Systems;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ public class DungeonOverworldScene : ExteriorScene
 {
     private string _dungeonName;
     private List<Building> _playerBuildings;
-    private List<NPC> _fauna; // Wildlife in the area
+    private List<NPCCharacter> _fauna; // Wildlife in the area
     private Vector2 _elevatorPosition;
     private Vector2 _gatePosition;
     private Rectangle _walledArea;
@@ -221,7 +222,7 @@ public class DungeonOverworldScene : ExteriorScene
             string[] faunaTypes = { "Deer", "Rabbit", "Bird", "Squirrel", "Fox" };
             string faunaType = faunaTypes[random.Next(faunaTypes.Length)];
             
-            var fauna = new NPC($"{faunaType}_{i}", position, faunaType);
+            var fauna = new NPCCharacter($"{faunaType}_{i}", position, faunaType);
             _fauna.Add(fauna);
             
             // Add as scene object

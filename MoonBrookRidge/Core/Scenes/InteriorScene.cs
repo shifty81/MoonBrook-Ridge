@@ -14,6 +14,7 @@ public class InteriorScene : Scene
     protected Texture2D _roomBuilderAtlas;
     protected Texture2D _interiorsAtlas;
     protected Texture2D _sunnysideTileset;
+    protected AssetManager _assetManager;
     
     public InteriorScene(string name, string sceneId, int width, int height) 
         : base(name, sceneId, SceneType.Interior, width, height)
@@ -27,7 +28,7 @@ public class InteriorScene : Scene
         {
             for (int y = 0; y < _height; y++)
             {
-                SetTile(x, y, new Tile(TileType.WoodFloor, new Vector2(x, y)));
+                SetTile(x, y, new Tile(TileType.WoodenFloor, new Vector2(x, y)));
             }
         }
         
@@ -52,10 +53,11 @@ public class InteriorScene : Scene
     
     public override void LoadContent()
     {
-        // Load interior textures
-        _roomBuilderAtlas = AssetManager.GetTexture("Textures/Interiors/ModernInteriors/Tilesets/Room_Builder_free_16x16");
-        _interiorsAtlas = AssetManager.GetTexture("Textures/Interiors/ModernInteriors/Tilesets/Interiors_free_16x16");
-        _sunnysideTileset = AssetManager.GetTexture("Textures/Tilesets/sunnyside_tileset");
+        // Load interior textures - will be set by GameplayState
+        // For now, textures will be null and we'll use colored rectangles
+        _roomBuilderAtlas = null; // AssetManager.GetTexture("Textures/Interiors/ModernInteriors/Tilesets/Room_Builder_free_16x16");
+        _interiorsAtlas = null; // AssetManager.GetTexture("Textures/Interiors/ModernInteriors/Tilesets/Interiors_free_16x16");
+        _sunnysideTileset = null; // AssetManager.GetTexture("Textures/Tilesets/sunnyside_tileset");
     }
     
     public override void Draw(SpriteBatch spriteBatch, Camera2D camera)

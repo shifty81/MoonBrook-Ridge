@@ -33,8 +33,9 @@ public class ExteriorScene : Scene
     
     public override void LoadContent()
     {
-        _sunnysideTileset = AssetManager.GetTexture("Textures/Tilesets/sunnyside_tileset");
-        _tilesetHelper = new SunnysideTilesetHelper(_sunnysideTileset);
+        // Load textures - will be set by GameplayState
+        _sunnysideTileset = null; // AssetManager.GetTexture("Textures/Tilesets/sunnyside_tileset");
+        _tilesetHelper = null; // new SunnysideTilesetHelper(_sunnysideTileset);
     }
     
     public override void Draw(SpriteBatch spriteBatch, Camera2D camera)
