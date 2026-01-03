@@ -240,8 +240,8 @@ public class BiomeResourceSpawner
     {
         // Create a ChoppableTree with biome-specific properties
         // Note: Texture will need to be set separately when integrating with the game
+        // The null texture is intentional - requires game integration to set actual textures
         var tree = new ChoppableTree(treeType, position, (Texture2D)null, treeType, _random);
-        // Store the required hits and drops count as properties for future use
         return tree;
     }
     
@@ -249,74 +249,9 @@ public class BiomeResourceSpawner
     {
         // Create a BreakableRock with biome-specific properties
         // Note: Texture will need to be set separately when integrating with the game
+        // The null texture is intentional - requires game integration to set actual textures
         var rock = new BreakableRock(rockType, position, (Texture2D)null, _random);
-        // Store the required hits and drops count as properties for future use
         return rock;
-    }
-    
-    private int GetTreeHits(string treeType)
-    {
-        // Different tree types require different hit counts
-        return treeType switch
-        {
-            "oak" or "pine" or "birch" => 3,
-            "apple" or "palm_tree" => 2,
-            "dead_tree" or "dead_bush" or "cactus" => 2,
-            "frozen_pine" or "swamp_tree" => 3,
-            "enchanted_tree" or "rainbow_tree" => 4,
-            "cloud_tree" or "celestial_oak" => 3,
-            "crystal_formation" => 5,
-            _ => 3 // Default
-        };
-    }
-    
-    private int GetTreeDrops(string treeType)
-    {
-        // Different tree types drop different amounts of wood
-        return treeType switch
-        {
-            "oak" or "pine" or "birch" => _random.Next(2, 5),
-            "dead_tree" or "dead_bush" => _random.Next(1, 3),
-            "cactus" => _random.Next(1, 3),
-            "enchanted_tree" or "rainbow_tree" => _random.Next(3, 6),
-            "frozen_pine" => _random.Next(2, 4),
-            "crystal_formation" => _random.Next(1, 3), // Drops crystals instead of wood
-            _ => _random.Next(2, 4)
-        };
-    }
-    
-    private int GetRockHits(string rockType)
-    {
-        // Different rock types require different hit counts
-        return rockType switch
-        {
-            "stone" or "limestone" => 2,
-            "iron_ore" or "coal_ore" => 3,
-            "gold_ore" or "diamond_ore" => 4,
-            "mithril_ore" => 5,
-            "obsidian" => 5,
-            "ice_block" => 2,
-            "magic_crystal" or "sky_crystal" => 4,
-            _ => 2
-        };
-    }
-    
-    private int GetRockDrops(string rockType)
-    {
-        // Different rock types drop different amounts
-        return rockType switch
-        {
-            "stone" or "limestone" => _random.Next(1, 4),
-            "iron_ore" => _random.Next(1, 3),
-            "coal_ore" => _random.Next(2, 4),
-            "gold_ore" => _random.Next(1, 2),
-            "diamond_ore" => 1,
-            "mithril_ore" => 1,
-            "obsidian" => _random.Next(1, 3),
-            "ice_block" => _random.Next(2, 4),
-            "magic_crystal" or "sky_crystal" => _random.Next(1, 2),
-            _ => _random.Next(1, 3)
-        };
     }
 }
 

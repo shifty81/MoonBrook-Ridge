@@ -340,15 +340,17 @@ public class WorldMap
         {
             if (visibleBounds.HasValue)
             {
-                // Check if object is within visible bounds (with buffer)
-                Rectangle objBounds = new Rectangle(
-                    (int)obj.Position.X - 16,
-                    (int)obj.Position.Y - 16,
-                    32,
-                    32
+                // Check if object is within visible bounds using actual object bounds
+                // Add a small buffer to prevent pop-in at edges
+                Rectangle objBounds = obj.GetBounds();
+                Rectangle bufferedViewport = new Rectangle(
+                    visibleBounds.Value.X - 32,
+                    visibleBounds.Value.Y - 32,
+                    visibleBounds.Value.Width + 64,
+                    visibleBounds.Value.Height + 64
                 );
                 
-                if (!objBounds.Intersects(visibleBounds.Value))
+                if (!objBounds.Intersects(bufferedViewport))
                 {
                     continue; // Skip objects outside visible area
                 }

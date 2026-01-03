@@ -28,7 +28,10 @@ public class ProjectileSystem
     private List<Projectile> _activeProjectiles;
     private Queue<Projectile> _projectilePool;
     private const int POOL_SIZE = 200;
-    private static Texture2D? _whitePixel; // Shared texture for drawing projectiles
+    // Shared texture for drawing projectiles - created once and reused
+    // Note: Since ProjectileSystem is typically a singleton in the game, this texture
+    // lifecycle is managed by the game's overall lifetime and doesn't need explicit disposal
+    private static Texture2D? _whitePixel;
     
     public ProjectileSystem()
     {
@@ -148,6 +151,8 @@ public class Projectile
     private float _lifetime;
     private float _age;
     private float _rotation;
+    // Note: Static Random is safe here as Projectile.Initialize is only called from
+    // ProjectileSystem.SpawnProjectile on the main thread (single-threaded game loop)
     private static Random _random = new Random();
     
     public void Initialize(Vector2 position, Vector2 velocity, ProjectileType type, 
