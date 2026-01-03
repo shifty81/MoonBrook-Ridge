@@ -1175,6 +1175,25 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for auto-fire toggle (N key) - Phase 8
+        if (keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N))
+        {
+            _autoFireSystem.ToggleAutoFire();
+            string status = _autoFireSystem.IsAutoFireEnabled ? "Enabled" : "Disabled";
+            _notificationSystem?.Show($"Auto-Fire: {status}", NotificationType.Info, 2.0f);
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for inventory sort (I key) - Phase 8
+        if (keyboardState.IsKeyDown(Keys.I) && !_previousKeyboardState.IsKeyDown(Keys.I))
+        {
+            InventoryHelper.SortInventory(_inventory);
+            _notificationSystem?.Show("Inventory Sorted", NotificationType.Success, 1.5f);
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Removed individual menu keybinds - all now consolidated in unified player menu (E key)
         // Removed: K (crafting), A (achievements), F (quests), L (alchemy), J (skills), P (pets), R (factions), Y (family)
         // These are now accessible via tabs in the unified menu
