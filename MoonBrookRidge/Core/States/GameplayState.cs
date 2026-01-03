@@ -76,11 +76,13 @@ public class GameplayState : GameState
     private SkillsMenu _skillsMenu;
     private PetSystem _petSystem;
     private PetMenu _petMenu;
+    private List<WildPet> _wildPets;
     private CombatSystem _combatSystem;
     private Dungeons.DungeonSystem _dungeonSystem;
     private DungeonMenu _dungeonMenu;
     private Factions.FactionSystem _factionSystem;
     private FactionMenu _factionMenu;
+    private Biomes.BiomeSystem _biomeSystem;
     // Marriage and Family System (Phase 5 deferred item)
     private MarriageSystem _marriageSystem;
     private FamilySystem _familySystem;
@@ -205,6 +207,10 @@ public class GameplayState : GameState
         _petSystem = new PetSystem();
         _petMenu = new PetMenu(_petSystem);
         
+        // Initialize wild pets for taming
+        _wildPets = new List<WildPet>();
+        SpawnWildPets();
+        
         // Initialize Combat System
         _combatSystem = new CombatSystem();
         
@@ -213,6 +219,9 @@ public class GameplayState : GameState
         
         // Initialize Faction System
         _factionSystem = new Factions.FactionSystem();
+        
+        // Initialize Biome System
+        _biomeSystem = new Biomes.BiomeSystem();
         
         // Initialize Marriage and Family System (Phase 5 deferred item)
         _marriageSystem = new MarriageSystem();
@@ -369,6 +378,143 @@ public class GameplayState : GameState
             }
             // Other spells (speed, light, fireball, teleport, summon) will be implemented
             // when their required systems are added (buff system, lighting, combat, etc.)
+            
+            // Track spell casting for quests
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.CastSpell && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Hook up quest tracking events for Phase 6 objectives
+        
+        // Track dungeon entry
+        _dungeonSystem.OnDungeonEntered += (dungeon) =>
+        {
+            // Update all active quests that require entering this dungeon type
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.EnterDungeon && 
+                        objective.TargetId == dungeon.Type.ToString() && 
+                        !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track room clearing
+        _dungeonSystem.OnRoomCleared += (room) =>
+        {
+            // Update all active quests that require clearing rooms
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.ClearRooms && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track dungeon completion
+        _dungeonSystem.OnDungeonCleared += (dungeon) =>
+        {
+            // Update all active quests that require completing a dungeon
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.CompleteDungeon && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track pet taming
+        _petSystem.OnPetTamed += (pet) =>
+        {
+            // Update all active quests that require taming a pet
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.TamePet && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
+        };
+        
+        // Track skill level ups
+        _skillSystem.OnSkillLevelUp += (category, level) =>
+        {
+            // Update all active quests that require reaching a skill level
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.ReachSkillLevel && !objective.IsCompleted)
+                    {
+                        // Check if this is the right category and level
+                        if (objective.TargetId == category.ToString() && level >= objective.RequiredProgress)
+                        {
+                            objective.CurrentProgress = level;
+                            objective.IsCompleted = true;
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Track skill unlocking
+        _skillSystem.OnSkillUnlocked += (skill) =>
+        {
+            // Update all active quests that require unlocking a skill
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.UnlockSkill && !objective.IsCompleted)
+                    {
+                        // For now, we track any skill unlock (can be enhanced later to track specific categories)
+                        if (objective.TargetId == "Any")
+                        {
+                            _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Track spell learning
+        _magicSystem.OnSpellLearned += (spell) =>
+        {
+            // Update all active quests that require learning a spell
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.LearnSpell && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
         };
         
         // Initialize save system
@@ -834,6 +980,14 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for taming wild pets (T key for "tame") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.T) && !_previousKeyboardState.IsKeyDown(Keys.T))
+        {
+            TryTameWildPet();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Check for dungeon menu (D key for "dungeon") - with debouncing
         // Only available when in a dungeon
         if (keyboardState.IsKeyDown(Keys.D) && !_previousKeyboardState.IsKeyDown(Keys.D))
@@ -918,6 +1072,12 @@ public class GameplayState : GameState
         _magicSystem.Update(gameTime);
         _petSystem.Update(gameTime);
         _combatSystem.Update(gameTime);
+        
+        // Update biome based on player position
+        UpdateBiomeFromPosition();
+        
+        // Update wild pets
+        UpdateWildPets(gameTime);
         
         // Update event system
         _eventSystem.Update(gameTime);
@@ -1627,6 +1787,37 @@ public class GameplayState : GameState
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
         
+        // Draw wild pets (simple colored circles for now)
+        foreach (var wildPet in _wildPets)
+        {
+            if (!wildPet.IsTamed)
+            {
+                // Draw a colored circle to represent the wild pet
+                Color petColor = wildPet.DefinitionId switch
+                {
+                    "dog" => Color.Brown,
+                    "cat" => Color.Orange,
+                    "wolf" => Color.Gray,
+                    "chicken" => Color.White,
+                    "hawk" => Color.DarkGray,
+                    _ => Color.Yellow
+                };
+                
+                DrawFilledCircle(spriteBatch, wildPet.Position, 8, petColor);
+                
+                // Draw pet name above it
+                Vector2 namePos = wildPet.Position - new Vector2(0, 20);
+                spriteBatch.DrawString(Game.DefaultFont, wildPet.Name, namePos, Color.White);
+                
+                // Draw "T to Tame" if player is nearby
+                if (wildPet.IsInRangeOf(_player.Position))
+                {
+                    Vector2 hintPos = wildPet.Position + new Vector2(0, 15);
+                    spriteBatch.DrawString(Game.DefaultFont, "[T] Tame", hintPos, Color.LightGreen);
+                }
+            }
+        }
+        
         // Draw enemies and health bars (in world space with camera transform)
         if (_miningManager.InMine)
         {
@@ -1661,9 +1852,34 @@ public class GameplayState : GameState
         
         spriteBatch.End();
         
+        // Draw biome screen tint overlay (between world and UI)
+        spriteBatch.Begin();
+        var currentBiomeDef = _biomeSystem.GetBiome(_biomeSystem.CurrentBiome);
+        if (currentBiomeDef != null)
+        {
+            // Draw semi-transparent overlay with biome tint color
+            Color tintColor = currentBiomeDef.TintColor * 0.15f; // 15% opacity
+            spriteBatch.Draw(_pixelTexture, 
+                new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height),
+                tintColor);
+        }
+        spriteBatch.End();
+        
         // Draw HUD (no camera transform)
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         _hud.DrawPlayerStats(spriteBatch, Game.DefaultFont, _player, _timeSystem);
+        
+        // Draw current biome name in upper right
+        if (currentBiomeDef != null)
+        {
+            string biomeText = $"Biome: {currentBiomeDef.Name}";
+            Vector2 biomeTextSize = Game.DefaultFont.MeasureString(biomeText);
+            Vector2 biomeTextPos = new Vector2(
+                Game.GraphicsDevice.Viewport.Width - biomeTextSize.X - 10,
+                10
+            );
+            spriteBatch.DrawString(Game.DefaultFont, biomeText, biomeTextPos, Color.White);
+        }
         
         // Draw NPC UI (dialogue wheel)
         _npcManager.DrawUI(spriteBatch, Game.DefaultFont);
@@ -2055,6 +2271,115 @@ public class GameplayState : GameState
                         color);
                 }
             }
+        }
+    }
+    
+    /// <summary>
+    /// Spawn wild pets in the world for taming
+    /// </summary>
+    private void SpawnWildPets()
+    {
+        // Spawn a few wild pets around the map for players to discover and tame
+        _wildPets.Add(new WildPet("dog", "Wild Dog", new Vector2(15, 20) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("cat", "Stray Cat", new Vector2(35, 25) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("wolf", "Wild Wolf", new Vector2(45, 15) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("chicken", "Wild Chicken", new Vector2(20, 30) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("hawk", "Wild Hawk", new Vector2(40, 35) * GameConstants.TILE_SIZE));
+    }
+    
+    /// <summary>
+    /// Update wild pets and handle taming interactions
+    /// </summary>
+    private void UpdateWildPets(GameTime gameTime)
+    {
+        foreach (var wildPet in _wildPets)
+        {
+            if (!wildPet.IsTamed)
+            {
+                wildPet.Update(gameTime);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Attempt to tame a nearby wild pet
+    /// </summary>
+    private void TryTameWildPet()
+    {
+        foreach (var wildPet in _wildPets)
+        {
+            if (!wildPet.IsTamed && wildPet.IsInRangeOf(_player.Position))
+            {
+                // Try to tame the pet
+                if (_petSystem.TamePet(wildPet.DefinitionId, wildPet.Position))
+                {
+                    wildPet.IsTamed = true;
+                    // Show notification (if notification system exists)
+                    // For now, the quest system will track the taming through the event
+                    return;
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Determine the biome based on player position and update if changed
+    /// </summary>
+    private void UpdateBiomeFromPosition()
+    {
+        // Convert player position to tile coordinates
+        int tileX = (int)(_player.Position.X / GameConstants.TILE_SIZE);
+        int tileY = (int)(_player.Position.Y / GameConstants.TILE_SIZE);
+        
+        // Simple position-based biome determination
+        // This is a basic implementation - can be enhanced with tile-based biome data
+        Biomes.BiomeType newBiome = Biomes.BiomeType.Farm; // Default
+        
+        // In mines or dungeons, use cave biomes
+        if (_miningManager.InMine)
+        {
+            int depth = _miningManager.CurrentLevel;
+            if (depth >= 10)
+                newBiome = Biomes.BiomeType.DeepCave;
+            else
+                newBiome = Biomes.BiomeType.Cave;
+        }
+        else if (_dungeonSystem.ActiveDungeon != null)
+        {
+            // Dungeon-specific biomes based on dungeon type
+            newBiome = _dungeonSystem.ActiveDungeon.Type switch
+            {
+                Dungeons.DungeonType.SlimeCave => Biomes.BiomeType.Cave,
+                Dungeons.DungeonType.SkeletonCrypt => Biomes.BiomeType.HauntedForest,
+                Dungeons.DungeonType.SpiderNest => Biomes.BiomeType.Cave,
+                Dungeons.DungeonType.GoblinWarrens => Biomes.BiomeType.Cave,
+                Dungeons.DungeonType.HauntedManor => Biomes.BiomeType.HauntedForest,
+                Dungeons.DungeonType.DragonLair => Biomes.BiomeType.Volcanic,
+                Dungeons.DungeonType.DemonRealm => Biomes.BiomeType.Volcanic,
+                Dungeons.DungeonType.AncientRuins => Biomes.BiomeType.MagicalMeadow,
+                _ => Biomes.BiomeType.Cave
+            };
+        }
+        else
+        {
+            // Overworld position-based biomes
+            // Simple quadrant-based system for demonstration
+            if (tileX < 20 && tileY < 20)
+                newBiome = Biomes.BiomeType.Farm; // Northwest = Farm
+            else if (tileX >= 30 && tileY < 20)
+                newBiome = Biomes.BiomeType.Forest; // Northeast = Forest
+            else if (tileX < 20 && tileY >= 30)
+                newBiome = Biomes.BiomeType.Swamp; // Southwest = Swamp
+            else if (tileX >= 30 && tileY >= 30)
+                newBiome = Biomes.BiomeType.Desert; // Southeast = Desert
+            else
+                newBiome = Biomes.BiomeType.Farm; // Center = Farm
+        }
+        
+        // Update biome if it changed
+        if (newBiome != _biomeSystem.CurrentBiome)
+        {
+            _biomeSystem.ChangeBiome(newBiome);
         }
     }
 }

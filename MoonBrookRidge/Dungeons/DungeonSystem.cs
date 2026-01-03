@@ -21,6 +21,7 @@ public class DungeonSystem
     public event Action<Dungeon> OnDungeonEntered;
     public event Action<Dungeon> OnDungeonCleared;
     public event Action<DungeonRoom> OnRoomEntered;
+    public event Action<DungeonRoom> OnRoomCleared;
     
     public DungeonSystem(int seed = 0)
     {
@@ -182,6 +183,9 @@ public class DungeonSystem
     public void ClearRoom(DungeonRoom room)
     {
         room.IsCleared = true;
+        
+        // Trigger room cleared event
+        OnRoomCleared?.Invoke(room);
         
         // Check if dungeon is fully cleared
         if (_activeDungeon != null && _activeDungeon.IsFullyCleared())
