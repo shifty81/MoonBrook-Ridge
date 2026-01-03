@@ -29,6 +29,7 @@
 | Open Map | M | - |
 | **Open Crafting Menu** ⭐ | **K** | - |
 | **Open Shop Menu** ⭐ | **B** | - |
+| **Open Fast Travel Menu** ⭐ **PHASE 9** | **W** | - |
 | **Gift to NPC** ⭐ | **G** | - |
 | **Toggle Auto-Fire** ⭐ **PHASE 8** | **N** | - |
 | **Sort Inventory** ⭐ **PHASE 8** | **I** | - |
@@ -37,6 +38,8 @@
 | **Quick Load** ⭐ | **F9** | - |
 
 **Note on Combat**: Your weapons fire automatically when in caves (auto-fire enabled by default). Press N to toggle auto-fire on/off. Press Space to manually throw grenades for AoE damage/effects.
+
+**Note on Fast Travel**: Press W to open the Fast Travel menu. Discover waypoints by exploring the world (get within ~3 tiles). Fast travel costs gold (varies by location) and advances time by 1 hour.
 
 ### Hotbar (Quick Access)
 | Slot | Key |

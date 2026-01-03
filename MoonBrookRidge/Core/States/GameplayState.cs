@@ -100,6 +100,7 @@ public class GameplayState : GameState
     private SpatialPartitioningSystem _spatialPartitioning;
     private EntityFrustumCulling _entityCulling;
     private WaypointSystem _waypointSystem;
+    private FastTravelMenu _fastTravelMenu;
     // Unified Player Menu - consolidates all character-related menus into one tabbed interface
     private UnifiedPlayerMenu _unifiedPlayerMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
@@ -681,13 +682,20 @@ public class GameplayState : GameState
         {
             _notificationSystem?.Show($"Waypoint Discovered: {waypoint.Name}", NotificationType.Success, 3.0f);
         };
-        _waypointSystem.OnFastTravel += (waypoint, cost) =>
+        
+        // Initialize fast travel menu
+        _fastTravelMenu = new FastTravelMenu(_waypointSystem, _timeSystem, _player);
+        _fastTravelMenu.OnFastTravel += (destination, cost) =>
         {
-            _player.SetPosition(waypoint.Position);
-            _player.SpendMoney(cost);
-            // Note: TimeSystem doesn't have a public AdvanceTime method
-            // Fast travel time advancement would need to be implemented in TimeSystem
-            _notificationSystem?.Show($"Traveled to {waypoint.Name} (-{cost}g)", NotificationType.Info, 2.5f);
+            // Move player to destination
+            _player.SetPosition(destination);
+            
+            // Advance time by travel cost (1 hour by default)
+            float timeCost = _waypointSystem.GetTimeCost();
+            _timeSystem.AdvanceTime(timeCost);
+            
+            // Show notification
+            _notificationSystem?.Show($"Traveled successfully! (-${cost}, +{timeCost:F1}h)", NotificationType.Info, 2.5f);
         };
         
         _isPaused = false;
@@ -994,6 +1002,13 @@ public class GameplayState : GameState
             return; // Don't update game while in shop menu
         }
         
+        if (_fastTravelMenu.IsActive)
+        {
+            _fastTravelMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in fast travel menu
+        }
+        
         if (_giftMenu.IsActive)
         {
             _giftMenu.Update(gameTime);
@@ -1118,6 +1133,14 @@ public class GameplayState : GameState
         if (keyboardState.IsKeyDown(Keys.B) && !_previousKeyboardState.IsKeyDown(Keys.B))
         {
             _shopMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for fast travel menu (W key for "waypoints")
+        if (keyboardState.IsKeyDown(Keys.W) && !_previousKeyboardState.IsKeyDown(Keys.W))
+        {
+            _fastTravelMenu.Show();
             _previousKeyboardState = keyboardState;
             return;
         }
@@ -2299,6 +2322,11 @@ public class GameplayState : GameState
         if (_shopMenu.IsActive)
         {
             _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_fastTravelMenu.IsActive)
+        {
+            _fastTravelMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         if (_giftMenu.IsActive)

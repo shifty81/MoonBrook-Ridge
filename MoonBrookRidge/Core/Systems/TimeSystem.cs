@@ -84,4 +84,22 @@ public class TimeSystem
         int displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
         return $"{displayHour}:{minute:D2} {period}";
     }
+    
+    /// <summary>
+    /// Advances game time by a specified number of hours
+    /// Used for fast travel and other time-skipping mechanics
+    /// </summary>
+    /// <param name="hours">Number of game hours to advance</param>
+    public void AdvanceTime(float hours)
+    {
+        if (hours <= 0) return;
+        
+        _timeOfDay += hours;
+        
+        // Handle day advancement if needed
+        while (_timeOfDay >= 26f) // 2 AM next day
+        {
+            AdvanceDay();
+        }
+    }
 }
