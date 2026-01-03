@@ -67,41 +67,45 @@ public class WaypointSystem
     
     private void InitializeDefaultWaypoints()
     {
-        // Farm waypoint (always unlocked)
+        // Updated for 250x250 world (5X larger)
+        // Center of world is at (125, 125)
+        const float TILE_SIZE = 16f;
+        
+        // Farm waypoint (always unlocked) - center of 250x250 world
         var farmWaypoint = new Waypoint(
             "farm_home",
             "Home Farm",
             "Your cozy farm in MoonBrook Ridge",
-            new Vector2(27.5f * 16, 27.5f * 16), // Center of farm area
+            new Vector2(125f * TILE_SIZE, 125f * TILE_SIZE), // Center of farm area
             WaypointType.Farm
         );
         farmWaypoint.IsUnlocked = true;
         AddWaypoint(farmWaypoint);
         
-        // Village center
+        // Village center - northwest of farm
         AddWaypoint(new Waypoint(
             "moonbrook_village",
             "MoonBrook Village",
             "The main village square",
-            new Vector2(15f * 16, 15f * 16),
+            new Vector2(75f * TILE_SIZE, 75f * TILE_SIZE),
             WaypointType.Village
         ));
         
-        // Mine entrance
+        // Mine entrance - southwest
         AddWaypoint(new Waypoint(
             "mine_entrance",
             "Mine Entrance",
             "The entrance to the dangerous mines",
-            new Vector2(5f * 16, 5f * 16),
+            new Vector2(50f * TILE_SIZE, 200f * TILE_SIZE),
             WaypointType.MineshaftEntrance
         ));
         
-        // Shop district
+        // Shop district - north of farm
         AddWaypoint(new Waypoint(
             "shop_district",
             "Shopping District",
             "Various shops and merchants",
-            new Vector2(20f * 16, 10f * 16),
+            new Vector2(125f * TILE_SIZE, 50f * TILE_SIZE),
             WaypointType.ShopDistrict
         ));
     }

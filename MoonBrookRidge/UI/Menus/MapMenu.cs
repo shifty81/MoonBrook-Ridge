@@ -421,5 +421,5 @@ public class MapMenu : TabbedMenu
         _pixelTexture.SetData(new[] { Color.White });
     }
     
-    public bool IsActive => _isActive;
+    public new bool IsActive => _isActive;
 }
