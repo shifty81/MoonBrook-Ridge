@@ -100,6 +100,7 @@ public class GameplayState : GameState
     private SpatialPartitioningSystem _spatialPartitioning;
     private EntityFrustumCulling _entityCulling;
     private WaypointSystem _waypointSystem;
+    private World.Villages.VillageSystem _villageSystem; // Phase 10: Multi-village system
     private FastTravelMenu _fastTravelMenu; // Legacy - kept for backwards compatibility
     private MapMenu _mapMenu; // New consolidated map interface (M key)
     // Unified Player Menu - consolidates all character-related menus into one tabbed interface
@@ -682,6 +683,18 @@ public class GameplayState : GameState
         _waypointSystem.OnWaypointUnlocked += (waypoint) =>
         {
             _notificationSystem?.Show($"Waypoint Discovered: {waypoint.Name}", NotificationType.Success, 3.0f);
+        };
+        
+        // Initialize village system (Phase 10)
+        _villageSystem = new World.Villages.VillageSystem();
+        _villageSystem.OnVillageDiscovered += (village) =>
+        {
+            _notificationSystem?.Show($"Village Discovered: {village.Name}", NotificationType.Success, 3.0f);
+        };
+        _villageSystem.OnReputationChanged += (village, newRep) =>
+        {
+            string level = _villageSystem.GetReputationLevel(newRep);
+            _notificationSystem?.Show($"{village.Name} reputation: {level}", NotificationType.Info, 2.0f);
         };
         
         // Initialize fast travel menu (legacy)
@@ -1299,6 +1312,9 @@ public class GameplayState : GameState
         
         // Check for waypoint discovery (Phase 8)
         _waypointSystem.CheckForNearbyWaypoint(_player.Position);
+        
+        // Check for village discovery (Phase 10)
+        _villageSystem.CheckForDiscovery(_player.Position);
         
         // Update event system
         _eventSystem.Update(gameTime);
