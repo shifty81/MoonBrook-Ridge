@@ -431,6 +431,38 @@ public class WorldMap
     }
     
     /// <summary>
+    /// Get world object at a specific position within a radius
+    /// </summary>
+    public WorldObject GetWorldObjectAt(Vector2 position, float radius = 16f)
+    {
+        foreach (var obj in _worldObjects)
+        {
+            float distance = Vector2.Distance(obj.Position, position);
+            if (distance <= radius)
+            {
+                return obj;
+            }
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// Remove a world object from the world
+    /// </summary>
+    public bool RemoveWorldObject(WorldObject obj)
+    {
+        return _worldObjects.Remove(obj);
+    }
+    
+    /// <summary>
+    /// Get all world objects
+    /// </summary>
+    public IReadOnlyList<WorldObject> GetWorldObjects()
+    {
+        return _worldObjects.AsReadOnly();
+    }
+    
+    /// <summary>
     /// Populate the world with natural elements - forests at borders and scattered throughout
     /// </summary>
     public void PopulateSunnysideWorldObjects(
@@ -451,7 +483,7 @@ public class WorldMap
             string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
-                AddWorldObject(new WorldObject(treeKey, new Vector2(x * TILE_SIZE, 1 * TILE_SIZE), trees[treeKey]));
+                AddWorldObject(new ChoppableTree(treeKey, new Vector2(x * TILE_SIZE, 1 * TILE_SIZE), trees[treeKey], "Oak", random));
             }
         }
         
@@ -461,7 +493,7 @@ public class WorldMap
             string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
-                AddWorldObject(new WorldObject(treeKey, new Vector2(x * TILE_SIZE, (_height - 2) * TILE_SIZE), trees[treeKey]));
+                AddWorldObject(new ChoppableTree(treeKey, new Vector2(x * TILE_SIZE, (_height - 2) * TILE_SIZE), trees[treeKey], "Oak", random));
             }
         }
         
@@ -471,7 +503,7 @@ public class WorldMap
             string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
-                AddWorldObject(new WorldObject(treeKey, new Vector2(1 * TILE_SIZE, y * TILE_SIZE), trees[treeKey]));
+                AddWorldObject(new ChoppableTree(treeKey, new Vector2(1 * TILE_SIZE, y * TILE_SIZE), trees[treeKey], "Oak", random));
             }
         }
         
@@ -481,7 +513,7 @@ public class WorldMap
             string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
-                AddWorldObject(new WorldObject(treeKey, new Vector2((_width - 2) * TILE_SIZE, y * TILE_SIZE), trees[treeKey]));
+                AddWorldObject(new ChoppableTree(treeKey, new Vector2((_width - 2) * TILE_SIZE, y * TILE_SIZE), trees[treeKey], "Oak", random));
             }
         }
         
@@ -532,7 +564,7 @@ public class WorldMap
             string treeKey = treeKeys[random.Next(treeKeys.Count)];
             if (trees.ContainsKey(treeKey))
             {
-                AddWorldObject(new WorldObject(treeKey, pos, trees[treeKey]));
+                AddWorldObject(new ChoppableTree(treeKey, pos, trees[treeKey], "Oak", random));
             }
         }
         
@@ -559,7 +591,7 @@ public class WorldMap
             string rockKey = rockKeys[random.Next(rockKeys.Count)];
             if (rocks.ContainsKey(rockKey))
             {
-                AddWorldObject(new WorldObject(rockKey, pos, rocks[rockKey]));
+                AddWorldObject(new BreakableRock(rockKey, pos, rocks[rockKey], random));
             }
         }
     }
