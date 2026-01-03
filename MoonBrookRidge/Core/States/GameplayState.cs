@@ -2669,11 +2669,12 @@ public class GameplayState : GameState
         var projectiles = _projectileSystem.GetActiveProjectiles();
         var enemies = _combatSystem.GetActiveEnemies();
         
+        // Track projectiles to remove after iteration (avoid modifying collection during iteration)
+        var projectilesToRemove = new List<Projectile>();
+        
         // Check each projectile against each enemy
-        for (int i = projectiles.Count - 1; i >= 0; i--)
+        foreach (var projectile in projectiles)
         {
-            var projectile = projectiles[i];
-            
             // Skip projectiles owned by non-player (future: enemy projectiles)
             if (projectile.OwnerId != "player")
                 continue;
@@ -2698,11 +2699,17 @@ public class GameplayState : GameState
                     // Apply damage through combat system (Phase 7.4)
                     _combatSystem.ApplyProjectileDamage(enemy, projectile.Damage);
                     
-                    // Remove the projectile
-                    _projectileSystem.RemoveProjectile(projectile);
+                    // Mark projectile for removal
+                    projectilesToRemove.Add(projectile);
                     break; // Move to next projectile
                 }
             }
+        }
+        
+        // Remove all marked projectiles
+        foreach (var projectile in projectilesToRemove)
+        {
+            _projectileSystem.RemoveProjectile(projectile);
         }
     }
 }
