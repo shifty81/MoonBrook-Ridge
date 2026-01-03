@@ -138,20 +138,32 @@ public class DungeonScene : Scene
     private Enemy CreateScaledEnemy(Vector2 position, System.Random random)
     {
         // Create enemy with stats scaled by floor difficulty
-        var enemyTypes = new[] { "Slime", "Skeleton", "Spider", "Goblin", "Ghost", "Demon" };
-        string type = enemyTypes[random.Next(enemyTypes.Length)];
+        var enemyTypes = new[] { EnemyType.Slime, EnemyType.Skeleton, EnemyType.Spider, EnemyType.Goblin, EnemyType.Ghost, EnemyType.Demon };
+        EnemyType type = enemyTypes[random.Next(enemyTypes.Length)];
         
         int baseHealth = 50 + (_difficulty * 20);
         int baseDamage = 10 + (_difficulty * 5);
+        int baseDefense = _difficulty * 2;
+        float baseSpeed = 50f + (_difficulty * 5f);
+        int baseExp = 25 + (_difficulty * 10);
+        bool isBoss = false;
         
         if (_floorType == DungeonFloorType.Boss)
         {
             baseHealth *= 5; // Boss has 5x health
             baseDamage *= 2; // Boss has 2x damage
-            type = $"Boss_{type}";
+            baseDefense *= 2;
+            baseExp *= 3;
+            isBoss = true;
         }
         
-        return new Enemy(type, position, baseHealth, baseDamage);
+        string id = isBoss ? $"Boss_{type}" : type.ToString();
+        string name = isBoss ? $"Boss {type}" : type.ToString();
+        
+        // Constructor: id, name, type, health, damage, defense, speed, experience, isBoss
+        var enemy = new Enemy(id, name, type, baseHealth, baseDamage, baseDefense / 100f, baseSpeed, baseExp, isBoss);
+        enemy.Position = position;
+        return enemy;
     }
     
     private void AddStairsTransition()
@@ -207,7 +219,7 @@ public class DungeonScene : Scene
             int aliveCount = 0;
             foreach (var enemy in _enemies)
             {
-                if (enemy.IsAlive)
+                if (!enemy.IsDead)
                 {
                     aliveCount++;
                     enemy.Update(gameTime);
@@ -261,13 +273,14 @@ public class DungeonScene : Scene
         }
         
         // Draw enemies
-        foreach (var enemy in _enemies)
+        // Note: Enemy class doesn't have Draw method yet - TODO: implement enemy rendering
+        /*foreach (var enemy in _enemies)
         {
-            if (enemy.IsAlive && camera.IsInView(enemy.Position, 32, 32))
+            if (!enemy.IsDead && camera.IsInView(enemy.Position, 32, 32))
             {
                 enemy.Draw(spriteBatch);
             }
-        }
+        }*/
         
         // Draw objects
         foreach (var obj in _objects)

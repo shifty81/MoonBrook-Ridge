@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.Core;
 
 namespace MoonBrookRidge.World.Buildings;
 
@@ -32,6 +34,16 @@ public class Building
     public int TileHeight { get; set; }
     public int Tier { get; set; }
     public bool IsConstructed { get; set; }
+    
+    /// <summary>
+    /// Width in pixels
+    /// </summary>
+    public int Width => TileWidth * GameConstants.TILE_SIZE;
+    
+    /// <summary>
+    /// Height in pixels
+    /// </summary>
+    public int Height => TileHeight * GameConstants.TILE_SIZE;
     
     public Building(BuildingType type, Vector2 position, int width = 3, int height = 3)
     {
@@ -68,6 +80,23 @@ public class Building
             }
         }
         return tiles;
+    }
+    
+    /// <summary>
+    /// Draw the building
+    /// </summary>
+    public void Draw(SpriteBatch spriteBatch, Texture2D texture, Color color)
+    {
+        if (texture != null)
+        {
+            var destRect = new Rectangle(
+                (int)Position.X,
+                (int)Position.Y,
+                Width,
+                Height
+            );
+            spriteBatch.Draw(texture, destRect, color);
+        }
     }
 }
 
