@@ -258,10 +258,38 @@ public class WorldMap
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        // Use Sunnyside tileset if available, otherwise fall back to individual textures or colored squares
-        for (int x = 0; x < _width; x++)
+        Draw(spriteBatch, null);
+    }
+    
+    /// <summary>
+    /// Draw the world map with optional frustum culling
+    /// </summary>
+    /// <param name="spriteBatch">SpriteBatch to draw with</param>
+    /// <param name="visibleBounds">Optional viewport bounds for frustum culling. If null, draws all tiles.</param>
+    public void Draw(SpriteBatch spriteBatch, Rectangle? visibleBounds)
+    {
+        // Calculate visible tile range for frustum culling
+        int startX = 0;
+        int endX = _width;
+        int startY = 0;
+        int endY = _height;
+        
+        if (visibleBounds.HasValue)
         {
-            for (int y = 0; y < _height; y++)
+            // Add buffer of 2 tiles on each side to prevent pop-in at edges
+            const int BUFFER_TILES = 2;
+            
+            Rectangle bounds = visibleBounds.Value;
+            startX = Math.Max(0, (bounds.Left / TILE_SIZE) - BUFFER_TILES);
+            endX = Math.Min(_width, (bounds.Right / TILE_SIZE) + BUFFER_TILES + 1);
+            startY = Math.Max(0, (bounds.Top / TILE_SIZE) - BUFFER_TILES);
+            endY = Math.Min(_height, (bounds.Bottom / TILE_SIZE) + BUFFER_TILES + 1);
+        }
+        
+        // Use Sunnyside tileset if available, otherwise fall back to individual textures or colored squares
+        for (int x = startX; x < endX; x++)
+        {
+            for (int y = startY; y < endY; y++)
             {
                 Tile tile = _tiles[x, y];
                 Rectangle tileRect = new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -306,8 +334,26 @@ public class WorldMap
         // Draw world objects (buildings, trees, rocks, etc.)
         // Sort by Y position for proper depth
         var sortedObjects = _worldObjects.OrderBy(obj => obj.Position.Y).ToList();
+        
+        // Apply frustum culling to world objects
         foreach (var obj in sortedObjects)
         {
+            if (visibleBounds.HasValue)
+            {
+                // Check if object is within visible bounds (with buffer)
+                Rectangle objBounds = new Rectangle(
+                    (int)obj.Position.X - 16,
+                    (int)obj.Position.Y - 16,
+                    32,
+                    32
+                );
+                
+                if (!objBounds.Intersects(visibleBounds.Value))
+                {
+                    continue; // Skip objects outside visible area
+                }
+            }
+            
             obj.Draw(spriteBatch);
         }
     }

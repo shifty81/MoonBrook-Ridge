@@ -1891,6 +1891,14 @@ public class GameplayState : GameState
         spriteBatch.Begin(transformMatrix: _camera.GetTransform(), 
                          samplerState: SamplerState.PointClamp);
         
+        // Calculate visible bounds for frustum culling
+        Rectangle viewportBounds = new Rectangle(
+            (int)(_camera.Position.X - Game.GraphicsDevice.Viewport.Width / (2 * _camera.Zoom)),
+            (int)(_camera.Position.Y - Game.GraphicsDevice.Viewport.Height / (2 * _camera.Zoom)),
+            (int)(Game.GraphicsDevice.Viewport.Width / _camera.Zoom),
+            (int)(Game.GraphicsDevice.Viewport.Height / _camera.Zoom)
+        );
+        
         // Draw either mine or overworld
         if (_miningManager.InMine)
         {
@@ -1898,7 +1906,7 @@ public class GameplayState : GameState
         }
         else
         {
-            _worldMap.Draw(spriteBatch);
+            _worldMap.Draw(spriteBatch, viewportBounds);
         }
         
         _player.Draw(spriteBatch);
@@ -1945,12 +1953,6 @@ public class GameplayState : GameState
         _particleSystem.Draw(spriteBatch, Game.GraphicsDevice);
         
         // Draw weather effects in world space (with camera transform)
-        var viewportBounds = new Rectangle(
-            (int)(_camera.Position.X - Game.GraphicsDevice.Viewport.Width / (2 * _camera.Zoom)),
-            (int)(_camera.Position.Y - Game.GraphicsDevice.Viewport.Height / (2 * _camera.Zoom)),
-            (int)(Game.GraphicsDevice.Viewport.Width / _camera.Zoom),
-            (int)(Game.GraphicsDevice.Viewport.Height / _camera.Zoom)
-        );
         _weatherSystem.Draw(spriteBatch, Game.GraphicsDevice, viewportBounds);
         
         // Draw building placement preview (in world space with camera transform)
