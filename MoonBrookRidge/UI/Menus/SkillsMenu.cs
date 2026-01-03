@@ -346,10 +346,10 @@ public class SkillsMenu
     {
         return type switch
         {
-            SkillType.Passive => "●",
-            SkillType.Active => "◆",
-            SkillType.Unlock => "★",
-            _ => "○"
+            SkillType.Passive => "o",
+            SkillType.Active => "*",
+            SkillType.Unlock => "^",
+            _ => "?"
         };
     }
     

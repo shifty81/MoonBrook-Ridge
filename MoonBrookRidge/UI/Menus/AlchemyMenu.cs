@@ -217,15 +217,15 @@ public class AlchemyMenu
     {
         return effect switch
         {
-            PotionEffect.Health => "❤",
-            PotionEffect.Mana => "✦",
-            PotionEffect.Energy => "⚡",
-            PotionEffect.SpeedBuff => "➤",
-            PotionEffect.StrengthBuff => "⚒",
-            PotionEffect.LuckBuff => "☆",
-            PotionEffect.NightVision => "◉",
+            PotionEffect.Health => "+",
+            PotionEffect.Mana => "*",
+            PotionEffect.Energy => "!",
+            PotionEffect.SpeedBuff => ">",
+            PotionEffect.StrengthBuff => "#",
+            PotionEffect.LuckBuff => "$",
+            PotionEffect.NightVision => "O",
             PotionEffect.WaterBreathing => "~",
-            _ => "○"
+            _ => "o"
         };
     }
     

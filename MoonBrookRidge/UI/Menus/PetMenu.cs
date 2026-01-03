@@ -257,10 +257,10 @@ public class PetMenu
     {
         return type switch
         {
-            PetType.Companion => "♥",
-            PetType.FarmHelper => "⚒",
-            PetType.Combat => "⚔",
-            PetType.Magical => "★",
+            PetType.Companion => "&",
+            PetType.FarmHelper => "#",
+            PetType.Combat => "!",
+            PetType.Magical => "*",
             _ => "?"
         };
     }
