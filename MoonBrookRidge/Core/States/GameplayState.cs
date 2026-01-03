@@ -100,7 +100,8 @@ public class GameplayState : GameState
     private SpatialPartitioningSystem _spatialPartitioning;
     private EntityFrustumCulling _entityCulling;
     private WaypointSystem _waypointSystem;
-    private FastTravelMenu _fastTravelMenu;
+    private FastTravelMenu _fastTravelMenu; // Legacy - kept for backwards compatibility
+    private MapMenu _mapMenu; // New consolidated map interface (M key)
     // Unified Player Menu - consolidates all character-related menus into one tabbed interface
     private UnifiedPlayerMenu _unifiedPlayerMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
@@ -129,9 +130,9 @@ public class GameplayState : GameState
         // Initialize world and player
         _worldMap = new WorldMap();
         // Spawn player in the center of the farm area
-        // Farm area is defined in WorldMap.InitializeMap() as tiles 20-35 x 20-35
-        // Center is at tile (27.5, 27.5)
-        _player = new PlayerCharacter(new Vector2(27.5f * GameConstants.TILE_SIZE, 27.5f * GameConstants.TILE_SIZE));
+        // With the new 250x250 world, center is at (125, 125)
+        // Central farm is 100x100 tiles centered at (125, 125)
+        _player = new PlayerCharacter(new Vector2(125f * GameConstants.TILE_SIZE, 125f * GameConstants.TILE_SIZE));
         
         // Initialize collision system
         _collisionSystem = new CollisionSystem(_worldMap);
@@ -683,7 +684,7 @@ public class GameplayState : GameState
             _notificationSystem?.Show($"Waypoint Discovered: {waypoint.Name}", NotificationType.Success, 3.0f);
         };
         
-        // Initialize fast travel menu
+        // Initialize fast travel menu (legacy)
         _fastTravelMenu = new FastTravelMenu(_waypointSystem, _timeSystem, _player);
         _fastTravelMenu.OnFastTravel += (destination, cost) =>
         {
@@ -696,6 +697,17 @@ public class GameplayState : GameState
             
             // Show notification
             _notificationSystem?.Show($"Traveled successfully! (-${cost}, +{timeCost:F1}h)", NotificationType.Info, 2.5f);
+        };
+        
+        // Initialize new Map Menu (M key) - consolidates world map, waypoints, and fast travel
+        _mapMenu = new MapMenu(_waypointSystem, _timeSystem, _player, _minimap);
+        _mapMenu.OnFastTravel += (destination, cost) =>
+        {
+            // Move player to destination
+            _player.SetPosition(destination);
+            
+            // Show notification
+            _notificationSystem?.Show($"Traveled successfully! (-${cost}g, +1h)", NotificationType.Info, 2.5f);
         };
         
         _isPaused = false;
@@ -935,6 +947,9 @@ public class GameplayState : GameState
         // Initialize faction menu
         _factionMenu = new FactionMenu(Game.DefaultFont, _pixelTexture, _factionSystem);
         
+        // Initialize Map Menu
+        _mapMenu.Initialize(Game.GraphicsDevice);
+        
         // Initialize Phase 7 UI components
         _minimap.Initialize(Game.GraphicsDevice);
         _performanceMonitor.Initialize(_pixelTexture);
@@ -988,6 +1003,13 @@ public class GameplayState : GameState
         }
         
         // Update menus if active
+        if (_mapMenu.IsActive)
+        {
+            _mapMenu.Update(gameTime, keyboardState, mouseState);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in map menu
+        }
+        
         if (_craftingMenu.IsActive)
         {
             _craftingMenu.Update(gameTime);
@@ -1137,13 +1159,8 @@ public class GameplayState : GameState
             return;
         }
         
-        // Check for fast travel menu (W key for "waypoints")
-        if (keyboardState.IsKeyDown(Keys.W) && !_previousKeyboardState.IsKeyDown(Keys.W))
-        {
-            _fastTravelMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
+        // Fast travel menu removed from W key - now accessible via M (Map) menu
+        // W key is reserved for core movement (Move Up)
         
         // Check for gift menu (G key) - Only available when near an NPC
         if (keyboardState.IsKeyDown(Keys.G) && !_previousKeyboardState.IsKeyDown(Keys.G))
@@ -1193,10 +1210,10 @@ public class GameplayState : GameState
             return;
         }
         
-        // Check for map toggle (M key)
+        // Check for map menu (M key) - opens tabbed menu with World Map, Waypoints, and Fast Travel
         if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
         {
-            _minimap.IsVisible = !_minimap.IsVisible;
+            _mapMenu.Toggle();
             _previousKeyboardState = keyboardState;
             return;
         }
@@ -2322,6 +2339,11 @@ public class GameplayState : GameState
         if (_shopMenu.IsActive)
         {
             _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_mapMenu.IsActive)
+        {
+            _mapMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         if (_fastTravelMenu.IsActive)

@@ -36,14 +36,14 @@ public class WorldMap
     
     public WorldMap()
     {
-        _width = 50;
-        _height = 50;
+        _width = 250;  // 5X larger than original 50x50 (250x250 = 62,500 tiles vs 50x50 = 2,500 tiles)
+        _height = 250;
         _tiles = new Tile[_width, _height];
         _cropTextures = new Dictionary<string, Texture2D[]>();
         _tileTextures = new Dictionary<TileType, Texture2D>();
         _sunnysideTileMapping = new Dictionary<TileType, int>();
         _worldObjects = new List<WorldObject>();
-        MineEntranceGridPosition = new Vector2(10, 40); // Default mine entrance location
+        MineEntranceGridPosition = new Vector2(50, 200); // Adjusted for larger map
         
         InitializeMap();
     }
@@ -61,109 +61,137 @@ public class WorldMap
     
     private void InitializeMap()
     {
-        // Create a natural farm scene with forests and water
+        // Create a large flat farmable world - 5X bigger than before
+        // The central area (100x100 tiles) is flat farmable land for the starting farm
+        // Outer areas can be expanded through upgrades and plot purchases
         Random random = new Random(42); // Fixed seed for consistency
+        
+        // Define the central farm area - much larger now for 5X expansion
+        int centerX = _width / 2;
+        int centerY = _height / 2;
+        int farmRadius = 50; // 100x100 flat farmable area in center
         
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                // Create varied terrain with natural biomes
                 TileType tileType;
                 
-                // Central farm clearing (where player spawns) - open grass area
-                bool isFarmArea = (x >= 20 && x < 35 && y >= 20 && y < 35);
+                // Calculate distance from center
+                int distanceFromCenter = Math.Max(Math.Abs(x - centerX), Math.Abs(y - centerY));
                 
-                // Water features - natural pond/stream in the upper right
-                if ((x >= 35 && x < 45 && y >= 5 && y < 15))  // Pond
+                // Central farm area (100x100) - flat, mostly grass for farming
+                bool isCentralFarm = distanceFromCenter <= farmRadius;
+                
+                if (isCentralFarm)
                 {
-                    tileType = TileType.Water;
-                }
-                // Sandy beach areas near water
-                else if ((x >= 33 && x < 35 && y >= 5 && y < 15) ||
-                         (x >= 45 && x < 47 && y >= 5 && y < 15) ||
-                         (x >= 35 && x < 45 && y >= 3 && y < 5) ||
-                         (x >= 35 && x < 45 && y >= 15 && y < 17))
-                {
-                    tileType = random.Next(2) == 0 ? TileType.Sand : TileType.Sand01;
-                }
-                // Small dirt path from farm area to edges
-                else if ((x >= 27 && x < 29 && y >= 15 && y < 20) ||  // North path
-                         (x >= 27 && x < 29 && y >= 35 && y < 40))    // South path
-                {
-                    tileType = random.Next(3) switch
-                    {
-                        0 => TileType.Dirt,
-                        1 => TileType.Dirt01,
-                        _ => TileType.Dirt02
-                    };
-                }
-                // Farm area - mostly clear grass for farming
-                else if (isFarmArea)
-                {
+                    // Flat farmable terrain in the center
                     int variant = random.Next(10);
-                    if (variant < 5)
-                        tileType = TileType.Grass;      // 50% base grass
-                    else if (variant < 8)
+                    if (variant < 6)
+                        tileType = TileType.Grass;      // 60% base grass
+                    else if (variant < 9)
                         tileType = TileType.Grass01;   // 30% light grass
                     else
-                        tileType = TileType.Grass02;   // 20% medium grass
+                        tileType = TileType.Grass02;   // 10% medium grass
                 }
-                // Default to grass with variation
+                // Outer expansion areas - still farmable but with more variety
+                else if (distanceFromCenter <= farmRadius + 25)
+                {
+                    // Near-farm expansion zone (50 tiles out from center farm)
+                    int variant = random.Next(15);
+                    if (variant < 5)
+                        tileType = TileType.Grass;
+                    else if (variant < 9)
+                        tileType = TileType.Grass01;
+                    else if (variant < 12)
+                        tileType = TileType.Grass02;
+                    else
+                        tileType = TileType.Grass03;   // Some darker grass
+                }
+                // Far expansion areas - purchasable plots
                 else
                 {
+                    // Outer wilderness - can be unlocked/purchased later
                     int variant = random.Next(20);
-                    if (variant < 8)
-                        tileType = TileType.Grass;      // 40% base grass
-                    else if (variant < 13)
-                        tileType = TileType.Grass01;   // 25% light grass
-                    else if (variant < 17)
-                        tileType = TileType.Grass02;   // 20% medium grass
+                    if (variant < 7)
+                        tileType = TileType.Grass;
+                    else if (variant < 12)
+                        tileType = TileType.Grass01;
+                    else if (variant < 16)
+                        tileType = TileType.Grass02;
                     else
-                        tileType = TileType.Grass03;   // 15% dark grass
+                        tileType = TileType.Grass03;
                 }
                 
                 _tiles[x, y] = new Tile(tileType, new Vector2(x, y));
             }
         }
         
-        // Place mine entrance at designated location
+        // Add some water features in specific areas (not in center farm)
+        // Pond in the northeast
+        for (int x = centerX + 60; x < centerX + 80 && x < _width; x++)
+        {
+            for (int y = centerY - 80; y < centerY - 60 && y >= 0; y++)
+            {
+                _tiles[x, y] = new Tile(TileType.Water, new Vector2(x, y));
+            }
+        }
+        
+        // Sand around the pond
+        for (int x = centerX + 58; x < centerX + 82 && x < _width; x++)
+        {
+            for (int y = centerY - 82; y < centerY - 58 && y >= 0; y++)
+            {
+                if (_tiles[x, y].Type != TileType.Water)
+                {
+                    _tiles[x, y] = new Tile(
+                        random.Next(2) == 0 ? TileType.Sand : TileType.Sand01,
+                        new Vector2(x, y)
+                    );
+                }
+            }
+        }
+        
+        // Place mine entrance
         _tiles[(int)MineEntranceGridPosition.X, (int)MineEntranceGridPosition.Y] = 
             new Tile(TileType.MineEntrance, MineEntranceGridPosition);
         
-        // Place dungeon entrances around the map
-        // Place them away from farm area and in logical locations
+        // Place dungeon entrances in outer areas
         PlaceDungeonEntrances();
     }
     
     /// <summary>
     /// Place dungeon entrances strategically around the world
+    /// Adjusted for 250x250 world size
     /// </summary>
     private void PlaceDungeonEntrances()
     {
-        // Slime Cave - near water (top right)
-        _tiles[40, 10] = new Tile(TileType.DungeonEntranceSlime, new Vector2(40, 10));
+        int centerX = _width / 2;
+        int centerY = _height / 2;
         
-        // Skeleton Crypt - in the north (top left)
-        _tiles[5, 5] = new Tile(TileType.DungeonEntranceSkeleton, new Vector2(5, 5));
+        // Slime Cave - northeast (near water)
+        _tiles[centerX + 70, centerY - 70] = new Tile(TileType.DungeonEntranceSlime, new Vector2(centerX + 70, centerY - 70));
         
-        // Spider Nest - in the forest area (left side)
-        _tiles[5, 25] = new Tile(TileType.DungeonEntranceSpider, new Vector2(5, 25));
+        // Skeleton Crypt - northwest
+        _tiles[centerX - 90, centerY - 90] = new Tile(TileType.DungeonEntranceSkeleton, new Vector2(centerX - 90, centerY - 90));
         
-        // Goblin Warrens - bottom left corner
-        _tiles[5, 45] = new Tile(TileType.DungeonEntranceGoblin, new Vector2(5, 45));
+        // Spider Nest - west side
+        _tiles[centerX - 100, centerY] = new Tile(TileType.DungeonEntranceSpider, new Vector2(centerX - 100, centerY));
         
-        // Haunted Manor - top middle area
-        _tiles[25, 5] = new Tile(TileType.DungeonEntranceHaunted, new Vector2(25, 5));
+        // Goblin Warrens - southwest
+        _tiles[centerX - 80, centerY + 80] = new Tile(TileType.DungeonEntranceGoblin, new Vector2(centerX - 80, centerY + 80));
         
-        // Dragon Lair - far right side
-        _tiles[45, 25] = new Tile(TileType.DungeonEntranceDragon, new Vector2(45, 25));
+        // Haunted Manor - north
+        _tiles[centerX, centerY - 100] = new Tile(TileType.DungeonEntranceHaunted, new Vector2(centerX, centerY - 100));
         
-        // Demon Realm - bottom right corner
-        _tiles[45, 45] = new Tile(TileType.DungeonEntranceDemon, new Vector2(45, 45));
+        // Dragon Lair - east side
+        _tiles[centerX + 100, centerY] = new Tile(TileType.DungeonEntranceDragon, new Vector2(centerX + 100, centerY));
         
-        // Ancient Ruins - bottom middle
-        _tiles[25, 45] = new Tile(TileType.DungeonEntranceRuins, new Vector2(25, 45));
+        // Demon Realm - southeast
+        _tiles[centerX + 80, centerY + 90] = new Tile(TileType.DungeonEntranceDemon, new Vector2(centerX + 80, centerY + 90));
+        
+        // Ancient Ruins - south
+        _tiles[centerX, centerY + 100] = new Tile(TileType.DungeonEntranceRuins, new Vector2(centerX, centerY + 100));
     }
     
     public void LoadContent(Dictionary<TileType, Texture2D> tileTextures, Dictionary<string, Texture2D[]> cropTextures = null)

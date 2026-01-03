@@ -26,10 +26,9 @@
 | **Throw Grenade** ⭐ **AUTO-COMBAT** | **Space** | - |
 | Open Menu / Inventory | E | Escape |
 | Open Journal / Quests | F | - |
-| Open Map | M | - |
+| **Open Map Menu** ⭐ **UPDATED** | **M** | - |
 | **Open Crafting Menu** ⭐ | **K** | - |
 | **Open Shop Menu** ⭐ | **B** | - |
-| **Open Fast Travel Menu** ⭐ **PHASE 9** | **W** | - |
 | **Gift to NPC** ⭐ | **G** | - |
 | **Toggle Auto-Fire** ⭐ **PHASE 8** | **N** | - |
 | **Sort Inventory** ⭐ **PHASE 8** | **I** | - |
@@ -39,7 +38,12 @@
 
 **Note on Combat**: Your weapons fire automatically when in caves (auto-fire enabled by default). Press N to toggle auto-fire on/off. Press Space to manually throw grenades for AoE damage/effects.
 
-**Note on Fast Travel**: Press W to open the Fast Travel menu. Discover waypoints by exploring the world (get within ~3 tiles). Fast travel costs gold (varies by location) and advances time by 1 hour.
+**Note on Map Menu**: Press M to open the Map Menu, which contains tabs for:
+- **World Map**: View the minimap and world overview
+- **Waypoints**: See all discovered locations
+- **Fast Travel**: Travel to discovered waypoints (costs gold and advances time)
+
+**IMPORTANT**: WASD keys are RESERVED for movement only and cannot be used for other actions.
 
 ### Hotbar (Quick Access)
 | Slot | Key |
