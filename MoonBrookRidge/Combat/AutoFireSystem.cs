@@ -29,10 +29,10 @@ public class AutoFireSystem
     /// <summary>
     /// Update auto-fire system - automatically fires at nearby enemies
     /// </summary>
-    public void Update(GameTime gameTime, Vector2 playerPosition, Weapon equippedWeapon, 
-                       List<Enemy> activeEnemies, float playerFacing)
+    public void Update(GameTime gameTime, Vector2 playerPosition, Weapon? equippedWeapon, 
+                       List<Enemy>? activeEnemies, float playerFacing)
     {
-        if (!IsAutoFireEnabled || equippedWeapon == null || activeEnemies.Count == 0)
+        if (!IsAutoFireEnabled || equippedWeapon == null || activeEnemies == null || activeEnemies.Count == 0)
         {
             return;
         }
@@ -134,7 +134,7 @@ public class AutoFireSystem
             
             // Calculate angle to enemy
             Vector2 toEnemy = enemy.Position - playerPosition;
-            float angleToEnemy = (float)Math.Atan2(toEnemy.Y, toEnemy.X) * (180f / MathF.PI);
+            float angleToEnemy = MathF.Atan2(toEnemy.Y, toEnemy.X) * (180f / MathF.PI);
             
             // Normalize angles to 0-360
             angleToEnemy = (angleToEnemy + 360f) % 360f;

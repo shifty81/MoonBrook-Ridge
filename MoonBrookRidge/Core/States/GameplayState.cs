@@ -231,7 +231,7 @@ public class GameplayState : GameState
         // Initialize Auto-Fire System (Phase 8)
         _autoFireSystem = new AutoFireSystem();
         _autoFireSystem.IsAutoFireEnabled = true; // Auto-fire on by default
-        _autoFireSystem.SetFiringPattern(FiringPattern.Circle360); // Target nearest enemy
+        _autoFireSystem.SetFiringPattern(FiringPattern.Circle360); // Targets nearest enemy in any direction
         
         // Hook up auto-fire to projectile system
         _autoFireSystem.OnAutoFire += (position, damage, weaponId) =>
@@ -668,7 +668,10 @@ public class GameplayState : GameState
         _toolHotkeyManager.RegisterTool(Keys.D6, new FishingRod());
         
         // Initialize Phase 7.4 systems - Advanced Optimization
-        Rectangle worldBounds = new Rectangle(0, 0, 800, 800); // 50×50 tiles @ 16px
+        const int WORLD_WIDTH_TILES = 50;
+        const int WORLD_HEIGHT_TILES = 50;
+        const int TILE_SIZE = 16; // GameConstants.TILE_SIZE
+        Rectangle worldBounds = new Rectangle(0, 0, WORLD_WIDTH_TILES * TILE_SIZE, WORLD_HEIGHT_TILES * TILE_SIZE);
         _spatialPartitioning = new SpatialPartitioningSystem(worldBounds);
         _entityCulling = new EntityFrustumCulling();
         
