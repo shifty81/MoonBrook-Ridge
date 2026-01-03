@@ -94,10 +94,12 @@ public class TimeSystem
     {
         if (hours <= 0) return;
         
+        const float NEXT_DAY_THRESHOLD = 26f; // 2 AM next day
+        
         _timeOfDay += hours;
         
         // Handle day advancement if needed
-        while (_timeOfDay >= 26f) // 2 AM next day
+        while (_timeOfDay >= NEXT_DAY_THRESHOLD)
         {
             AdvanceDay();
         }

@@ -141,8 +141,8 @@ public class FastTravelMenu
         }
         
         // Cancel
-        if (keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N) ||
-            keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
+        if ((keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N)) ||
+            (keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape)))
         {
             _confirmationMode = false;
             _selectedWaypoint = null;
@@ -276,10 +276,8 @@ public class FastTravelMenu
                 int itemY = itemStartY + i * ITEM_HEIGHT;
                 bool isSelected = (i == _selectedIndex);
                 
-                // Calculate cost
-                Vector2 dest;
-                int cost;
-                _waypointSystem.TravelToWaypoint(waypoint.Id, int.MaxValue, out dest, out cost);
+                // Get travel cost
+                int cost = _waypointSystem.GetTravelCost(waypoint.Id);
                 bool canAfford = _player.Money >= cost;
                 
                 // Draw waypoint background
@@ -336,10 +334,8 @@ public class FastTravelMenu
     
     private void DrawConfirmation(SpriteBatch spriteBatch, SpriteFont font, int menuX, int menuY)
     {
-        // Calculate cost
-        Vector2 dest;
-        int cost;
-        _waypointSystem.TravelToWaypoint(_selectedWaypoint.Id, int.MaxValue, out dest, out cost);
+        // Get travel cost
+        int cost = _waypointSystem.GetTravelCost(_selectedWaypoint.Id);
         
         // Draw confirmation box
         int confirmWidth = 600;
@@ -410,6 +406,11 @@ public class FastTravelMenu
         DrawTextWithShadow(spriteBatch, font, hint, hintPos, Color.LightGray);
     }
     
+    /// <summary>
+    /// Gets a visual icon for the waypoint type
+    /// Note: Uses Unicode emojis as text fallback icons.
+    /// For production, consider replacing with sprite assets for better cross-platform support.
+    /// </summary>
     private string GetWaypointIcon(WaypointType type)
     {
         return type switch
