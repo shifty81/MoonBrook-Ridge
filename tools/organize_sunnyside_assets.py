@@ -428,7 +428,7 @@ def main():
     
     if not dry_run:
         print(f"\nNext steps:")
-        print("1. Review the organized assets in {CONTENT_DIR}")
+        print(f"1. Review the organized assets in {CONTENT_DIR}")
         print("2. Update Content.mgcb to include new assets")
         print("3. Update asset loading code to use the new structure")
     else:
