@@ -378,6 +378,18 @@ public class GameplayState : GameState
             }
             // Other spells (speed, light, fireball, teleport, summon) will be implemented
             // when their required systems are added (buff system, lighting, combat, etc.)
+            
+            // Track spell casting for quests
+            foreach (var quest in _questSystem.GetActiveQuests())
+            {
+                foreach (var objective in quest.Objectives)
+                {
+                    if (objective.Type == QuestObjectiveType.CastSpell && !objective.IsCompleted)
+                    {
+                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
+                    }
+                }
+            }
         };
         
         // Hook up quest tracking events for Phase 6 objectives
@@ -498,22 +510,6 @@ public class GameplayState : GameState
                 foreach (var objective in quest.Objectives)
                 {
                     if (objective.Type == QuestObjectiveType.LearnSpell && !objective.IsCompleted)
-                    {
-                        _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
-                    }
-                }
-            }
-        };
-        
-        // Track spell casting (already has OnSpellCast event handler above)
-        _magicSystem.OnSpellCast += (spell) =>
-        {
-            // Update all active quests that require casting spells
-            foreach (var quest in _questSystem.GetActiveQuests())
-            {
-                foreach (var objective in quest.Objectives)
-                {
-                    if (objective.Type == QuestObjectiveType.CastSpell && !objective.IsCompleted)
                     {
                         _questSystem.UpdateQuestProgress(quest.Id, objective.Id, 1);
                     }
@@ -2296,7 +2292,7 @@ public class GameplayState : GameState
     /// </summary>
     private void UpdateWildPets(GameTime gameTime)
     {
-        foreach (var wildPet in _wildPets.ToList())
+        foreach (var wildPet in _wildPets)
         {
             if (!wildPet.IsTamed)
             {
@@ -2345,8 +2341,6 @@ public class GameplayState : GameState
             int depth = _miningManager.CurrentLevel;
             if (depth >= 10)
                 newBiome = Biomes.BiomeType.DeepCave;
-            else if (depth >= 5)
-                newBiome = Biomes.BiomeType.Cave;
             else
                 newBiome = Biomes.BiomeType.Cave;
         }
