@@ -424,9 +424,9 @@ The quaint village of **MoonBrook Valley** sits atop a beautiful countryside, su
 
 **You** are the only one who knows the truth. Deep below the valley—and indeed, beneath every settlement in the region—an ancient evil stirs. Alien-like creatures, insectoid horrors, are multiplying in the darkness. If left unchecked, they will eventually swarm to the surface and destroy everything.
 
-The valley region is home to **eight distinct villages**, each settled in a different biome with its own culture, resources, and way of life. The villagers trade with each other, help each other, and live in harmony. But none of them know about the threat beneath their feet.
+The valley region is home to **eight primary villages**, each settled in a different biome with its own culture, resources, and way of life. The villagers trade with each other, help each other, and live in harmony. But none of them know about the threat beneath their feet. While other smaller settlements dot the landscape, these eight villages are the major hubs where the underground threat is most concentrated.
 
-Every day, you maintain the facade of a simple farmer and traveler, moving between villages, accepting their quests, and helping with their daily needs. But you have a secret mission: **explore the caves beneath each biome and push back the horde**. Each village's caves are connected to the same underground network, and the creatures grow stronger the deeper you go.
+Every day, you maintain the facade of a simple farmer and traveler, moving between villages, accepting their quests, and helping with their daily needs. But you have a secret mission: **explore the caves beneath each major village and push back the horde**. Each village's caves are connected to the same underground network, and the creatures grow stronger the deeper you go.
 
 The villagers must never know the full truth—if they discovered the scale of the threat, panic would consume them. Instead, you accept their innocent requests for cave materials and rare resources, using these quests as cover for your true purpose: **defending all the villages of MoonBrook Valley**, one descent at a time.
 

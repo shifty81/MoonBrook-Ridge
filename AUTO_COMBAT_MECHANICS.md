@@ -65,6 +65,7 @@ public class AutoWeapon
     {
         return CurrentAmmo > 0 
             && !IsReloading 
+            && FireRate > 0  // Safety check: prevent division by zero
             && TimeSinceLastShot >= (1.0f / FireRate)
             && playerEnergy >= EnergyCost
             && playerMana >= ManaCost;
@@ -136,7 +137,8 @@ public class ForwardFiringPattern : IFiringPattern
         var toEnemy = (enemy.Position - playerPosition).Normalized();
         var angle = Vector2.Dot(playerDirection, toEnemy);
         
-        // 90-degree cone in front (angle > 0.707 = ~45 degrees on each side)
+        // 60-degree cone in front (angle > 0.5 = 60 degrees from center, 120 degrees total)
+        // Use 0.707f for 45-degree cone (90 degrees total) if narrower coverage is desired
         return angle > 0.5f && Vector2.Distance(playerPosition, enemy.Position) <= range;
     }
 }
@@ -206,11 +208,15 @@ public class TargetedFiringPattern : IFiringPattern
         
         return Priority switch
         {
-            TargetingPriority.Closest => validTargets.OrderBy(e => 
-                Vector2.Distance(playerPosition, e.Position)).First(),
-            TargetingPriority.LowestHP => validTargets.OrderBy(e => e.CurrentHP).First(),
-            TargetingPriority.HighestHP => validTargets.OrderByDescending(e => e.CurrentHP).First(),
-            TargetingPriority.HighestThreat => validTargets.OrderByDescending(e => e.ThreatLevel).First(),
+            TargetingPriority.Closest => validTargets.Aggregate((closest, next) => 
+                Vector2.Distance(playerPosition, closest.Position) < 
+                Vector2.Distance(playerPosition, next.Position) ? closest : next),
+            TargetingPriority.LowestHP => validTargets.Aggregate((min, next) => 
+                min.CurrentHP < next.CurrentHP ? min : next),
+            TargetingPriority.HighestHP => validTargets.Aggregate((max, next) => 
+                max.CurrentHP > next.CurrentHP ? max : next),
+            TargetingPriority.HighestThreat => validTargets.Aggregate((max, next) => 
+                max.ThreatLevel > next.ThreatLevel ? max : next),
             _ => validTargets.First()
         };
     }
