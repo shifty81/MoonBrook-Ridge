@@ -76,6 +76,7 @@ public class GameplayState : GameState
     private SkillsMenu _skillsMenu;
     private PetSystem _petSystem;
     private PetMenu _petMenu;
+    private List<WildPet> _wildPets;
     private CombatSystem _combatSystem;
     private Dungeons.DungeonSystem _dungeonSystem;
     private DungeonMenu _dungeonMenu;
@@ -204,6 +205,10 @@ public class GameplayState : GameState
         
         _petSystem = new PetSystem();
         _petMenu = new PetMenu(_petSystem);
+        
+        // Initialize wild pets for taming
+        _wildPets = new List<WildPet>();
+        SpawnWildPets();
         
         // Initialize Combat System
         _combatSystem = new CombatSystem();
@@ -975,6 +980,14 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for taming wild pets (T key for "tame") - with debouncing
+        if (keyboardState.IsKeyDown(Keys.T) && !_previousKeyboardState.IsKeyDown(Keys.T))
+        {
+            TryTameWildPet();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Check for dungeon menu (D key for "dungeon") - with debouncing
         // Only available when in a dungeon
         if (keyboardState.IsKeyDown(Keys.D) && !_previousKeyboardState.IsKeyDown(Keys.D))
@@ -1059,6 +1072,9 @@ public class GameplayState : GameState
         _magicSystem.Update(gameTime);
         _petSystem.Update(gameTime);
         _combatSystem.Update(gameTime);
+        
+        // Update wild pets
+        UpdateWildPets(gameTime);
         
         // Update event system
         _eventSystem.Update(gameTime);
@@ -1768,6 +1784,37 @@ public class GameplayState : GameState
         _player.Draw(spriteBatch);
         _npcManager.Draw(spriteBatch, Game.DefaultFont);
         
+        // Draw wild pets (simple colored circles for now)
+        foreach (var wildPet in _wildPets)
+        {
+            if (!wildPet.IsTamed)
+            {
+                // Draw a colored circle to represent the wild pet
+                Color petColor = wildPet.DefinitionId switch
+                {
+                    "dog" => Color.Brown,
+                    "cat" => Color.Orange,
+                    "wolf" => Color.Gray,
+                    "chicken" => Color.White,
+                    "hawk" => Color.DarkGray,
+                    _ => Color.Yellow
+                };
+                
+                DrawFilledCircle(spriteBatch, wildPet.Position, 8, petColor);
+                
+                // Draw pet name above it
+                Vector2 namePos = wildPet.Position - new Vector2(0, 20);
+                spriteBatch.DrawString(Game.DefaultFont, wildPet.Name, namePos, Color.White);
+                
+                // Draw "T to Tame" if player is nearby
+                if (wildPet.IsInRangeOf(_player.Position))
+                {
+                    Vector2 hintPos = wildPet.Position + new Vector2(0, 15);
+                    spriteBatch.DrawString(Game.DefaultFont, "[T] Tame", hintPos, Color.LightGreen);
+                }
+            }
+        }
+        
         // Draw enemies and health bars (in world space with camera transform)
         if (_miningManager.InMine)
         {
@@ -2194,6 +2241,54 @@ public class GameplayState : GameState
                     spriteBatch.Draw(_pixelTexture,
                         new Rectangle((int)center.X + x, (int)center.Y + y, 1, 1),
                         color);
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Spawn wild pets in the world for taming
+    /// </summary>
+    private void SpawnWildPets()
+    {
+        // Spawn a few wild pets around the map for players to discover and tame
+        _wildPets.Add(new WildPet("dog", "Wild Dog", new Vector2(15, 20) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("cat", "Stray Cat", new Vector2(35, 25) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("wolf", "Wild Wolf", new Vector2(45, 15) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("chicken", "Wild Chicken", new Vector2(20, 30) * GameConstants.TILE_SIZE));
+        _wildPets.Add(new WildPet("hawk", "Wild Hawk", new Vector2(40, 35) * GameConstants.TILE_SIZE));
+    }
+    
+    /// <summary>
+    /// Update wild pets and handle taming interactions
+    /// </summary>
+    private void UpdateWildPets(GameTime gameTime)
+    {
+        foreach (var wildPet in _wildPets.ToList())
+        {
+            if (!wildPet.IsTamed)
+            {
+                wildPet.Update(gameTime);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Attempt to tame a nearby wild pet
+    /// </summary>
+    private void TryTameWildPet()
+    {
+        foreach (var wildPet in _wildPets)
+        {
+            if (!wildPet.IsTamed && wildPet.IsInRangeOf(_player.Position))
+            {
+                // Try to tame the pet
+                if (_petSystem.TamePet(wildPet.DefinitionId, wildPet.Position))
+                {
+                    wildPet.IsTamed = true;
+                    // Show notification (if notification system exists)
+                    // For now, the quest system will track the taming through the event
+                    return;
                 }
             }
         }
