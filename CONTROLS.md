@@ -23,16 +23,18 @@
 |--------|------------|-----------------|
 | Use Tool / Place Item | C | Left Mouse Button |
 | Interact / Talk | X | Right Mouse Button |
-| **Attack (Combat)** ⭐ **NEW** | **Space** | - |
+| **Throw Grenade** ⭐ **AUTO-COMBAT** | **Space** | - |
 | Open Menu / Inventory | E | Escape |
 | Open Journal / Quests | F | - |
 | Open Map | M | - |
-| **Open Crafting Menu** ⭐ **NEW** | **K** | - |
-| **Open Shop Menu** ⭐ **NEW** | **B** | - |
-| **Gift to NPC** ⭐ **NEW** | **G** | - |
-| Switch Toolbar Row | Tab | - |
+| **Open Crafting Menu** ⭐ | **K** | - |
+| **Open Shop Menu** ⭐ | **B** | - |
+| **Gift to NPC** ⭐ | **G** | - |
+| **Switch Weapon Loadout** ⭐ **AUTO-COMBAT** | **Tab** | - |
 | **Quick Save** ⭐ | **F5** | - |
 | **Quick Load** ⭐ | **F9** | - |
+
+**Note on Combat**: Your weapons fire automatically when in caves. Press Space to manually throw grenades for AoE damage/effects.
 
 ### Hotbar (Quick Access)
 | Slot | Key |
@@ -293,57 +295,171 @@ Appear on left side when stats are critical:
 4. **Lily's Supply Run** (Lily): Collect 20 Wood & 15 Stone
 5. **The Big Catch** (Oliver): Catch 15 Fish
 
-## Combat System ⭐ **NEW**
+## Auto-Combat System ⭐ **AUTO-SHOOTER ROGUELITE**
 
-### Basic Combat
-- **Attack**: Press **Space** to attack nearby enemies
-- **Attack Range**: 64 pixels (4 tiles)
-- **Weapons**: 12 different weapons available
-- **Energy/Mana Cost**: Varies by weapon
-  - Melee/Ranged weapons use Energy
-  - Magic weapons use Mana
+### How Auto-Combat Works
+**MoonBrook Valley features an auto-shooter combat system where your weapons fire automatically!**
 
-### Weapons
-Weapons have different stats:
-- **Damage**: Base damage dealt to enemies
-- **Attack Speed**: How fast you can attack
-- **Cost**: Energy or Mana consumed per attack
-- **Type**: Melee, Ranged, or Magic
+- **Automatic Firing**: Your equipped weapons shoot at nearby enemies without pressing attack buttons
+- **Automatic Reloading**: Weapons reload themselves when out of ammo
+- **No Manual Aiming**: Weapons target enemies based on their firing pattern
+- **Your Role**: Focus on positioning, dodging, and strategic build choices
 
-**Starter Weapon:**
-- Rusty Sword: 10 damage, 1.0 speed, 5 energy cost
+### Player Controls in Combat
+| Action | Key | Description |
+|--------|-----|-------------|
+| **Movement** | WASD | Dodge enemies, position for optimal weapon coverage |
+| **Throw Grenade** | Space | Manually trigger AoE grenade (30-60 second cooldown) |
+| **Switch Loadout** | Tab | Cycle between weapon loadouts |
+| **Quick Heal** | Q | Use health potion from inventory |
+| **Call Pet** | T | Command pet to specific location |
 
-**Available Weapons:**
-- **Melee**: Rusty Sword, Wooden Club, Iron Sword, Steel Sword, Golden Sword
-- **Ranged**: Wooden Bow, Crossbow, Longbow
-- **Magic**: Magic Staff, Fire Wand, Arcane Staff
+### Combat Zones
+**Important**: Combat only occurs in caves! The overworld (villages, farms) is peaceful.
 
-### Enemies
-Enemies spawn in mines and have different types:
-- **Common**: Slimes, Bats, Goblins, Skeletons, Spiders, Wolves
-- **Uncommon**: Ghosts, Zombies, Orcs
-- **Rare**: Fire Elementals, Demons
-- **Bosses**: Slime King, Skeleton Lord, Ancient Dragon, Arch Demon
+- **Overworld**: Safe zones for farming, fishing, trading, and village activities
+- **Caves**: Procedurally generated combat zones with endless enemy waves
+- **Cave Entrances**: Found near each biome's village
+- **Floor Progression**: Descend deeper for harder enemies and better loot
 
-**Enemy Mechanics:**
-- Enemies pursue and attack the player
-- Each enemy has unique stats (HP, Damage, Speed, Defense)
-- Defeated enemies drop loot and gold
-- Boss enemies are larger and have more health
+### Weapon System
 
-### Combat Strategy
-- Keep your distance from groups of enemies
-- Use ranged weapons for safety
-- Magic weapons are powerful but use mana
-- Watch enemy health bars to gauge progress
-- Loot drops automatically added to inventory
-- Combat skill XP earned for defeating enemies
+#### Weapon Types
+**Melee Weapons** (Forward firing, high damage, short range)
+- Rusty Sword, Wooden Club, Iron Sword, Steel Sword, Golden Sword
 
-### Mine Combat
-- Enemies only spawn in mines
-- Each mine level has more/stronger enemies
-- Deeper levels = better loot
-- Be prepared with food, water, and energy before entering
+**Ranged Weapons** (Forward firing, medium damage, long range)
+- Wooden Bow, Crossbow, Longbow
+
+**Magic Weapons** (Various patterns, uses mana instead of energy)
+- Magic Staff (360° firing), Fire Wand (forward), Arcane Staff (360°)
+
+#### Firing Patterns
+- **Forward Firing**: Shoots in direction you're facing (rifles, bows, swords)
+- **Backward Firing**: Shoots behind you (protects your back)
+- **360° Firing**: Shoots in all directions (magic weapons, area weapons)
+- **Targeted Firing**: Prioritizes high-value targets (sniper weapons)
+
+#### Weapon Stats
+- **Damage**: Base damage per shot
+- **Fire Rate**: Shots per second (automatic)
+- **Range**: Maximum target distance
+- **Magazine Size**: Shots before reload
+- **Reload Time**: Seconds to reload
+- **Energy/Mana Cost**: Resource cost per shot
+
+### Damage Types
+Mix damage types for effective crowd control:
+
+**Kinetic (Physical)**: Pure damage, no special effects
+- Best against: Unarmored enemies
+- Weapons: Most melee and ranged weapons
+
+**Fire (DoT)**: Burning damage over time
+- Best against: Groups, organic enemies
+- Weapons: Flamethrower, fire wand, incendiary grenades
+
+**Cryo (Ice)**: Slows and freezes enemies
+- Best against: Fast enemies, creating defensive zones
+- Weapons: Ice staff, cryo grenades, frost bow
+
+**Electric (Lightning)**: Critical buff, chains to nearby enemies
+- Best against: Groups, metal enemies
+- Weapons: Lightning gun, shock wand, tesla coils
+
+**Acid (Corrosive)**: Armor reduction, damage amplification
+- Best against: Armored enemies, bosses
+- Weapons: Acid sprayer, poison dagger, toxin grenades
+
+### Grenade System
+Manually triggered AoE abilities:
+
+| Grenade Type | Effect | Cooldown | Best Use |
+|--------------|--------|----------|----------|
+| **Explosive** | High AoE damage | 30s | Dense enemy groups |
+| **Cryo** | Freezes area | 45s | Crowd control, breathing room |
+| **H-Grenade** | Destroys walls, mines resources | 60s | Mining, secret passages |
+| **Neurotoxin** | DoT cloud, reduces enemy damage | 40s | Area denial, boss fights |
+| **Electric** | Chain lightning, stuns | 35s | Mixed groups, stopping charges |
+
+### Pet Companion System
+
+#### Pet Types
+**Combat Pets**: Attack enemies automatically
+- **Wolf**: High damage melee, aggro draw
+- **Hawk**: Fast ranged dive attacks
+- **Bear**: Tank, high HP, knockback
+
+**Support Pets**: Provide buffs and healing
+- **Fairy**: HP regeneration, mana restoration
+- **Spirit**: Damage buffs, elemental synergies
+- **Phoenix**: Revive ability (once per run), fire immunity
+
+**Utility Pets**: Enhance loot and detection
+- **Dog**: Finds hidden items, loot bonus
+- **Cat**: Enemy detection, crit chance boost
+- **Owl**: Reveals map, enemy health bars
+
+#### Pet Management
+- **Summon/Dismiss**: Press **P** to open pet menu
+- **Pet Actions**: Pets auto-attack and support automatically
+- **Pet Leveling**: Pets gain XP alongside you
+- **Skill Trees**: Allocate points to Offensive/Defensive/Utility branches
+- **Pet Charms**: Equip charms to enhance abilities
+
+### Build Strategy
+
+#### Example Builds
+**"Front and Back"** (Beginner-friendly)
+- Weapon 1: Rifle (forward, kinetic)
+- Weapon 2: Shotgun (backward, kinetic)
+- Pet: Dog (utility, loot bonus)
+- Strategy: Cover both directions, focus on positioning
+
+**"Elemental Master"** (Advanced)
+- Weapon 1: Fire Wand (360°, fire DoT)
+- Weapon 2: Ice Staff (forward, cryo slow)
+- Weapon 3: Lightning Gun (targeted, electric chain)
+- Pet: Spirit (support, elemental synergy)
+- Strategy: Apply multiple status effects, combo damage
+
+**"Tank Brawler"** (Aggressive)
+- Weapon 1: Flamethrower (forward cone, fire)
+- Weapon 2: Shotgun (forward, high damage)
+- Pet: Bear (tank, high HP, aggro)
+- Strategy: Face-tank enemies, close-range destruction
+
+### Combat Tips
+- **Positioning is Key**: Auto-weapons fire automatically, so your positioning determines effectiveness
+- **Mix Damage Types**: Elemental combos create powerful synergies
+- **Watch Resources**: Monitor energy/mana for your weapons
+- **Use Grenades Wisely**: 30-60 second cooldowns make timing crucial
+- **Pet Synergy**: Choose pets that complement your weapon loadout
+- **Upgrade Often**: Visit villages to upgrade weapons and buy better gear
+- **Learn Enemy Patterns**: Each biome cave has unique enemy types
+
+### Enemy Types (By Floor Depth)
+
+**Floors 1-2 (Easy)**
+- Green Slime (20 HP, 5 dmg)
+- Cave Bat (15 HP, 8 dmg)
+- Goblin (35 HP, 10 dmg)
+
+**Floors 3-5 (Medium)**
+- Skeleton (40 HP, 12 dmg)
+- Giant Spider (30 HP, 14 dmg)
+- Wild Wolf (45 HP, 16 dmg)
+
+**Floors 6-8 (Hard)**
+- Phantom (50 HP, 20 dmg)
+- Zombie (60 HP, 18 dmg)
+- Orc Warrior (80 HP, 25 dmg)
+
+**Floors 9+ (Very Hard)**
+- Fire Elemental (100 HP, 35 dmg)
+- Lesser Demon (120 HP, 40 dmg)
+
+**Bosses**: Larger, more HP, special abilities, guaranteed loot
 
 ## Tips & Strategies
 

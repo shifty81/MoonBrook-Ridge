@@ -1,36 +1,50 @@
-# The World Below - Design Document
+# The World Below - Design Document (Updated for Auto-Combat)
 
 ## Overview
 
-"The World Below" is a planned expansion for MoonBrook Ridge that will add cavernous cave systems, dungeons, and secret areas to discover beneath the overworld. This document outlines the design goals and technical implementation plan for this feature.
+"The World Below" is the combat-focused component of MoonBrook Valley. While the overworld features peaceful farming, fishing, and village life, **the caves beneath the valley are dangerous procedurally-generated combat zones** where you face endless waves of enemies using an auto-shooter combat system.
 
 ## Design Goals
 
 ### Core Pillars
-1. **Exploration** - Reward players for venturing into dangerous underground areas
-2. **Challenge** - Provide combat and puzzle-solving opportunities
-3. **Progression** - Unlock deeper areas as player skills and equipment improve
-4. **Mystery** - Hide secrets and lore throughout the underground
+1. **Auto-Combat Action** - Weapons fire automatically, focus on positioning and builds
+2. **Escalating Challenge** - Progressive difficulty as you descend deeper
+3. **Strategic Depth** - Build choices, weapon synergies, and pet companions matter
+4. **Cave Exploration** - Discover biome-specific caves with unique enemies and loot
+5. **Peaceful Overworld** - Combat restricted to caves; overworld is safe
+
+### Key Differences from Original Design
+- **No Combat in Overworld**: Villages and farms are 100% peaceful
+- **Auto-Shooter Mechanics**: Weapons fire automatically, not manually
+- **Pet Companions**: Replace Bosco with customizable pets
+- **Multi-Village System**: 8 villages across different biomes
+- **Quest Integration**: Cave quests from village NPCs
 
 ### Gameplay Features
 
-#### Cave Systems
-- **Natural Caves**: Randomly generated cavern networks
-- **Multiple Levels**: Increasing difficulty as player descends
-- **Resources**: Unique minerals, ores, and materials found only underground
-- **Hazards**: Environmental dangers (lava, water, cave-ins, toxic gas)
+#### Cave Combat Zones
+**Combat is exclusive to caves beneath the valley:**
+- **Auto-Shooter Mechanics**: Equipped weapons fire automatically at enemies
+- **Wave-Based Spawning**: Endless enemy waves, increasing in difficulty
+- **Floor Progression**: Descend deeper for better rewards and harder challenges
+- **Biome-Specific**: Each biome's caves have unique enemies and resources
+- **Hazard Levels**: Choose difficulty before entering (1-5 stars)
 
-#### Dungeons
-- **Structured Layouts**: Hand-crafted puzzle and combat encounters
-- **Boss Encounters**: Unique enemies with special mechanics
-- **Treasures**: Rare items and equipment rewards
-- **Lore Elements**: Story pieces that reveal the world's history
+#### Cave Types by Biome
+- **Forest Caves** (Pinewood): Beast-type enemies, common resources
+- **Mountain Caves** (Stonehelm): Rock elementals, rich ore deposits
+- **Desert Caves** (Sandshore): Fire enemies, rare gems
+- **Frozen Caves** (Frostpeak): Ice enemies, cryo weapons
+- **Toxic Swamp Caves** (Marshwood): Acid enemies, alchemical materials
+- **Crystal Caves** (Crystalgrove): Magical enemies, enchanting materials
+- **Ancient Ruins Caves** (Ruinwatch): Guardians, legendary artifacts
 
-#### Secret Areas
-- **Hidden Passages**: Secret doors and breakable walls
-- **Ancient Ruins**: Mysterious structures predating the town
-- **Treasure Vaults**: High-value loot behind challenges
-- **Easter Eggs**: Fun surprises for thorough explorers
+#### Resources Underground
+- **Ore Deposits**: Mine while fighting for metals and gems
+- **XP Orbs**: Collect from defeated enemies
+- **Loot Drops**: Enemies drop weapons, equipment, gold, items
+- **Secret Rooms**: Hidden areas with bonus treasures
+- **Boss Chambers**: Special rooms with boss encounters
 
 ## Technical Architecture
 
