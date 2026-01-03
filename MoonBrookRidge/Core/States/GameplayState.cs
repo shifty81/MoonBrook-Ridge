@@ -96,6 +96,10 @@ public class GameplayState : GameState
     private Minimap _minimap;
     private NotificationSystem _notificationSystem;
     private ToolHotkeyManager _toolHotkeyManager;
+    // Phase 7.4 Systems - Advanced Optimization & QoL
+    private SpatialPartitioningSystem _spatialPartitioning;
+    private EntityFrustumCulling _entityCulling;
+    private WaypointSystem _waypointSystem;
     // Unified Player Menu - consolidates all character-related menus into one tabbed interface
     private UnifiedPlayerMenu _unifiedPlayerMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
@@ -663,6 +667,26 @@ public class GameplayState : GameState
         _toolHotkeyManager.RegisterTool(Keys.D5, new Axe());
         _toolHotkeyManager.RegisterTool(Keys.D6, new FishingRod());
         
+        // Initialize Phase 7.4 systems - Advanced Optimization
+        Rectangle worldBounds = new Rectangle(0, 0, 800, 800); // 50×50 tiles @ 16px
+        _spatialPartitioning = new SpatialPartitioningSystem(worldBounds);
+        _entityCulling = new EntityFrustumCulling();
+        
+        // Initialize waypoint system with default waypoints
+        _waypointSystem = new WaypointSystem();
+        _waypointSystem.OnWaypointUnlocked += (waypoint) =>
+        {
+            _notificationSystem?.Show($"Waypoint Discovered: {waypoint.Name}", NotificationType.Success, 3.0f);
+        };
+        _waypointSystem.OnFastTravel += (waypoint, cost) =>
+        {
+            _player.SetPosition(waypoint.Position);
+            _player.SpendMoney(cost);
+            // Note: TimeSystem doesn't have a public AdvanceTime method
+            // Fast travel time advancement would need to be implemented in TimeSystem
+            _notificationSystem?.Show($"Traveled to {waypoint.Name} (-{cost}g)", NotificationType.Info, 2.5f);
+        };
+        
         _isPaused = false;
         _previousDay = _timeSystem.Day; // Initialize day tracking for marriage/family
     }
@@ -1211,6 +1235,9 @@ public class GameplayState : GameState
         // Update wild pets
         UpdateWildPets(gameTime);
         
+        // Check for waypoint discovery (Phase 8)
+        _waypointSystem.CheckForNearbyWaypoint(_player.Position);
+        
         // Update event system
         _eventSystem.Update(gameTime);
         
@@ -1262,6 +1289,14 @@ public class GameplayState : GameState
         
         // Update camera to follow player
         _camera.Follow(_player.Position);
+        
+        // Update entity frustum culling bounds (Phase 8)
+        _entityCulling.UpdateViewport(
+            _camera.Position,
+            Game.GraphicsDevice.Viewport.Width,
+            Game.GraphicsDevice.Viewport.Height,
+            _camera.Zoom
+        );
         
         // Update HUD
         _hud.Update(gameTime, _player, _timeSystem);
