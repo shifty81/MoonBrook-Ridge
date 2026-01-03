@@ -409,10 +409,18 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Open Faction Reputation** ⭐ **NEW!** | **R** |
 | **Propose Marriage** ⭐ **NEW!** | **V** (when near eligible NPC) |
 | **Open Family Menu** ⭐ **NEW!** | **Y** |
-| Switch Tool | Tab |
-| Hotbar Slots (Consume) | 1-9, 0, -, = |
+| **Tame Wild Pet** ⭐ **NEW!** | **T** (when near wild pet) |
+| **Toggle Minimap** ⭐ **PHASE 7!** | **Tab** |
+| **Select Tool: Hoe** ⭐ **PHASE 7!** | **1** |
+| **Select Tool: Watering Can** ⭐ **PHASE 7!** | **2** |
+| **Select Tool: Scythe** ⭐ **PHASE 7!** | **3** |
+| **Select Tool: Pickaxe** ⭐ **PHASE 7!** | **4** |
+| **Select Tool: Axe** ⭐ **PHASE 7!** | **5** |
+| **Select Tool: Fishing Rod** ⭐ **PHASE 7!** | **6** |
+| Hotbar Slots (Consume) | 7-9, 0, -, = |
 | **Quick Save** ⭐ | **F5** |
 | **Quick Load** ⭐ | **F9** |
+| **Toggle Performance Monitor** ⭐ **PHASE 7!** | **F3** |
 
 See [CONTROLS.md](CONTROLS.md) for complete control documentation.
 
@@ -513,6 +521,21 @@ Comprehensive guides and references:
 
 See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.  
 See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](PHASE_6_SAVE_AND_QUEST_INTEGRATION.md) for integration details.
+
+### Phase 7: Performance & Polish ⚙️ **IN PROGRESS!**
+- [x] **Performance Monitoring** ⭐ **NEW!** - Real-time FPS, memory, and timing metrics (F3 to toggle)
+- [x] **Auto-Save System** ⭐ **NEW!** - Automatic background saves every 5 minutes
+- [x] **Minimap** ⭐ **NEW!** - Real-time 150px world overview in top-right corner (Tab to toggle)
+- [x] **Notification System** ⭐ **NEW!** - Toast-style messages for game events
+- [x] **Tool Hotkeys** ⭐ **NEW!** - Direct tool selection with number keys 1-6
+- [x] **Enhanced Feedback** ⭐ **NEW!** - Visual/audio feedback for item consumption
+- [ ] Rendering optimizations (spatial partitioning, frustum culling)
+- [ ] Object pooling for particles and projectiles
+- [ ] Biome-specific resources and creatures
+- [ ] Quest progress notifications
+- [ ] Additional quality-of-life features
+
+See [PHASE_7_IMPLEMENTATION_SUMMARY.md](PHASE_7_IMPLEMENTATION_SUMMARY.md) for complete Phase 7 documentation.
 
 ## 🤝 Contributing
 
