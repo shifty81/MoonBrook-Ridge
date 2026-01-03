@@ -57,6 +57,11 @@ with.
         <Start>&#32;</Start>
         <End>&#126;</End>
       </CharacterRegion>
+      <!-- Unicode arrow characters for UI navigation -->
+      <CharacterRegion>
+        <Start>&#8592;</Start>
+        <End>&#8595;</End>
+      </CharacterRegion>
     </CharacterRegions>
   </Asset>
 </XnaContent>
