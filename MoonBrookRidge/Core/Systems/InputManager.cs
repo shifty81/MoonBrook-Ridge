@@ -22,7 +22,7 @@ public class InputManager
     // Action keys
     public Keys Run { get; set; } = Keys.LeftShift;
     public Keys OpenMenu { get; set; } = Keys.E;
-    public Keys OpenMenuAlt { get; set; } = Keys.Escape;
+    public Keys CloseMenu { get; set; } = Keys.Escape; // ESC closes menus, doesn't exit game
     public Keys UseToolOrPlace { get; set; } = Keys.C;
     public Keys DoAction { get; set; } = Keys.X;
     public Keys OpenJournal { get; set; } = Keys.F;
@@ -59,7 +59,8 @@ public class InputManager
     public bool IsRunPressed() => _currentKeyState.IsKeyDown(Run);
     
     // Action checks (pressed this frame)
-    public bool IsOpenMenuPressed() => IsKeyPressed(OpenMenu) || IsKeyPressed(OpenMenuAlt);
+    public bool IsOpenMenuPressed() => IsKeyPressed(OpenMenu);
+    public bool IsCloseMenuPressed() => IsKeyPressed(CloseMenu);
     public bool IsUseToolPressed() => IsKeyPressed(UseToolOrPlace);
     public bool IsDoActionPressed() => IsKeyPressed(DoAction);
     public bool IsOpenJournalPressed() => IsKeyPressed(OpenJournal);
