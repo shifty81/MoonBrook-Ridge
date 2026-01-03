@@ -85,7 +85,8 @@ public class NPCManager
     
     public void Update(GameTime gameTime, TimeSystem timeSystem, Vector2 playerPosition, bool interactPressed)
     {
-        // Update all NPCs
+        // Update all NPCs (always simulated, even when off-screen - Phase 7.4)
+        // This ensures NPCs follow their daily schedules and can be found by players
         foreach (var npc in _npcs)
         {
             npc.Update(gameTime, timeSystem);
@@ -190,15 +191,34 @@ public class NPCManager
         _interactingNPC = null;
     }
     
-    public void Draw(SpriteBatch spriteBatch, SpriteFont font)
+    public void Draw(SpriteBatch spriteBatch, SpriteFont font, Rectangle? visibleBounds = null)
     {
-        // Draw all NPCs
+        // Draw all NPCs (with optional frustum culling - Phase 7.4)
+        // NOTE: NPCs are ALWAYS updated in Update() regardless of visibility
+        // Culling here only affects rendering, not simulation/schedules
         foreach (var npc in _npcs)
         {
+            // If viewport bounds provided, check if NPC is visible
+            if (visibleBounds.HasValue)
+            {
+                // Simple visibility check - NPC position within viewport bounds
+                // Add buffer around viewport to prevent pop-in
+                Rectangle npcBounds = new Rectangle(
+                    (int)npc.Position.X - 32,
+                    (int)npc.Position.Y - 32,
+                    64, 64
+                );
+                
+                if (!visibleBounds.Value.Intersects(npcBounds))
+                {
+                    continue; // Skip NPCs outside visible area
+                }
+            }
+            
             npc.Draw(spriteBatch);
         }
         
-        // Draw chat bubble
+        // Draw chat bubble (always visible when active)
         _chatBubble.Draw(spriteBatch, font);
     }
     

@@ -95,6 +95,14 @@ public class MagicSystem
         _mana = MathHelper.Clamp(_mana + amount, 0, _maxMana);
     }
     
+    /// <summary>
+    /// Consume mana (Phase 7.4 - for weapon usage)
+    /// </summary>
+    public void ConsumeMana(float amount)
+    {
+        _mana = MathHelper.Clamp(_mana - amount, 0, _maxMana);
+    }
+    
     public void IncreaseMaxMana(float amount)
     {
         _maxMana += amount;
