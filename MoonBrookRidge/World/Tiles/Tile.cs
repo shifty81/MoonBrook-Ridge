@@ -11,6 +11,8 @@ public class Tile
     private Vector2 _gridPosition;
     private bool _isWatered;
     private Crop _crop;
+    private string _animationName;
+    private int _spriteId = -1; // Sprite ID from tileset (-1 means use default for tile type)
     
     public Tile(TileType type, Vector2 gridPosition)
     {
@@ -18,6 +20,7 @@ public class Tile
         _gridPosition = gridPosition;
         _isWatered = false;
         _crop = null;
+        _animationName = string.Empty;
     }
     
     public void Update(GameTime gameTime)
@@ -133,6 +136,26 @@ public class Tile
     public bool IsWatered => _isWatered;
     public Crop Crop => _crop;
     public Vector2 GridPosition => _gridPosition;
+    
+    /// <summary>
+    /// Animation name for animated tiles (e.g., "water_1", "flame_1")
+    /// Empty string means no animation.
+    /// </summary>
+    public string AnimationName
+    {
+        get => _animationName;
+        set => _animationName = value ?? string.Empty;
+    }
+    
+    /// <summary>
+    /// Sprite ID from the tileset. -1 means use default for tile type.
+    /// Set by autotiling or animation systems.
+    /// </summary>
+    public int SpriteId
+    {
+        get => _spriteId;
+        set => _spriteId = value;
+    }
 }
 
 public enum TileType
