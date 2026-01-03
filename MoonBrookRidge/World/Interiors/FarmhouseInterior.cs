@@ -1,67 +1,40 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonBrookRidge.World.Tiles;
+using MoonBrookRidge.Core.Scenes;
 
 namespace MoonBrookRidge.World.Interiors;
 
 /// <summary>
 /// The player's farmhouse interior with bedroom, kitchen, and living area
+/// Now inherits from the new scene-based InteriorScene
 /// </summary>
 public class FarmhouseInterior : InteriorScene
 {
-    private Texture2D _roomBuilderAtlas;
-    private Texture2D _interiorsAtlas;
-    
-    public FarmhouseInterior() : base("Farmhouse", 15, 12)
+    public FarmhouseInterior() : base("Farmhouse", "farmhouse_interior", 15, 12)
     {
-        // Player spawns near the bed
-        _playerSpawnPosition = new Vector2(7, 5);
-        
-        // Door is at the bottom center
-        _doorPosition = new Vector2(7, 11);
-        
-        InitializeRoom();
-    }
-    
-    /// <summary>
-    /// Load textures for the farmhouse
-    /// </summary>
-    public void LoadContent(Texture2D roomBuilder, Texture2D interiors)
-    {
-        _roomBuilderAtlas = roomBuilder;
-        _interiorsAtlas = interiors;
+        // Door transition to farm exterior at bottom center
+        var doorTransition = new SceneTransition(
+            "farmhouse_door",
+            new Vector2(7, 11) * GameConstants.TILE_SIZE,
+            "farm_exterior",
+            new Vector2(125, 125), // Spawn position on farm
+            TransitionType.Door,
+            requiresInteraction: true
+        );
+        AddTransition(doorTransition);
     }
     
     /// <summary>
     /// Initialize the farmhouse room layout
     /// </summary>
-    private void InitializeRoom()
+    public override void Initialize()
     {
-        // Fill with wood floor tiles (using simple floor tile for now)
-        for (int x = 0; x < _width; x++)
-        {
-            for (int y = 0; y < _height; y++)
-            {
-                // Create a simple floor tile
-                SetTile(x, y, new Tile(TileType.WoodFloor, new Vector2(x, y)));
-            }
-        }
-        
-        // Add walls around the perimeter (marked as blocking but we'll draw them separately)
-        for (int x = 0; x < _width; x++)
-        {
-            SetTile(x, 0, new Tile(TileType.Wall, new Vector2(x, 0)));
-            SetTile(x, _height - 1, new Tile(TileType.Wall, new Vector2(x, _height - 1)));
-        }
-        
-        for (int y = 0; y < _height; y++)
-        {
-            SetTile(0, y, new Tile(TileType.Wall, new Vector2(0, y)));
-            SetTile(_width - 1, y, new Tile(TileType.Wall, new Vector2(_width - 1, y)));
-        }
+        // Initialize base interior (floors and walls)
+        base.Initialize();
         
         // Clear door position (no wall at door)
-        SetTile((int)_doorPosition.X, (int)_doorPosition.Y, new Tile(TileType.WoodFloor, _doorPosition));
+        SetTile(7, 11, new Tile(TileType.WoodFloor, new Vector2(7, 11)));
         
         AddFurniture();
     }
@@ -72,88 +45,103 @@ public class FarmhouseInterior : InteriorScene
     private void AddFurniture()
     {
         // Bed (player spawns near this) - top right area
-        // Using tile coordinates from Interiors_free_16x16.png
-        // Bed is typically in the first few rows
-        AddObject(new InteriorObject(
+        var bed = new SceneObject(
             "Bed",
             new Vector2(10 * GameConstants.TILE_SIZE, 3 * GameConstants.TILE_SIZE),
-            new Rectangle(0, 32, 32, 32), // 2x2 bed sprite
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: true
+        );
+        bed.SourceRect = new Rectangle(0, 32, 32, 32);
+        bed.InteractionText = "Press X to sleep";
+        AddObject(bed);
         
         // Nightstand next to bed
-        AddObject(new InteriorObject(
+        var nightstand = new SceneObject(
             "Nightstand",
             new Vector2(9 * GameConstants.TILE_SIZE, 3 * GameConstants.TILE_SIZE),
-            new Rectangle(32, 16, 16, 16),
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: false
+        );
+        nightstand.SourceRect = new Rectangle(32, 16, 16, 16);
+        AddObject(nightstand);
         
         // Table in center area
-        AddObject(new InteriorObject(
+        var table = new SceneObject(
             "Table",
             new Vector2(6 * GameConstants.TILE_SIZE, 6 * GameConstants.TILE_SIZE),
-            new Rectangle(0, 48, 32, 16), // 2x1 table
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: false
+        );
+        table.SourceRect = new Rectangle(0, 48, 32, 16);
+        AddObject(table);
         
         // Chairs around table
-        AddObject(new InteriorObject(
+        var chair1 = new SceneObject(
             "Chair",
             new Vector2(5 * GameConstants.TILE_SIZE, 6 * GameConstants.TILE_SIZE),
-            new Rectangle(48, 48, 16, 16),
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: false
+        );
+        chair1.SourceRect = new Rectangle(48, 48, 16, 16);
+        AddObject(chair1);
         
-        AddObject(new InteriorObject(
+        var chair2 = new SceneObject(
             "Chair",
             new Vector2(8 * GameConstants.TILE_SIZE, 6 * GameConstants.TILE_SIZE),
-            new Rectangle(48, 48, 16, 16),
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: false
+        );
+        chair2.SourceRect = new Rectangle(48, 48, 16, 16);
+        AddObject(chair2);
         
         // Kitchen counter - left side
-        AddObject(new InteriorObject(
+        var counter = new SceneObject(
             "Counter",
             new Vector2(2 * GameConstants.TILE_SIZE, 3 * GameConstants.TILE_SIZE),
-            new Rectangle(0, 0, 16, 16),
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: false
+        );
+        counter.SourceRect = new Rectangle(0, 0, 16, 16);
+        AddObject(counter);
         
         // Stove
-        AddObject(new InteriorObject(
+        var stove = new SceneObject(
             "Stove",
             new Vector2(3 * GameConstants.TILE_SIZE, 3 * GameConstants.TILE_SIZE),
-            new Rectangle(16, 0, 16, 16),
-            isBlocking: true
-        ));
+            isBlocking: true,
+            isInteractive: true
+        );
+        stove.SourceRect = new Rectangle(16, 0, 16, 16);
+        stove.InteractionText = "Press X to cook";
+        AddObject(stove);
         
         // Plant decoration (non-blocking)
-        AddObject(new InteriorObject(
+        var plant = new SceneObject(
             "Plant",
             new Vector2(2 * GameConstants.TILE_SIZE, 9 * GameConstants.TILE_SIZE),
-            new Rectangle(64, 64, 16, 16),
-            isBlocking: false
-        ));
+            isBlocking: false,
+            isInteractive: false
+        );
+        plant.SourceRect = new Rectangle(64, 64, 16, 16);
+        AddObject(plant);
         
         // Rug near door (non-blocking)
-        AddObject(new InteriorObject(
+        var rug = new SceneObject(
             "Rug",
             new Vector2(6 * GameConstants.TILE_SIZE, 9 * GameConstants.TILE_SIZE),
-            new Rectangle(80, 80, 32, 16),
-            isBlocking: false
-        ));
+            isBlocking: false,
+            isInteractive: false
+        );
+        rug.SourceRect = new Rectangle(80, 80, 32, 16);
+        AddObject(rug);
     }
     
     /// <summary>
-    /// Draw the farmhouse interior
+    /// Called when player enters farmhouse
     /// </summary>
-    public override void Draw(SpriteBatch spriteBatch, Texture2D floorAtlas, Texture2D objectAtlas)
+    public override void OnEnter(Vector2 spawnPosition)
     {
-        // Use the loaded atlases if available, otherwise fall back to provided textures
-        Texture2D floor = _roomBuilderAtlas ?? floorAtlas;
-        Texture2D objects = _interiorsAtlas ?? objectAtlas;
-        
-        base.Draw(spriteBatch, floor, objects);
+        // Spawn player near the bed (starting position)
+        // spawnPosition will be used from transition or default to (7, 5)
     }
 }
