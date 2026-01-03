@@ -533,12 +533,17 @@ See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](PHASE_6_SAVE_AND_QUEST_INTEGRATION.m
 - [x] **Rock Breaking** ⭐ **PHASE 7.2** - Break decorative rocks on farm for stone (1-3 per rock)
 - [x] **Biome Movement Modifiers** ⭐ **PHASE 7.2** - Speed changes based on biome (0.6x to 1.2x)
 - [x] **Quest Progress Notifications** ⭐ **PHASE 7.2** - Toast notifications for quest objective updates
-- [ ] Rendering optimizations (spatial partitioning, frustum culling)
-- [ ] Object pooling for particles and projectiles
-- [ ] Biome-specific resources and creatures
+- [x] **Frustum Culling** ⭐ **PHASE 7.3** - 85-90% reduction in tile rendering (only visible tiles drawn)
+- [x] **Projectile System** ⭐ **PHASE 7.3** - Object pooling for 200 projectiles with 8 types
+- [x] **Biome Resource Spawner** ⭐ **PHASE 7.3** - Biome-specific trees and rocks (12 biome configs)
+- [ ] Spatial partitioning for large worlds (quadtree)
+- [ ] NPC and enemy frustum culling
+- [ ] Integration of projectile collision detection
 - [ ] Additional quality-of-life features
 
-See [PHASE_7_IMPLEMENTATION_SUMMARY.md](PHASE_7_IMPLEMENTATION_SUMMARY.md) for complete Phase 7 documentation.
+See [PHASE_7_IMPLEMENTATION_SUMMARY.md](PHASE_7_IMPLEMENTATION_SUMMARY.md) for Phase 7.1 and 7.2.  
+See [PHASE_7.2_COMPLETION_SUMMARY.md](PHASE_7.2_COMPLETION_SUMMARY.md) for Phase 7.2 details.  
+See [PHASE_7.3_COMPLETION_SUMMARY.md](PHASE_7.3_COMPLETION_SUMMARY.md) for Phase 7.3 details.
 
 ## 🤝 Contributing
 
