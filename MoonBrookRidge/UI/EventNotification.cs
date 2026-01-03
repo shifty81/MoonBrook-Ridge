@@ -32,7 +32,7 @@ public class EventNotification
     /// </summary>
     public void Show(GameEvent gameEvent)
     {
-        _message = $"📅 {gameEvent.Name}\n{gameEvent.Description}";
+        _message = $"[EVENT] {gameEvent.Name}\n{gameEvent.Description}";
         _displayTime = NOTIFICATION_DURATION;
         _elapsed = 0f;
         _isVisible = true;
