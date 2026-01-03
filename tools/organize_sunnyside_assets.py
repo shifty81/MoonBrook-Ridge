@@ -15,6 +15,7 @@ This script:
 import os
 import shutil
 import json
+import sys
 from pathlib import Path
 from collections import defaultdict
 
@@ -103,6 +104,82 @@ ASSET_CATEGORIES = {
 }
 
 
+def get_user_confirmation() -> bool:
+    """
+    Prompt user for confirmation to proceed with file operations.
+    
+    Returns:
+        bool: True if user confirms, False otherwise
+    """
+    print("\n" + "=" * 80)
+    print("⚠️  This script will copy files from sprites/ to Content/Textures/")
+    print("=" * 80)
+    
+    while True:
+        response = input("\nDo you want to proceed with copying files? (Yes/No): ").strip().lower()
+        if response in ['yes', 'y']:
+            return True
+        elif response in ['no', 'n']:
+            return False
+        else:
+            print("Invalid input. Please enter 'Yes' or 'No'.")
+
+
+def print_directory_tree(directory: Path, prefix="", is_last=True, max_depth=None, current_depth=0):
+    """
+    Print directory structure in a visual tree format.
+    
+    Args:
+        directory: Path to the directory to visualize
+        prefix: Prefix string for tree formatting
+        is_last: Whether this is the last item in the parent directory
+        max_depth: Maximum depth to traverse (None for unlimited)
+        current_depth: Current depth level
+    """
+    if not directory.exists():
+        print(f"{prefix}[Directory does not exist: {directory}]")
+        return
+    
+    if max_depth is not None and current_depth > max_depth:
+        return
+    
+    # Print current directory
+    if current_depth == 0:
+        print(f"\n{directory.name}/")
+    else:
+        connector = "└── " if is_last else "├── "
+        print(f"{prefix}{connector}{directory.name}/")
+    
+    # Get all entries in directory
+    try:
+        entries = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower()))
+    except PermissionError:
+        print(f"{prefix}    [Permission Denied]")
+        return
+    
+    # Separate directories and files
+    dirs = [e for e in entries if e.is_dir()]
+    files = [e for e in entries if e.is_file()]
+    
+    # Prepare prefix for children
+    if current_depth == 0:
+        new_prefix = ""
+    else:
+        extension = "    " if is_last else "│   "
+        new_prefix = prefix + extension
+    
+    # Print directories first
+    for i, entry in enumerate(dirs):
+        is_last_entry = (i == len(dirs) - 1) and len(files) == 0
+        print_directory_tree(entry, new_prefix, is_last_entry, max_depth, current_depth + 1)
+    
+    # Print files
+    for i, entry in enumerate(files):
+        is_last_file = (i == len(files) - 1)
+        connector = "└── " if is_last_file else "├── "
+        print(f"{new_prefix}{connector}{entry.name}")
+
+
 def should_skip(path: Path) -> bool:
     """Check if a path should be skipped."""
     # Skip if in skip directories
@@ -139,6 +216,9 @@ def organize_assets(dry_run=False):
     
     Args:
         dry_run: If True, only scan and report without copying files
+        
+    Returns:
+        tuple: (stats dict, success bool, copied_count int, errors list)
     """
     print("=" * 80)
     print("Sunnyside World Asset Organizer")
@@ -148,13 +228,21 @@ def organize_assets(dry_run=False):
     print(f"Mode: {'DRY RUN (no files will be copied)' if dry_run else 'LIVE (files will be copied)'}")
     print()
     
-    # Statistics
+    # Statistics and error tracking
     stats = defaultdict(lambda: {"count": 0, "files": []})
+    errors = []
+    success = True
     
     # Find all PNG files in sprites directory
     print("Scanning sprites directory...")
-    png_files = list(SPRITES_DIR.rglob("*.png"))
-    print(f"Found {len(png_files)} total PNG files")
+    try:
+        png_files = list(SPRITES_DIR.rglob("*.png"))
+        print(f"Found {len(png_files)} total PNG files")
+    except Exception as e:
+        error_msg = f"Error scanning sprites directory: {e}"
+        print(f"❌ {error_msg}")
+        errors.append(error_msg)
+        return stats, False, 0, errors
     print()
     
     # Categorize assets
@@ -163,11 +251,16 @@ def organize_assets(dry_run=False):
         if should_skip(png_file):
             continue
         
-        category = categorize_asset(png_file)
-        relative_path = png_file.relative_to(SPRITES_DIR)
-        
-        stats[category]["count"] += 1
-        stats[category]["files"].append(str(relative_path))
+        try:
+            category = categorize_asset(png_file)
+            relative_path = png_file.relative_to(SPRITES_DIR)
+            
+            stats[category]["count"] += 1
+            stats[category]["files"].append(str(relative_path))
+        except Exception as e:
+            error_msg = f"Error categorizing {png_file}: {e}"
+            errors.append(error_msg)
+            success = False
     
     # Print statistics
     print("\nAsset Statistics:")
@@ -185,7 +278,7 @@ def organize_assets(dry_run=False):
     if dry_run:
         print("DRY RUN complete. No files were copied.")
         print("Run with --execute to actually copy files.")
-        return stats
+        return stats, success, 0, errors
     
     # Copy files
     print("Copying files to Content/Textures/...")
@@ -195,56 +288,65 @@ def organize_assets(dry_run=False):
         if should_skip(png_file):
             continue
         
-        category = categorize_asset(png_file)
-        
-        # Determine target directory
-        if category in ASSET_CATEGORIES:
-            target_base = CONTENT_DIR / ASSET_CATEGORIES[category]["target_dir"]
-        else:
-            target_base = CONTENT_DIR / "Uncategorized"
-        
-        # Preserve some directory structure
-        relative_path = png_file.relative_to(SPRITES_DIR)
-        
-        # Clean up the path (remove version numbers and parent dirs)
-        path_parts = list(relative_path.parts)
-        cleaned_parts = []
-        
-        for part in path_parts[:-1]:  # All except filename
-            # Skip version folder names
-            if "V0." in part or "v1." in part or part.startswith("SUNNYSIDE_WORLD_"):
-                continue
-            cleaned_parts.append(part)
-        
-        # Add filename
-        cleaned_parts.append(path_parts[-1])
-        
-        # Build target path
-        if len(cleaned_parts) > 1:
-            target_path = target_base / Path(*cleaned_parts)
-        else:
-            target_path = target_base / cleaned_parts[0]
-        
-        # Create target directory
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Copy file (skip if already exists with same size)
-        if target_path.exists():
-            if target_path.stat().st_size == png_file.stat().st_size:
-                continue  # Skip identical file
-        
         try:
+            category = categorize_asset(png_file)
+            
+            # Determine target directory
+            if category in ASSET_CATEGORIES:
+                target_base = CONTENT_DIR / ASSET_CATEGORIES[category]["target_dir"]
+            else:
+                target_base = CONTENT_DIR / "Uncategorized"
+            
+            # Preserve some directory structure
+            relative_path = png_file.relative_to(SPRITES_DIR)
+            
+            # Clean up the path (remove version numbers and parent dirs)
+            path_parts = list(relative_path.parts)
+            cleaned_parts = []
+            
+            for part in path_parts[:-1]:  # All except filename
+                # Skip version folder names
+                if "V0." in part or "v1." in part or part.startswith("SUNNYSIDE_WORLD_"):
+                    continue
+                cleaned_parts.append(part)
+            
+            # Add filename
+            cleaned_parts.append(path_parts[-1])
+            
+            # Build target path
+            if len(cleaned_parts) > 1:
+                target_path = target_base / Path(*cleaned_parts)
+            else:
+                target_path = target_base / cleaned_parts[0]
+            
+            # Create target directory
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Copy file (skip if already exists with same size)
+            if target_path.exists():
+                if target_path.stat().st_size == png_file.stat().st_size:
+                    continue  # Skip identical file
+            
             shutil.copy2(png_file, target_path)
             copied_count += 1
             if copied_count % 100 == 0:
                 print(f"  Copied {copied_count} files...")
+                
         except Exception as e:
-            print(f"  Error copying {png_file}: {e}")
+            error_msg = f"Error copying {png_file}: {e}"
+            print(f"  ❌ {error_msg}")
+            errors.append(error_msg)
+            success = False
     
     print(f"\nCopied {copied_count} new/updated files")
+    
+    # Set success to False if there were errors
+    if errors:
+        success = False
+    
     print()
     
-    return stats
+    return stats, success, copied_count, errors
 
 
 def generate_catalog(stats):
@@ -273,8 +375,6 @@ def generate_catalog(stats):
 
 
 def main():
-    import sys
-    
     # Check if --execute flag is present
     dry_run = "--execute" not in sys.argv
     
@@ -282,19 +382,58 @@ def main():
         print("Running in DRY RUN mode. Use --execute to actually copy files.")
         print()
     
+    # Get user confirmation before proceeding
+    if not get_user_confirmation():
+        print("\n❌ Operation cancelled by user.")
+        print("No files were copied.")
+        sys.exit(0)
+    
+    print("\n✅ User confirmed. Proceeding with operation...\n")
+    
     # Organize assets
-    stats = organize_assets(dry_run=dry_run)
+    stats, success, copied_count, errors = organize_assets(dry_run=dry_run)
+    
+    # Print operation results
+    print("\n" + "=" * 80)
+    print("OPERATION SUMMARY")
+    print("=" * 80)
+    
+    if success and not errors:
+        print("✅ Operation completed successfully!")
+    elif errors:
+        print("⚠️  Operation completed with errors:")
+        for error in errors[:10]:  # Show first 10 errors
+            print(f"   - {error}")
+        if len(errors) > 10:
+            print(f"   ... and {len(errors) - 10} more errors")
+    else:
+        print("❌ Operation failed!")
+    
+    print(f"\n📊 Total files moved/copied: {copied_count}")
     
     # Generate catalog
+    if not dry_run and stats:
+        try:
+            generate_catalog(stats)
+        except Exception as e:
+            print(f"\n⚠️  Error generating catalog: {e}")
+    
+    # Display directory tree of target folder
+    if CONTENT_DIR.exists():
+        print("\n" + "=" * 80)
+        print("DIRECTORY STRUCTURE - Content/Textures")
+        print("=" * 80)
+        print_directory_tree(CONTENT_DIR, max_depth=3)
+        print("=" * 80)
+    
     if not dry_run:
-        generate_catalog(stats)
-        print("\n✅ Asset organization complete!")
         print(f"\nNext steps:")
         print("1. Review the organized assets in {CONTENT_DIR}")
         print("2. Update Content.mgcb to include new assets")
         print("3. Update asset loading code to use the new structure")
     else:
         print("\n📊 Dry run complete. Review the statistics above.")
+        print("Run with --execute to actually copy files.")
 
 
 if __name__ == "__main__":
