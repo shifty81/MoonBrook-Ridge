@@ -16,6 +16,7 @@ public class AssetManager
     private readonly ContentManager _content;
     private readonly GraphicsDevice _graphicsDevice;
     private readonly Dictionary<string, Texture2D> _textureCache;
+    private readonly Dictionary<string, string> _textureCategoryMap; // Maps texture path to category
     private readonly Dictionary<string, List<string>> _categoryIndex;
     
     public AssetManager(ContentManager content, GraphicsDevice graphicsDevice)
@@ -23,6 +24,7 @@ public class AssetManager
         _content = content;
         _graphicsDevice = graphicsDevice;
         _textureCache = new Dictionary<string, Texture2D>();
+        _textureCategoryMap = new Dictionary<string, string>();
         _categoryIndex = new Dictionary<string, List<string>>();
         
         BuildCategoryIndex();
@@ -63,6 +65,10 @@ public class AssetManager
             // Load from Content Pipeline
             var texture = _content.Load<Texture2D>(path);
             _textureCache[path] = texture;
+            
+            // Store category mapping for efficient unloading
+            StoreCategory(path);
+            
             return texture;
         }
         catch (ContentLoadException)
@@ -95,6 +101,10 @@ public class AssetManager
                     using var fileStream = new FileStream(filePath, FileMode.Open);
                     var texture = Texture2D.FromStream(_graphicsDevice, fileStream);
                     _textureCache[path] = texture;
+                    
+                    // Store category mapping for efficient unloading
+                    StoreCategory(path);
+                    
                     return texture;
                 }
                 catch (Exception ex)
@@ -136,6 +146,23 @@ public class AssetManager
     }
     
     /// <summary>
+    /// Store category mapping for a path for efficient unloading
+    /// </summary>
+    private void StoreCategory(string path)
+    {
+        // Determine category from path
+        foreach (var category in _categoryIndex.Keys)
+        {
+            if (path.StartsWith(category + "/", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith(category, StringComparison.OrdinalIgnoreCase))
+            {
+                _textureCategoryMap[path] = category;
+                break;
+            }
+        }
+    }
+    
+    /// <summary>
     /// Preload all assets in a category (e.g., "Tiles", "Characters")
     /// </summary>
     public void PreloadCategory(string category)
@@ -169,8 +196,10 @@ public class AssetManager
     /// </summary>
     public void UnloadCategory(string category)
     {
-        var toRemove = _textureCache.Keys
-            .Where(k => k.Contains(category, StringComparison.OrdinalIgnoreCase))
+        // Use category map for efficient lookup
+        var toRemove = _textureCategoryMap
+            .Where(kvp => kvp.Value.Equals(category, StringComparison.OrdinalIgnoreCase))
+            .Select(kvp => kvp.Key)
             .ToList();
         
         foreach (var key in toRemove)
@@ -180,6 +209,7 @@ public class AssetManager
                 texture?.Dispose();
                 _textureCache.Remove(key);
             }
+            _textureCategoryMap.Remove(key);
         }
         
         Console.WriteLine($"Unloaded {toRemove.Count} assets from category '{category}'");
@@ -200,8 +230,17 @@ public class AssetManager
             texture?.Dispose();
         }
         _textureCache.Clear();
+        _textureCategoryMap.Clear();
         
         Console.WriteLine("Asset cache cleared");
+    }
+    
+    /// <summary>
+    /// Build asset path from template
+    /// </summary>
+    private string BuildAssetPath(string template, params object[] args)
+    {
+        return string.Format(template, args);
     }
     
     /// <summary>
@@ -209,7 +248,7 @@ public class AssetManager
     /// </summary>
     public Texture2D GetCropTexture(string cropType, int growthStage)
     {
-        string path = $"Crops/{cropType}/{cropType}_{growthStage:D2}";
+        string path = BuildAssetPath("Crops/{0}/{0}_{1:D2}", cropType, growthStage);
         return GetTexture(path);
     }
     
@@ -220,7 +259,8 @@ public class AssetManager
     {
         // action: WALKING, MINING, FISHING, etc.
         // part: base, longhair, shorthair, tools, etc.
-        string path = $"Characters/{action}/{part}_{action.ToLower()}_strip";
+        string actionLower = action.ToLower();
+        string path = BuildAssetPath("Characters/{0}/{1}_{2}_strip", action, part, actionLower);
         return GetTexture(path);
     }
     
