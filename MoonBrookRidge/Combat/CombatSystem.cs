@@ -133,6 +133,29 @@ public class CombatSystem
             _playerWeapons.Add(weapon);
         }
     }
+    
+    /// <summary>
+    /// Apply damage from a projectile to an enemy (Phase 7.4)
+    /// </summary>
+    public bool ApplyProjectileDamage(Enemy target, float damage)
+    {
+        if (target == null || target.IsDead)
+        {
+            return false;
+        }
+        
+        // Apply damage to enemy
+        target.TakeDamage(damage);
+        OnEnemyDamaged?.Invoke(target, damage);
+        
+        // Check if enemy defeated
+        if (target.IsDead)
+        {
+            OnEnemyDefeated?.Invoke(target);
+        }
+        
+        return true;
+    }
 }
 
 /// <summary>

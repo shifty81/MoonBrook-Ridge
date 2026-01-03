@@ -78,6 +78,7 @@ public class GameplayState : GameState
     private PetMenu _petMenu;
     private List<WildPet> _wildPets;
     private CombatSystem _combatSystem;
+    private ProjectileSystem _projectileSystem;
     private Dungeons.DungeonSystem _dungeonSystem;
     private DungeonMenu _dungeonMenu;
     private Factions.FactionSystem _factionSystem;
@@ -219,6 +220,9 @@ public class GameplayState : GameState
         
         // Initialize Combat System
         _combatSystem = new CombatSystem();
+        
+        // Initialize Projectile System (Phase 7.4)
+        _projectileSystem = new ProjectileSystem();
         
         // Initialize Dungeon System
         _dungeonSystem = new Dungeons.DungeonSystem();
@@ -1156,6 +1160,12 @@ public class GameplayState : GameState
         _petSystem.Update(gameTime);
         _combatSystem.Update(gameTime);
         
+        // Update Phase 7.4 systems
+        _projectileSystem.Update(gameTime);
+        
+        // Check projectile collisions with enemies (Phase 7.4)
+        CheckProjectileCollisions();
+        
         // Update biome based on player position
         UpdateBiomeFromPosition();
         
@@ -1533,40 +1543,176 @@ public class GameplayState : GameState
         var keyboardState = Keyboard.GetState();
         if (keyboardState.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
         {
-            // Find nearest enemy in attack range
-            Enemy nearestEnemy = null;
-            float nearestDistance = float.MaxValue;
-            
-            foreach (var enemy in enemies)
+            var weapon = _combatSystem.GetEquippedWeapon();
+            if (weapon != null)
             {
-                float distance = Vector2.Distance(_player.Position, enemy.Position);
-                if (distance < 64f && distance < nearestDistance) // 64 pixel attack range (4 tiles)
+                // Check energy/mana requirements
+                bool canAttack = false;
+                if (weapon.UsesMana)
                 {
-                    nearestEnemy = enemy;
-                    nearestDistance = distance;
+                    canAttack = _magicSystem.Mana >= weapon.EnergyCost;
                 }
-            }
-            
-            if (nearestEnemy != null)
-            {
-                // Check if weapon uses mana or energy
-                var weapon = _combatSystem.GetEquippedWeapon();
-                if (weapon != null)
+                else
                 {
-                    if (weapon.UsesMana)
+                    canAttack = _player.Energy >= weapon.EnergyCost;
+                }
+                
+                if (canAttack)
+                {
+                    // Handle ranged weapons (spawn projectiles - Phase 7.4)
+                    if (weapon.Type == WeaponType.Ranged)
                     {
-                        if (_magicSystem.Mana >= weapon.EnergyCost)
+                        // Calculate direction to nearest enemy or facing direction
+                        Vector2 direction = Vector2.Zero;
+                        Enemy nearestEnemy = null;
+                        float nearestDistance = float.MaxValue;
+                        
+                        foreach (var enemy in enemies)
                         {
-                            _combatSystem.AttackEnemy(nearestEnemy);
-                            // Mana consumption is handled in combat system
+                            float distance = Vector2.Distance(_player.Position, enemy.Position);
+                            if (distance < nearestDistance)
+                            {
+                                nearestEnemy = enemy;
+                                nearestDistance = distance;
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (_player.Energy >= weapon.EnergyCost)
+                        
+                        // Aim at nearest enemy if within range, otherwise use facing direction
+                        if (nearestEnemy != null && nearestDistance < 400f) // 400 pixel max range
+                        {
+                            direction = nearestEnemy.Position - _player.Position;
+                            if (direction.Length() > 0)
+                                direction.Normalize();
+                        }
+                        else
+                        {
+                            // Use player's facing direction
+                            direction = _player.Facing switch
+                            {
+                                Direction.Up => new Vector2(0, -1),
+                                Direction.Down => new Vector2(0, 1),
+                                Direction.Left => new Vector2(-1, 0),
+                                Direction.Right => new Vector2(1, 0),
+                                _ => new Vector2(1, 0)
+                            };
+                        }
+                        
+                        // Determine projectile type based on weapon
+                        ProjectileType projType = weapon.Id switch
+                        {
+                            "wooden_bow" => ProjectileType.Arrow,
+                            "longbow" => ProjectileType.Arrow,
+                            "crossbow" => ProjectileType.Bolt,
+                            _ => ProjectileType.Arrow
+                        };
+                        
+                        // Spawn projectile
+                        float projectileSpeed = 300f; // pixels per second
+                        Vector2 velocity = direction * projectileSpeed;
+                        _projectileSystem.SpawnProjectile(
+                            _player.Position,
+                            velocity,
+                            projType,
+                            weapon.Damage,
+                            3.0f, // 3 second lifetime
+                            "player"
+                        );
+                        
+                        // Consume energy
+                        if (!weapon.UsesMana)
                         {
                             _player.Stats.ConsumeEnergy(weapon.EnergyCost);
+                        }
+                    }
+                    // Handle melee weapons (instant hit)
+                    else if (weapon.Type == WeaponType.Melee)
+                    {
+                        // Find nearest enemy in melee range
+                        Enemy nearestEnemy = null;
+                        float nearestDistance = float.MaxValue;
+                        
+                        foreach (var enemy in enemies)
+                        {
+                            float distance = Vector2.Distance(_player.Position, enemy.Position);
+                            if (distance < 64f && distance < nearestDistance) // 64 pixel melee range (4 tiles)
+                            {
+                                nearestEnemy = enemy;
+                                nearestDistance = distance;
+                            }
+                        }
+                        
+                        if (nearestEnemy != null)
+                        {
+                            // Consume energy
+                            if (!weapon.UsesMana)
+                            {
+                                _player.Stats.ConsumeEnergy(weapon.EnergyCost);
+                            }
                             _combatSystem.AttackEnemy(nearestEnemy);
+                        }
+                    }
+                    // Handle magic weapons (spawn magic projectiles)
+                    else if (weapon.Type == WeaponType.Magic)
+                    {
+                        // Calculate direction similar to ranged weapons
+                        Vector2 direction = Vector2.Zero;
+                        Enemy nearestEnemy = null;
+                        float nearestDistance = float.MaxValue;
+                        
+                        foreach (var enemy in enemies)
+                        {
+                            float distance = Vector2.Distance(_player.Position, enemy.Position);
+                            if (distance < nearestDistance)
+                            {
+                                nearestEnemy = enemy;
+                                nearestDistance = distance;
+                            }
+                        }
+                        
+                        if (nearestEnemy != null && nearestDistance < 400f)
+                        {
+                            direction = nearestEnemy.Position - _player.Position;
+                            if (direction.Length() > 0)
+                                direction.Normalize();
+                        }
+                        else
+                        {
+                            // Use player's facing direction
+                            direction = _player.Facing switch
+                            {
+                                Direction.Up => new Vector2(0, -1),
+                                Direction.Down => new Vector2(0, 1),
+                                Direction.Left => new Vector2(-1, 0),
+                                Direction.Right => new Vector2(1, 0),
+                                _ => new Vector2(1, 0)
+                            };
+                        }
+                        
+                        // Determine magic projectile type based on weapon
+                        ProjectileType projType = weapon.Id switch
+                        {
+                            "fire_wand" => ProjectileType.Fireball,
+                            "arcane_staff" => ProjectileType.MagicMissile,
+                            _ => ProjectileType.MagicMissile
+                        };
+                        
+                        // Spawn magic projectile
+                        float projectileSpeed = 250f;
+                        Vector2 velocity = direction * projectileSpeed;
+                        _projectileSystem.SpawnProjectile(
+                            _player.Position,
+                            velocity,
+                            projType,
+                            weapon.Damage,
+                            3.0f,
+                            "player"
+                        );
+                        
+                        // Consume mana
+                        if (weapon.UsesMana)
+                        {
+                            // Directly consume mana (similar to CastSpell logic)
+                            _magicSystem.RestoreMana(-weapon.EnergyCost);
                         }
                     }
                 }
@@ -1948,6 +2094,9 @@ public class GameplayState : GameState
         {
             DrawEnemies(spriteBatch);
         }
+        
+        // Draw projectiles (Phase 7.4 - in world space with camera transform)
+        _projectileSystem.Draw(spriteBatch, Game.GraphicsDevice);
         
         // Draw particle effects in world space (with camera transform)
         _particleSystem.Draw(spriteBatch, Game.GraphicsDevice);
@@ -2509,6 +2658,51 @@ public class GameplayState : GameState
         if (newBiome != _biomeSystem.CurrentBiome)
         {
             _biomeSystem.ChangeBiome(newBiome);
+        }
+    }
+    
+    /// <summary>
+    /// Check collisions between projectiles and enemies (Phase 7.4)
+    /// </summary>
+    private void CheckProjectileCollisions()
+    {
+        var projectiles = _projectileSystem.GetActiveProjectiles();
+        var enemies = _combatSystem.GetActiveEnemies();
+        
+        // Check each projectile against each enemy
+        for (int i = projectiles.Count - 1; i >= 0; i--)
+        {
+            var projectile = projectiles[i];
+            
+            // Skip projectiles owned by non-player (future: enemy projectiles)
+            if (projectile.OwnerId != "player")
+                continue;
+            
+            // Check collision with each enemy
+            foreach (var enemy in enemies)
+            {
+                if (enemy.IsDead)
+                    continue;
+                
+                // Get bounding boxes
+                Rectangle projectileBounds = projectile.GetBounds();
+                Rectangle enemyBounds = new Rectangle(
+                    (int)(enemy.Position.X - 16),
+                    (int)(enemy.Position.Y - 16),
+                    32, 32
+                );
+                
+                // Check collision
+                if (projectileBounds.Intersects(enemyBounds))
+                {
+                    // Apply damage through combat system (Phase 7.4)
+                    _combatSystem.ApplyProjectileDamage(enemy, projectile.Damage);
+                    
+                    // Remove the projectile
+                    _projectileSystem.RemoveProjectile(projectile);
+                    break; // Move to next projectile
+                }
+            }
         }
     }
 }
