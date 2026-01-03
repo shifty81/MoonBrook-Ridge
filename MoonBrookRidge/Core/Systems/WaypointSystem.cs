@@ -82,16 +82,81 @@ public class WaypointSystem
         farmWaypoint.IsUnlocked = true;
         AddWaypoint(farmWaypoint);
         
-        // Village center - northwest of farm
+        // ===== 8 Village Waypoints (Phase 10) =====
+        
+        // 1. MoonBrook Valley (Grassland) - Main village
         AddWaypoint(new Waypoint(
             "moonbrook_village",
-            "MoonBrook Village",
-            "The main village square",
+            "MoonBrook Valley",
+            "Your home village, a peaceful farming community",
             new Vector2(75f * TILE_SIZE, 75f * TILE_SIZE),
             WaypointType.Village
         ));
         
-        // Mine entrance - southwest
+        // 2. Pinewood Village (Forest) - North
+        AddWaypoint(new Waypoint(
+            "pinewood_village",
+            "Pinewood Village",
+            "Forest settlement of lumberjacks and hunters",
+            new Vector2(125f * TILE_SIZE, 30f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // 3. Stonehelm Village (Mountain) - Northeast
+        AddWaypoint(new Waypoint(
+            "stonehelm_village",
+            "Stonehelm Village",
+            "Dwarven mining town with master blacksmiths",
+            new Vector2(200f * TILE_SIZE, 50f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // 4. Sandshore Village (Desert) - East
+        AddWaypoint(new Waypoint(
+            "sandshore_village",
+            "Sandshore Village",
+            "Desert trading outpost with fire mages",
+            new Vector2(220f * TILE_SIZE, 125f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // 5. Frostpeak Village (Frozen) - Northwest
+        AddWaypoint(new Waypoint(
+            "frostpeak_village",
+            "Frostpeak Village",
+            "Icy settlement specializing in ice fishing",
+            new Vector2(30f * TILE_SIZE, 30f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // 6. Marshwood Village (Swamp) - Southwest
+        AddWaypoint(new Waypoint(
+            "marshwood_village",
+            "Marshwood Village",
+            "Swamp settlement of alchemists and healers",
+            new Vector2(50f * TILE_SIZE, 200f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // 7. Crystalgrove Village (Crystal Cave) - Southeast
+        AddWaypoint(new Waypoint(
+            "crystalgrove_village",
+            "Crystalgrove Village",
+            "Magical academy within glowing crystal caverns",
+            new Vector2(200f * TILE_SIZE, 200f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // 8. Ruinwatch Village (Ruins) - South
+        AddWaypoint(new Waypoint(
+            "ruinwatch_village",
+            "Ruinwatch Village",
+            "Archaeological expedition studying ancient ruins",
+            new Vector2(125f * TILE_SIZE, 220f * TILE_SIZE),
+            WaypointType.Village
+        ));
+        
+        // Mine entrance - southwest (kept for backwards compatibility)
         AddWaypoint(new Waypoint(
             "mine_entrance",
             "Mine Entrance",
@@ -100,7 +165,7 @@ public class WaypointSystem
             WaypointType.MineshaftEntrance
         ));
         
-        // Shop district - north of farm
+        // Shop district - north of farm (kept for backwards compatibility)
         AddWaypoint(new Waypoint(
             "shop_district",
             "Shopping District",
