@@ -78,6 +78,7 @@ public class GameplayState : GameState
     private PetMenu _petMenu;
     private List<WildPet> _wildPets;
     private CombatSystem _combatSystem;
+    private AutoFireSystem _autoFireSystem; // Phase 8: Auto-shooter combat
     private ProjectileSystem _projectileSystem;
     private Dungeons.DungeonSystem _dungeonSystem;
     private DungeonMenu _dungeonMenu;
@@ -95,6 +96,10 @@ public class GameplayState : GameState
     private Minimap _minimap;
     private NotificationSystem _notificationSystem;
     private ToolHotkeyManager _toolHotkeyManager;
+    // Phase 7.4 Systems - Advanced Optimization & QoL
+    private SpatialPartitioningSystem _spatialPartitioning;
+    private EntityFrustumCulling _entityCulling;
+    private WaypointSystem _waypointSystem;
     // Unified Player Menu - consolidates all character-related menus into one tabbed interface
     private UnifiedPlayerMenu _unifiedPlayerMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
@@ -222,6 +227,73 @@ public class GameplayState : GameState
         
         // Initialize Combat System
         _combatSystem = new CombatSystem();
+        
+        // Initialize Auto-Fire System (Phase 8)
+        _autoFireSystem = new AutoFireSystem();
+        _autoFireSystem.IsAutoFireEnabled = true; // Auto-fire on by default
+        _autoFireSystem.SetFiringPattern(FiringPattern.Circle360); // Targets nearest enemy in any direction
+        
+        // Hook up auto-fire to projectile system
+        _autoFireSystem.OnAutoFire += (position, damage, weaponId) =>
+        {
+            // Find target direction
+            var enemies = _combatSystem.GetActiveEnemies();
+            Enemy nearestEnemy = null;
+            float nearestDistance = float.MaxValue;
+            
+            foreach (var enemy in enemies)
+            {
+                float distance = Vector2.Distance(position, enemy.Position);
+                if (distance < nearestDistance)
+                {
+                    nearestEnemy = enemy;
+                    nearestDistance = distance;
+                }
+            }
+            
+            if (nearestEnemy != null)
+            {
+                Vector2 direction = nearestEnemy.Position - position;
+                if (direction.Length() > 0)
+                    direction.Normalize();
+                
+                // Get the weapon for energy/mana cost
+                var currentWeapon = _combatSystem.GetEquippedWeapon();
+                if (currentWeapon != null)
+                {
+                    // Consume energy or mana
+                    if (currentWeapon.UsesMana)
+                    {
+                        _magicSystem.ConsumeMana(currentWeapon.EnergyCost);
+                    }
+                    else
+                    {
+                        _player.Stats.ConsumeEnergy(currentWeapon.EnergyCost);
+                    }
+                }
+                
+                // Determine projectile type based on weapon
+                ProjectileType projType = weaponId switch
+                {
+                    "wooden_bow" or "longbow" => ProjectileType.Arrow,
+                    "crossbow" => ProjectileType.Bolt,
+                    "magic_staff" or "fire_wand" or "arcane_staff" => ProjectileType.Fireball,
+                    _ => ProjectileType.Arrow
+                };
+                
+                // Spawn auto-fire projectile
+                float projectileSpeed = 300f;
+                Vector2 velocity = direction * projectileSpeed;
+                _projectileSystem.SpawnProjectile(
+                    position,
+                    velocity,
+                    projType,
+                    damage,
+                    3.0f, // 3 second lifetime
+                    "player"
+                );
+            }
+        };
         
         // Initialize Projectile System (Phase 7.4)
         _projectileSystem = new ProjectileSystem();
@@ -594,6 +666,29 @@ public class GameplayState : GameState
         _toolHotkeyManager.RegisterTool(Keys.D4, new Pickaxe());
         _toolHotkeyManager.RegisterTool(Keys.D5, new Axe());
         _toolHotkeyManager.RegisterTool(Keys.D6, new FishingRod());
+        
+        // Initialize Phase 7.4 systems - Advanced Optimization
+        const int WORLD_WIDTH_TILES = 50;
+        const int WORLD_HEIGHT_TILES = 50;
+        const int TILE_SIZE = 16; // GameConstants.TILE_SIZE
+        Rectangle worldBounds = new Rectangle(0, 0, WORLD_WIDTH_TILES * TILE_SIZE, WORLD_HEIGHT_TILES * TILE_SIZE);
+        _spatialPartitioning = new SpatialPartitioningSystem(worldBounds);
+        _entityCulling = new EntityFrustumCulling();
+        
+        // Initialize waypoint system with default waypoints
+        _waypointSystem = new WaypointSystem();
+        _waypointSystem.OnWaypointUnlocked += (waypoint) =>
+        {
+            _notificationSystem?.Show($"Waypoint Discovered: {waypoint.Name}", NotificationType.Success, 3.0f);
+        };
+        _waypointSystem.OnFastTravel += (waypoint, cost) =>
+        {
+            _player.SetPosition(waypoint.Position);
+            _player.SpendMoney(cost);
+            // Note: TimeSystem doesn't have a public AdvanceTime method
+            // Fast travel time advancement would need to be implemented in TimeSystem
+            _notificationSystem?.Show($"Traveled to {waypoint.Name} (-{cost}g)", NotificationType.Info, 2.5f);
+        };
         
         _isPaused = false;
         _previousDay = _timeSystem.Day; // Initialize day tracking for marriage/family
@@ -1083,6 +1178,25 @@ public class GameplayState : GameState
             return;
         }
         
+        // Check for auto-fire toggle (N key) - Phase 8
+        if (keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N))
+        {
+            _autoFireSystem.ToggleAutoFire();
+            string status = _autoFireSystem.IsAutoFireEnabled ? "Enabled" : "Disabled";
+            _notificationSystem?.Show($"Auto-Fire: {status}", NotificationType.Info, 2.0f);
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for inventory sort (I key) - Phase 8
+        if (keyboardState.IsKeyDown(Keys.I) && !_previousKeyboardState.IsKeyDown(Keys.I))
+        {
+            InventoryHelper.SortInventory(_inventory);
+            _notificationSystem?.Show("Inventory Sorted", NotificationType.Success, 1.5f);
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Removed individual menu keybinds - all now consolidated in unified player menu (E key)
         // Removed: K (crafting), A (achievements), F (quests), L (alchemy), J (skills), P (pets), R (factions), Y (family)
         // These are now accessible via tabs in the unified menu
@@ -1143,6 +1257,9 @@ public class GameplayState : GameState
         // Update wild pets
         UpdateWildPets(gameTime);
         
+        // Check for waypoint discovery (Phase 8)
+        _waypointSystem.CheckForNearbyWaypoint(_player.Position);
+        
         // Update event system
         _eventSystem.Update(gameTime);
         
@@ -1194,6 +1311,14 @@ public class GameplayState : GameState
         
         // Update camera to follow player
         _camera.Follow(_player.Position);
+        
+        // Update entity frustum culling bounds (Phase 8)
+        _entityCulling.UpdateViewport(
+            _camera.Position,
+            Game.GraphicsDevice.Viewport.Width,
+            Game.GraphicsDevice.Viewport.Height,
+            _camera.Zoom
+        );
         
         // Update HUD
         _hud.Update(gameTime, _player, _timeSystem);
@@ -1507,6 +1632,41 @@ public class GameplayState : GameState
                     enemy.Attack();
                     _combatSystem.PlayerTakeDamage(enemy.Damage);
                 }
+            }
+        }
+        
+        // Auto-fire system - automatically shoots at nearby enemies (Phase 8)
+        var autoFireWeapon = _combatSystem.GetEquippedWeapon();
+        if (autoFireWeapon != null && _autoFireSystem.IsAutoFireEnabled)
+        {
+            // Calculate player facing angle (0 = right, 90 = down, 180 = left, 270 = up)
+            float playerFacing = _player.Facing switch
+            {
+                Direction.Right => 0f,
+                Direction.Down => 90f,
+                Direction.Left => 180f,
+                Direction.Up => 270f,
+                _ => 0f
+            };
+            
+            // Check energy/mana requirements for auto-fire
+            bool canAutoFire = false;
+            if (autoFireWeapon.UsesMana)
+            {
+                canAutoFire = _magicSystem.Mana >= autoFireWeapon.EnergyCost;
+            }
+            else
+            {
+                canAutoFire = _player.Energy >= autoFireWeapon.EnergyCost;
+            }
+            
+            if (canAutoFire)
+            {
+                // Update auto-fire system
+                _autoFireSystem.Update(gameTime, _player.Position, autoFireWeapon, enemies, playerFacing);
+                
+                // Note: Energy/mana consumption happens in the OnAutoFire event handler
+                // We should consume resources when firing
             }
         }
         

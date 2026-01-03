@@ -30,11 +30,13 @@
 | **Open Crafting Menu** ⭐ | **K** | - |
 | **Open Shop Menu** ⭐ | **B** | - |
 | **Gift to NPC** ⭐ | **G** | - |
+| **Toggle Auto-Fire** ⭐ **PHASE 8** | **N** | - |
+| **Sort Inventory** ⭐ **PHASE 8** | **I** | - |
 | **Switch Weapon Loadout** ⭐ **AUTO-COMBAT** | **Tab** | - |
 | **Quick Save** ⭐ | **F5** | - |
 | **Quick Load** ⭐ | **F9** | - |
 
-**Note on Combat**: Your weapons fire automatically when in caves. Press Space to manually throw grenades for AoE damage/effects.
+**Note on Combat**: Your weapons fire automatically when in caves (auto-fire enabled by default). Press N to toggle auto-fire on/off. Press Space to manually throw grenades for AoE damage/effects.
 
 ### Hotbar (Quick Access)
 | Slot | Key |
