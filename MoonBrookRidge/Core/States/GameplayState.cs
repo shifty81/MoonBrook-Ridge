@@ -198,8 +198,8 @@ public class GameplayState : GameState
             _achievementNotification.ShowNotification(achievement);
         };
         
-        // Initialize settings menu
-        _settingsMenu = new SettingsMenu(Game.AudioManager);
+        // Initialize settings menu (Phase 7.4 - now includes display & UI scale settings)
+        _settingsMenu = new SettingsMenu(Game.AudioManager, (Game1)Game);
         
         // Initialize Phase 6 systems
         _magicSystem = new MagicSystem(100f); // Start with 100 max mana
