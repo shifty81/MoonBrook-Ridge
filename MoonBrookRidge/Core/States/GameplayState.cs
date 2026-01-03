@@ -88,6 +88,12 @@ public class GameplayState : GameState
     private FamilySystem _familySystem;
     private MarriageProposalMenu _marriageProposalMenu;
     private FamilyMenu _familyMenu;
+    // Phase 7 Systems - Performance & QoL
+    private PerformanceMonitor _performanceMonitor;
+    private AutoSaveSystem _autoSaveSystem;
+    private Minimap _minimap;
+    private NotificationSystem _notificationSystem;
+    private ToolHotkeyManager _toolHotkeyManager;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
@@ -520,6 +526,41 @@ public class GameplayState : GameState
         // Initialize save system
         _saveSystem = new SaveSystem();
         
+        // Initialize Phase 7 systems - Performance & QoL
+        _performanceMonitor = new PerformanceMonitor();
+        _performanceMonitor.IsVisible = false; // Hidden by default, toggle with F3
+        
+        _autoSaveSystem = new AutoSaveSystem(5.0); // Auto-save every 5 minutes
+        _autoSaveSystem.SetAutoSaveCallback(() =>
+        {
+            // Perform auto-save
+            var saveData = CreateSaveData("autosave");
+            if (_saveSystem.SaveGame("autosave", saveData))
+            {
+                _notificationSystem?.Show("Game Auto-Saved", NotificationType.Success, 2.0f);
+            }
+        });
+        
+        _minimap = new Minimap(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
+        _minimap.IsVisible = true; // Visible by default
+        
+        _notificationSystem = new NotificationSystem(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
+        
+        _toolHotkeyManager = new ToolHotkeyManager();
+        _toolHotkeyManager.SetToolSelectedCallback((tool) =>
+        {
+            _toolManager.SetCurrentTool(tool);
+            _notificationSystem?.Show($"Tool: {tool.Name}", NotificationType.Info, 1.5f);
+        });
+        
+        // Register tools with hotkeys (1-6)
+        _toolHotkeyManager.RegisterTool(Keys.D1, new Hoe());
+        _toolHotkeyManager.RegisterTool(Keys.D2, new WateringCan());
+        _toolHotkeyManager.RegisterTool(Keys.D3, new Scythe());
+        _toolHotkeyManager.RegisterTool(Keys.D4, new Pickaxe());
+        _toolHotkeyManager.RegisterTool(Keys.D5, new Axe());
+        _toolHotkeyManager.RegisterTool(Keys.D6, new FishingRod());
+        
         _isPaused = false;
         _previousDay = _timeSystem.Day; // Initialize day tracking for marriage/family
     }
@@ -757,24 +798,53 @@ public class GameplayState : GameState
         // Initialize faction menu
         _factionMenu = new FactionMenu(Game.DefaultFont, _pixelTexture, _factionSystem);
         
+        // Initialize Phase 7 UI components
+        _minimap.Initialize(Game.GraphicsDevice);
+        _performanceMonitor.Initialize(_pixelTexture);
+        _notificationSystem.Initialize(_pixelTexture);
+        
         // Initialize starter quests
         InitializeQuests();
     }
 
     public override void Update(GameTime gameTime)
     {
+        // Track update time for performance monitoring
+        var updateStartTime = DateTime.Now;
+        
         // Update input first
         _inputManager.Update();
         
-        // Check for quick save/load (F5/F9) - using keyboard state
+        // Update Phase 7 systems (always update)
+        _performanceMonitor.Update(gameTime);
+        _autoSaveSystem.Update(gameTime);
+        _notificationSystem.Update(gameTime);
+        _toolHotkeyManager.Update();
+        
+        // Check for performance monitor toggle (F3)
         var keyboardState = Keyboard.GetState();
+        if (keyboardState.IsKeyDown(Keys.F3) && !_previousKeyboardState.IsKeyDown(Keys.F3))
+        {
+            _performanceMonitor.IsVisible = !_performanceMonitor.IsVisible;
+        }
+        
+        // Check for minimap toggle (Tab key - remapped from tool switching)
+        if (keyboardState.IsKeyDown(Keys.Tab) && !_previousKeyboardState.IsKeyDown(Keys.Tab))
+        {
+            _minimap.IsVisible = !_minimap.IsVisible;
+        }
+        
+        // Check for quick save/load (F5/F9) - using keyboard state
         if (keyboardState.IsKeyDown(Keys.F5) && !_previousKeyboardState.IsKeyDown(Keys.F5))
         {
             QuickSave();
+            _autoSaveSystem.ResetTimer(); // Reset auto-save timer after manual save
+            _notificationSystem.Show("Game Saved", NotificationType.Success, 2.0f);
         }
         if (keyboardState.IsKeyDown(Keys.F9) && !_previousKeyboardState.IsKeyDown(Keys.F9))
         {
             QuickLoad();
+            _notificationSystem.Show("Game Loaded", NotificationType.Success, 2.0f);
         }
         
         // Update menus if active
@@ -1137,11 +1207,18 @@ public class GameplayState : GameState
         // Update achievement notification
         _achievementNotification.Update(gameTime);
         
+        // Update minimap
+        _minimap.Update(_worldMap, _player);
+        
         // Check for sleep time (player exhaustion at 2 AM)
         if (_timeSystem.TimeOfDay >= 26f && _player.Energy < 10f)
         {
             ForceSleep();
         }
+        
+        // Record update time for performance monitoring
+        var updateEndTime = DateTime.Now;
+        _performanceMonitor.RecordUpdateTime((updateEndTime - updateStartTime).TotalMilliseconds);
         
         // Store keyboard state for next frame
         _previousKeyboardState = keyboardState;
@@ -1179,12 +1256,8 @@ public class GameplayState : GameState
             }
         }
         
-        // TODO: Add hotkey switching between tools (1-9 keys)
-        // For now, cycle tools with Tab key
-        if (_inputManager.IsSwitchToolbarPressed())
-        {
-            CycleTools();
-        }
+        // Tool hotkey switching is handled by ToolHotkeyManager (1-6 keys)
+        // Tab key now toggles minimap
     }
     
     private void SpawnToolParticles(Tool tool, Vector2 position)
@@ -1579,17 +1652,45 @@ public class GameplayState : GameState
     
     private void HandleConsumableInput()
     {
-        // Check for hotbar key presses (1-9, 0, -, =)
+        // Check for hotbar key presses (7-9, 0, -, =) for consumables
+        // Note: 1-6 are now used for tool hotkeys
         int hotbarIndex = _inputManager.GetHotbarKeyPressed();
         
-        if (hotbarIndex >= 0)
+        if (hotbarIndex >= 6) // Only consumables in slots 7-12 (keys 7-9, 0, -, =)
         {
-            // Try to use the item in that hotbar slot
-            _consumableManager.UseConsumableBySlot(hotbarIndex);
+            var slots = _inventory.GetSlots();
+            if (hotbarIndex < slots.Count && !slots[hotbarIndex].IsEmpty)
+            {
+                var item = slots[hotbarIndex].Item;
+                
+                // Check if player stats are already full
+                bool hungerFull = item is FoodItem && _player.Hunger >= 100f;
+                bool thirstFull = item is DrinkItem && _player.Thirst >= 100f;
+                
+                if (hungerFull)
+                {
+                    _notificationSystem.Show("Can't eat - hunger is full!", NotificationType.Warning, 2.0f);
+                }
+                else if (thirstFull)
+                {
+                    _notificationSystem.Show("Can't drink - thirst is full!", NotificationType.Warning, 2.0f);
+                }
+                else
+                {
+                    // Try to use the item
+                    bool success = _consumableManager.UseConsumableBySlot(hotbarIndex);
+                    if (success)
+                    {
+                        // Visual feedback - spawn sparkle particles
+                        _particleSystem.SpawnParticles(_player.Position, ParticleEffectType.Sparkle, 8);
+                        
+                        // Notification feedback
+                        string message = item is FoodItem ? $"Ate {item.Name}" : $"Drank {item.Name}";
+                        _notificationSystem.Show(message, NotificationType.Success, 1.5f);
+                    }
+                }
+            }
         }
-        
-        // TODO: Add visual/audio feedback for consumption
-        // TODO: Add "can't eat/drink when full" message
     }
     
     private void HandleBuildingPlacement()
@@ -1770,6 +1871,9 @@ public class GameplayState : GameState
 
     public override void Draw(SpriteBatch spriteBatch)
     {
+        // Track draw time for performance monitoring
+        var drawStartTime = DateTime.Now;
+        
         // Draw world with camera transform
         spriteBatch.Begin(transformMatrix: _camera.GetTransform(), 
                          samplerState: SamplerState.PointClamp);
@@ -1975,6 +2079,12 @@ public class GameplayState : GameState
         // Draw achievement notification (on top of events)
         _achievementNotification.Draw(spriteBatch, Game.GraphicsDevice);
         
+        // Draw Phase 7 UI elements
+        _minimap.Draw(spriteBatch, Game.DefaultFont);
+        _notificationSystem.Draw(spriteBatch, Game.DefaultFont);
+        _performanceMonitor.Draw(spriteBatch, Game.DefaultFont, 
+            Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
+        
         // Draw pause indicator
         if (_isPaused)
         {
@@ -1982,6 +2092,10 @@ public class GameplayState : GameState
         }
         
         spriteBatch.End();
+        
+        // Record draw time for performance monitoring
+        var drawEndTime = DateTime.Now;
+        _performanceMonitor.RecordDrawTime((drawEndTime - drawStartTime).TotalMilliseconds);
     }
     
     private void DrawPauseOverlay(SpriteBatch spriteBatch)
