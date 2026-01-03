@@ -104,7 +104,7 @@ ASSET_CATEGORIES = {
 }
 
 
-def get_user_confirmation() -> bool:
+def get_user_confirmation(force: bool = False) -> bool:
     """
     Prompt user for confirmation to proceed with file operations.
     
@@ -112,9 +112,16 @@ def get_user_confirmation() -> bool:
     Accepts 'yes', 'y', 'no', or 'n' (case-insensitive). Will continue to prompt
     until a valid response is provided.
     
+    Args:
+        force: If True, skips confirmation and returns True
+    
     Returns:
         bool: True if user confirms (yes/y), False if user declines (no/n)
     """
+    if force:
+        print("\n⚠️  Force mode enabled - skipping confirmation")
+        return True
+        
     print("\n" + "=" * 80)
     print("⚠️  This script will copy files from sprites/ to Content/Textures/")
     print("=" * 80)
@@ -386,20 +393,38 @@ def generate_catalog(stats):
 
 
 def main():
-    # Check if --execute flag is present
+    # Check command-line arguments
     dry_run = "--execute" not in sys.argv
+    force = "--force" in sys.argv or "-f" in sys.argv
+    show_help = "--help" in sys.argv or "-h" in sys.argv
+    
+    if show_help:
+        print("Sunnyside World Asset Organizer")
+        print()
+        print("Usage: python3 organize_sunnyside_assets.py [OPTIONS]")
+        print()
+        print("Options:")
+        print("  --execute      Actually copy files (default is dry-run)")
+        print("  --force, -f    Skip confirmation prompt")
+        print("  --help, -h     Show this help message")
+        print()
+        print("Examples:")
+        print("  python3 organize_sunnyside_assets.py                    # Dry run with confirmation")
+        print("  python3 organize_sunnyside_assets.py --execute          # Execute with confirmation")
+        print("  python3 organize_sunnyside_assets.py --execute --force  # Execute without confirmation")
+        sys.exit(0)
     
     if dry_run:
         print("Running in DRY RUN mode. Use --execute to actually copy files.")
         print()
     
-    # Get user confirmation before proceeding
-    if not get_user_confirmation():
+    # Get user confirmation before proceeding (unless --force is used)
+    if not get_user_confirmation(force):
         print("\n❌ Operation cancelled by user.")
         print("No files were copied.")
         sys.exit(0)
     
-    print("\n✅ User confirmed. Proceeding with operation...\n")
+    print("\n✅ Proceeding with operation...\n")
     
     # Organize assets
     stats, success, copied_count, errors = organize_assets(dry_run=dry_run)
