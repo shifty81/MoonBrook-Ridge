@@ -1711,8 +1711,7 @@ public class GameplayState : GameState
                         // Consume mana
                         if (weapon.UsesMana)
                         {
-                            // Directly consume mana (similar to CastSpell logic)
-                            _magicSystem.RestoreMana(-weapon.EnergyCost);
+                            _magicSystem.ConsumeMana(weapon.EnergyCost);
                         }
                     }
                 }
