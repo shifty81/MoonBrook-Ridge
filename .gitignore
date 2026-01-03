@@ -57,3 +57,5 @@ packages/
 *.user
 *.userosscache
 *.sln.docstates
+*.pyc
+__pycache__/
