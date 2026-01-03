@@ -184,7 +184,7 @@ public class QuestMenu
         DrawQuestDetails(spriteBatch, font, menuX + PADDING + QUEST_LIST_WIDTH + PADDING, listY);
         
         // Instructions
-        string instructions = "↑↓: Select | Enter: Accept | Tab/1-3: Switch Tab | Esc/F: Close";
+        string instructions = "Up/Down: Select | Enter: Accept | Tab/1-3: Switch Tab | Esc/F: Close";
         Vector2 instructSize = font.MeasureString(instructions);
         spriteBatch.DrawString(font, instructions,
             new Vector2(menuX + MENU_WIDTH / 2 - instructSize.X / 2, menuY + MENU_HEIGHT - PADDING - 20),
@@ -304,7 +304,7 @@ public class QuestMenu
         
         foreach (var objective in selectedQuest.Objectives)
         {
-            string checkmark = objective.IsCompleted ? "[✓]" : "[ ]";
+            string checkmark = objective.IsCompleted ? "[X]" : "[ ]";
             Color objColor = objective.IsCompleted ? Color.Green : Color.White;
             
             spriteBatch.DrawString(font, $"{checkmark} {objective.Description}",

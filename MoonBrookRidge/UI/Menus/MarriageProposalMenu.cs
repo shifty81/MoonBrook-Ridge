@@ -205,7 +205,7 @@ public class MarriageProposalMenu
             Color.White);
         
         // Instructions
-        string instructions = "←→: Select | Enter: Confirm | Esc: Cancel";
+        string instructions = "Left/Right: Select | Enter: Confirm | Esc: Cancel";
         Vector2 instructSize = font.MeasureString(instructions);
         spriteBatch.DrawString(font, instructions,
             new Vector2(menuX + MENU_WIDTH / 2 - instructSize.X / 2, menuY + MENU_HEIGHT - PADDING - 10),

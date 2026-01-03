@@ -170,7 +170,7 @@ public class SkillsMenu
         DrawSkillsList(spriteBatch, font, menuX, skillsStartY);
         
         // Draw controls hint at bottom
-        string hint = "←→: Categories | ↑↓: Skills | Enter: Unlock | Esc: Close";
+        string hint = "Left/Right: Categories | Up/Down: Skills | Enter: Unlock | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);
@@ -297,8 +297,8 @@ public class SkillsMenu
             DrawTextWithShadow(spriteBatch, font, skill.Description, descPos, Color.LightGray * 0.8f);
             
             // Draw status
-            string status = isUnlocked ? "✓ Unlocked" : 
-                           (canUnlock ? "○ Available" : "✗ Locked");
+            string status = isUnlocked ? "[X] Unlocked" : 
+                           (canUnlock ? "[ ] Available" : "[-] Locked");
             Vector2 statusSize = font.MeasureString(status);
             Vector2 statusPos = new Vector2(skillRect.Right - statusSize.X - 10, 
                                             skillRect.Y + (skillRect.Height - statusSize.Y) / 2);

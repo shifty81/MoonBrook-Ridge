@@ -214,7 +214,7 @@ public class ModsMenuState : GameState
                 Color.White);
             
             // Instructions
-            string instructions = "↑↓/Mouse: Navigate | Space/Enter/Click: Toggle | ESC/Back Button: Return";
+            string instructions = "Up/Down/Mouse: Navigate | Space/Enter/Click: Toggle | ESC/Back Button: Return";
             Vector2 instSize = Game.DefaultFont.MeasureString(instructions);
             spriteBatch.DrawString(Game.DefaultFont, instructions,
                 new Vector2((screenWidth - instSize.X) / 2, screenHeight - 40), Color.Gray);

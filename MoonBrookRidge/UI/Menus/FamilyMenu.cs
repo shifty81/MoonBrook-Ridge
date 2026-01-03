@@ -312,7 +312,7 @@ public class FamilyMenu
         }
         
         // Instructions
-        string instructions = "↑↓: Select Child | ←→: Select Action | Enter: Do Action | Y/Esc: Close";
+        string instructions = "Up/Down: Select Child | Left/Right: Select Action | Enter: Do Action | Y/Esc: Close";
         Vector2 instructSize = font.MeasureString(instructions);
         spriteBatch.DrawString(font, instructions,
             new Vector2(menuX + MENU_WIDTH / 2 - instructSize.X / 2, menuY + MENU_HEIGHT - PADDING - 10),

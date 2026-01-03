@@ -194,7 +194,7 @@ public class AchievementMenu
         }
         
         // Controls hint
-        string hint = "↑/↓: Scroll | ESC: Close";
+        string hint = "Up/Down: Scroll | ESC: Close";
         Vector2 hintPos = new Vector2(menuX + 10, menuY + MENU_HEIGHT - 30);
         spriteBatch.DrawString(_font, hint, hintPos, Color.LightGray * 0.7f);
     }
@@ -226,7 +226,7 @@ public class AchievementMenu
         // Progress
         int currentProgress = _achievementSystem.GetProgress(achievement.Id);
         string progressText = achievement.IsUnlocked 
-            ? "✓ Unlocked" 
+            ? "[X] Unlocked" 
             : $"Progress: {currentProgress}/{achievement.RequiredProgress}";
         Vector2 progressPos = new Vector2(x + 10, y + 45);
         spriteBatch.DrawString(_font, progressText, progressPos, Color.Yellow * 0.9f);

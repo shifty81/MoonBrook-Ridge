@@ -190,7 +190,7 @@ public class MagicMenu
         }
         
         // Draw controls hint at bottom
-        string hint = "↑↓: Navigate | Enter: Cast Spell | Esc: Close";
+        string hint = "Up/Down: Navigate | Enter: Cast Spell | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);
@@ -224,11 +224,11 @@ public class MagicMenu
     {
         return type switch
         {
-            SpellType.Combat => "⚔",
-            SpellType.Healing => "❤",
-            SpellType.Buff => "↑",
-            SpellType.Utility => "⚡",
-            SpellType.Summon => "★",
+            SpellType.Combat => "!",
+            SpellType.Healing => "+",
+            SpellType.Buff => "^",
+            SpellType.Utility => "*",
+            SpellType.Summon => "@",
             _ => "?"
         };
     }

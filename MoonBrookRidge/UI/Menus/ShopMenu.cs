@@ -253,7 +253,7 @@ public class ShopMenu
         }
         
         // Draw controls hint at bottom
-        string hint = "↑↓: Navigate | Enter: Buy/Sell | Tab: Switch Mode | Esc: Close";
+        string hint = "Up/Down: Navigate | Enter: Buy/Sell | Tab: Switch Mode | Esc: Close";
         Vector2 hintSize = font.MeasureString(hint);
         Vector2 hintPos = new Vector2(menuX + (MENU_WIDTH - hintSize.X) / 2, 
                                      menuY + MENU_HEIGHT - PADDING - hintSize.Y);
