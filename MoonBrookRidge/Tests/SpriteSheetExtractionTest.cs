@@ -33,7 +33,6 @@ public class SpriteSheetExtractionTest
         
         // Simulate extraction (we can't create actual textures without GraphicsDevice)
         int sheetWidth = 1536;
-        int sheetHeight = 256;
         int spriteWidth = 256;
         int spriteHeight = 256;
         int expectedCount = sheetWidth / spriteWidth;

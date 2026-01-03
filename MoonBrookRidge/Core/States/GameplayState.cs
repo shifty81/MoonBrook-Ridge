@@ -95,6 +95,8 @@ public class GameplayState : GameState
     private Minimap _minimap;
     private NotificationSystem _notificationSystem;
     private ToolHotkeyManager _toolHotkeyManager;
+    // Unified Player Menu - consolidates all character-related menus into one tabbed interface
+    private UnifiedPlayerMenu _unifiedPlayerMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
     private bool _isPaused;
@@ -238,6 +240,21 @@ public class GameplayState : GameState
         _familySystem = new FamilySystem(_marriageSystem);
         _marriageProposalMenu = new MarriageProposalMenu(_marriageSystem);
         _familyMenu = new FamilyMenu(_marriageSystem, _familySystem);
+        
+        // Initialize Unified Player Menu - consolidates all character-related menus
+        _unifiedPlayerMenu = new UnifiedPlayerMenu(
+            _inventory,
+            _skillSystem,
+            _craftingSystem,
+            _marriageSystem,
+            _familySystem,
+            _questSystem,
+            _achievementSystem,
+            _magicSystem,
+            _alchemySystem,
+            _petSystem,
+            _factionSystem
+        );
         
         // Hook up marriage events
         _marriageSystem.OnMarried += (spouse) =>
@@ -832,6 +849,10 @@ public class GameplayState : GameState
         // Update input first
         _inputManager.Update();
         
+        // Get keyboard and mouse state
+        var keyboardState = Keyboard.GetState();
+        var mouseState = Mouse.GetState();
+        
         // Update Phase 7 systems (always update)
         _performanceMonitor.Update(gameTime);
         _autoSaveSystem.Update(gameTime);
@@ -839,7 +860,6 @@ public class GameplayState : GameState
         _toolHotkeyManager.Update();
         
         // Check for performance monitor toggle (F3)
-        var keyboardState = Keyboard.GetState();
         if (keyboardState.IsKeyDown(Keys.F3) && !_previousKeyboardState.IsKeyDown(Keys.F3))
         {
             _performanceMonitor.IsVisible = !_performanceMonitor.IsVisible;
@@ -946,7 +966,6 @@ public class GameplayState : GameState
         
         if (_dungeonMenu.IsOpen)
         {
-            var mouseState = Mouse.GetState();
             _dungeonMenu.Update(keyboardState, _previousKeyboardState, mouseState, _previousMouseState);
             _previousKeyboardState = keyboardState;
             _previousMouseState = mouseState;
@@ -974,15 +993,33 @@ public class GameplayState : GameState
             return; // Don't update game while in family menu
         }
         
-        // Check for crafting menu (K key) - with debouncing
-        if (keyboardState.IsKeyDown(Keys.K) && !_previousKeyboardState.IsKeyDown(Keys.K))
+        // Check for unified player menu (E key) - with debouncing
+        if (keyboardState.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
         {
-            _craftingMenu.Show();
+            _unifiedPlayerMenu.Toggle();
             _previousKeyboardState = keyboardState;
             return;
         }
         
-        // Check for shop menu (B key for "buy") - with debouncing
+        // Close unified player menu with ESC
+        if (_unifiedPlayerMenu.IsActive && keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
+        {
+            _unifiedPlayerMenu.Hide();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Update unified player menu if active
+        if (_unifiedPlayerMenu.IsActive)
+        {
+            _unifiedPlayerMenu.Update(gameTime, keyboardState, mouseState);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in menu
+        }
+        
+        // Context-specific keybinds (only available outside unified menu)
+        
+        // Check for shop menu (B key for "buy") - only when near a shop
         if (keyboardState.IsKeyDown(Keys.B) && !_previousKeyboardState.IsKeyDown(Keys.B))
         {
             _shopMenu.Show();
@@ -990,8 +1027,7 @@ public class GameplayState : GameState
             return;
         }
         
-        // Check for gift menu (G key) - with debouncing
-        // Only allow when near an NPC
+        // Check for gift menu (G key) - Only available when near an NPC
         if (keyboardState.IsKeyDown(Keys.G) && !_previousKeyboardState.IsKeyDown(Keys.G))
         {
             var nearbyNPC = GetNearbyNPC();
@@ -1003,71 +1039,7 @@ public class GameplayState : GameState
             }
         }
         
-        // Check for quest menu (F key for "quests") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F))
-        {
-            _questMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for achievement menu (A key for "achievements") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.A) && !_previousKeyboardState.IsKeyDown(Keys.A))
-        {
-            _achievementMenu.IsVisible = true;
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for settings menu (O key for "options") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.O) && !_previousKeyboardState.IsKeyDown(Keys.O))
-        {
-            _settingsMenu.IsVisible = true;
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for building menu (H key for "house/build") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.H) && !_previousKeyboardState.IsKeyDown(Keys.H))
-        {
-            _buildingMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for magic menu (M key for "magic") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
-        {
-            _magicMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for alchemy menu (L key for "alchemy/lab") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.L) && !_previousKeyboardState.IsKeyDown(Keys.L))
-        {
-            _alchemyMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for skills menu (J key for "skills/jobs") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.J) && !_previousKeyboardState.IsKeyDown(Keys.J))
-        {
-            _skillsMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for pet menu (P key for "pets") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
-        {
-            _petMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for taming wild pets (T key for "tame") - with debouncing
+        // Check for taming wild pets (T key) - Only available when near a wild pet
         if (keyboardState.IsKeyDown(Keys.T) && !_previousKeyboardState.IsKeyDown(Keys.T))
         {
             TryTameWildPet();
@@ -1075,28 +1047,7 @@ public class GameplayState : GameState
             return;
         }
         
-        // Check for dungeon menu (D key for "dungeon") - with debouncing
-        // Only available when in a dungeon
-        if (keyboardState.IsKeyDown(Keys.D) && !_previousKeyboardState.IsKeyDown(Keys.D))
-        {
-            if (_dungeonSystem.ActiveDungeon != null)
-            {
-                _dungeonMenu.Toggle();
-                _previousKeyboardState = keyboardState;
-                return;
-            }
-        }
-        
-        // Check for faction menu (R key for "reputation") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
-        {
-            _factionMenu.Show();
-            _previousKeyboardState = keyboardState;
-            return;
-        }
-        
-        // Check for marriage proposal menu (V key for "vows") - with debouncing
-        // Only allow when near an NPC with 10 hearts and not married
+        // Check for marriage proposal menu (V key) - Only available when near an NPC with 10 hearts
         if (keyboardState.IsKeyDown(Keys.V) && !_previousKeyboardState.IsKeyDown(Keys.V))
         {
             var nearbyNPC = GetNearbyNPC();
@@ -1108,13 +1059,33 @@ public class GameplayState : GameState
             }
         }
         
-        // Check for family menu (Y key for "Your family") - with debouncing
-        if (keyboardState.IsKeyDown(Keys.Y) && !_previousKeyboardState.IsKeyDown(Keys.Y))
+        // Check for settings menu (O key for "options")
+        if (keyboardState.IsKeyDown(Keys.O) && !_previousKeyboardState.IsKeyDown(Keys.O))
         {
-            _familyMenu.Toggle();
+            _settingsMenu.IsVisible = true;
             _previousKeyboardState = keyboardState;
             return;
         }
+        
+        // Check for building menu (H key for "house/build")
+        if (keyboardState.IsKeyDown(Keys.H) && !_previousKeyboardState.IsKeyDown(Keys.H))
+        {
+            _buildingMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Check for map toggle (M key)
+        if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
+        {
+            _minimap.IsVisible = !_minimap.IsVisible;
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Removed individual menu keybinds - all now consolidated in unified player menu (E key)
+        // Removed: K (crafting), A (achievements), F (quests), L (alchemy), J (skills), P (pets), R (factions), Y (family)
+        // These are now accessible via tabs in the unified menu
         
         // Check for pause
         if (_inputManager.IsOpenMenuPressed())
@@ -2234,6 +2205,12 @@ public class GameplayState : GameState
         if (_familyMenu.IsActive)
         {
             _familyMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        // Draw unified player menu (consolidates most character-related menus)
+        if (_unifiedPlayerMenu.IsActive)
+        {
+            _unifiedPlayerMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         // Draw event notification (on top of most UI but below menus)

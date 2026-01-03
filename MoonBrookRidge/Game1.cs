@@ -108,10 +108,9 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
-            Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
-
+        // Note: Back button on gamepad can still be used to exit if desired
+        // Removed ESC key exit - ESC should only close menus/pause, not exit game
+        
         // Update current game state
         _stateManager?.Update(gameTime);
 
