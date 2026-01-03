@@ -27,11 +27,15 @@ public class FastTravelMenu
     private bool _confirmationMode;
     private Waypoint _selectedWaypoint;
     
+    // Waypoint icon sprites (optional - falls back to text if null)
+    private Dictionary<WaypointType, Texture2D> _waypointIcons;
+    
     private const int MENU_WIDTH = 800;
     private const int MENU_HEIGHT = 650;
     private const int ITEM_HEIGHT = 70;
     private const int PADDING = 20;
     private const float MESSAGE_DURATION = 2f;
+    private const int ICON_SIZE = 32; // Size for sprite icons
     
     // Event raised when fast travel occurs
     public event Action<Vector2, int> OnFastTravel; // destination, cost
@@ -47,6 +51,16 @@ public class FastTravelMenu
         _statusMessage = "";
         _messageTimer = 0f;
         _confirmationMode = false;
+        _waypointIcons = new Dictionary<WaypointType, Texture2D>();
+    }
+    
+    /// <summary>
+    /// Load waypoint icon sprites (optional - will use text fallback if not loaded)
+    /// </summary>
+    /// <param name="icons">Dictionary mapping waypoint types to icon textures</param>
+    public void LoadWaypointIcons(Dictionary<WaypointType, Texture2D> icons)
+    {
+        _waypointIcons = icons ?? new Dictionary<WaypointType, Texture2D>();
     }
     
     public void Show()
@@ -291,11 +305,22 @@ public class FastTravelMenu
                     DrawBorder(spriteBatch, itemRect, Color.Yellow, 2);
                 }
                 
-                // Draw waypoint icon based on type
-                string icon = GetWaypointIcon(waypoint.Type);
-                Color iconColor = GetWaypointColor(waypoint.Type);
+                // Draw waypoint icon (sprite if available, otherwise text)
                 Vector2 iconPos = new Vector2(itemRect.X + 10, itemRect.Y + 10);
-                DrawTextWithShadow(spriteBatch, font, icon, iconPos, iconColor);
+                if (_waypointIcons.TryGetValue(waypoint.Type, out Texture2D iconTexture))
+                {
+                    // Draw sprite icon
+                    Color iconColor = GetWaypointColor(waypoint.Type);
+                    Rectangle iconRect = new Rectangle((int)iconPos.X, (int)iconPos.Y, ICON_SIZE, ICON_SIZE);
+                    spriteBatch.Draw(iconTexture, iconRect, iconColor);
+                }
+                else
+                {
+                    // Fall back to text icon
+                    string icon = GetWaypointIcon(waypoint.Type);
+                    Color iconColor = GetWaypointColor(waypoint.Type);
+                    DrawTextWithShadow(spriteBatch, font, icon, iconPos, iconColor);
+                }
                 
                 // Draw waypoint name
                 Color textColor = canAfford ? Color.White : Color.Gray;
@@ -407,22 +432,30 @@ public class FastTravelMenu
     }
     
     /// <summary>
-    /// Gets a visual icon for the waypoint type
-    /// Note: Uses Unicode emojis as text fallback icons.
-    /// For production, consider replacing with sprite assets for better cross-platform support.
+    /// Gets a text-based icon for the waypoint type (fallback when sprite icons not loaded)
+    /// TODO: Replace with sprite-based icons for better visual representation
+    /// Icon sprites should be 32x32 pixels and loaded via LoadWaypointIcons()
+    /// Recommended icon designs:
+    /// - Farm: Small house/barn icon
+    /// - Village: Multiple buildings cluster
+    /// - Dungeon: Sword or dungeon entrance
+    /// - Mineshaft: Pickaxe or mine cart
+    /// - Landmark: Flag or star marker
+    /// - Shop District: Shop/merchant icon
+    /// - Custom: Customizable star/marker
     /// </summary>
     private string GetWaypointIcon(WaypointType type)
     {
         return type switch
         {
-            WaypointType.Farm => "🏡",
-            WaypointType.Village => "🏘",
-            WaypointType.DungeonEntrance => "⚔",
-            WaypointType.MineshaftEntrance => "⛏",
-            WaypointType.Landmark => "📍",
-            WaypointType.ShopDistrict => "🏪",
-            WaypointType.Custom => "⭐",
-            _ => "📍"
+            WaypointType.Farm => "[F]",
+            WaypointType.Village => "[V]",
+            WaypointType.DungeonEntrance => "[D]",
+            WaypointType.MineshaftEntrance => "[M]",
+            WaypointType.Landmark => "[L]",
+            WaypointType.ShopDistrict => "[S]",
+            WaypointType.Custom => "[*]",
+            _ => "[?]"
         };
     }
     
