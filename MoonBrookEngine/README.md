@@ -14,17 +14,52 @@ MoonBrook Engine is a lightweight, high-performance 2D game engine designed spec
 - **Game Loop**: Fixed timestep update loop with VSync support
 - **Input System**: Keyboard and mouse input via Silk.NET.Input
 - **Event System**: Initialize, Update, Render, and Shutdown events
+- **Performance Monitor**: Real-time FPS, frame time, and memory tracking
 
 ### Graphics (✅ Implemented)
 - **Texture Loading**: PNG/JPG loading via StbImageSharp
 - **Shader System**: GLSL shader compilation and uniform management
-- **2D Rendering**: Vertex array objects and buffer management
+- **SpriteBatch**: Efficient sprite batching (2048 sprites per batch)
+- **Camera2D**: Zoom, pan, rotation support
+- **Particle Rendering**: Integrated particle system rendering
 - **Color System**: RGBA color with normalization and common presets
 
-### In Progress
-- Input Manager (keyboard and mouse abstraction)
-- Font Rendering (bitmap fonts)
-- Resource Manager
+### Physics (✅ Implemented)
+- **Physics System**: Force-based physics with gravity and drag
+- **Collision Detection**: Circle and rectangle collision shapes
+- **Collision Response**: Impulse-based collision resolution
+- **Trigger Events**: OnTriggerEnter/Exit, OnCollisionEnter/Exit callbacks
+- **Spatial Partitioning**: Quadtree for efficient collision detection
+
+### Animation (✅ Implemented)
+- **Sprite Sheet Animation**: Frame-based animation system
+- **Animation Component**: Multiple animations per entity
+- **Looping & One-Shot**: Configurable playback modes
+- **Animation Events**: Frame change and completion callbacks
+- **Helper Methods**: Easy sprite sheet layout parsing
+
+### Particle System (✅ Implemented)
+- **Particle Emitters**: Configurable particle spawning
+- **Particle Pooling**: Zero-allocation particle management
+- **Particle Affectors**: Gravity, wind, color/size interpolation
+- **Rotation Support**: Spinning particles with random speeds
+- **Efficient Rendering**: Batch rendering of all particles
+
+### Audio (✅ Implemented)
+- **Audio System**: OpenAL-based audio playback
+- **Sound Effects**: SoundEffect and SoundEffectInstance
+- **Resource Management**: Integrated with ResourceManager
+
+### ECS Architecture (✅ Implemented)
+- **Entity Component System**: Clean separation of data and logic
+- **Built-in Components**: Transform, Sprite, Velocity, Physics, Collider, Particle, Animation
+- **World Management**: Entity lifecycle management
+- **Component Queries**: Fast entity-component lookups
+
+### Scene Management (✅ Implemented)
+- **Scene System**: Multiple scene support
+- **Scene Transitions**: Smooth scene switching
+- **Resource Scoping**: Per-scene resource management
 
 ## Technology Stack
 
@@ -161,12 +196,23 @@ engine.Run();
 - [x] Drag and restitution simulation
 - [x] Physics test scene
 
-### Week 7+ (In Progress)
-- [ ] Additional components (Animation, Particle, Audio)
+### Week 8 (✅ Complete)
+- [x] Trigger events (OnTriggerEnter, OnTriggerExit, OnCollisionEnter, OnCollisionExit)
+- [x] Particle System with pooling
+- [x] ParticleComponent and ParticleSystem
+- [x] Particle affectors (gravity, wind, color interpolation, size interpolation)
+- [x] Animation System with sprite sheet support
+- [x] AnimationComponent and AnimationSystem
+- [x] Animation events (OnAnimationComplete, OnFrameChange)
+- [x] Helper methods for sprite sheet layouts
+
+### Week 9+ (Planned)
+- [ ] UI System (Button, Label, Panel, Layout)
+- [ ] Audio enhancements (positional audio, audio pools)
+- [ ] Advanced resource management (asset bundles, streaming)
 - [ ] Rendering improvements (sprite sorting, frustum culling)
 - [ ] Advanced physics (friction, angular velocity, constraints)
-- [ ] Particle system
-- [ ] Advanced resource management
+- [ ] Multi-threading support
 
 ## Compatibility with MonoGame
 
