@@ -28,10 +28,12 @@ public class SpriteBatch : IDisposable
     private bool _isBegun;
     private Camera2D? _camera;
     private Matrix4x4 _transformMatrix;
+    private Core.PerformanceMonitor? _performanceMonitor;
     
-    public SpriteBatch(GL gl)
+    public SpriteBatch(GL gl, Core.PerformanceMonitor? performanceMonitor = null)
     {
         _gl = gl;
+        _performanceMonitor = performanceMonitor;
         _vertexData = new float[MaxBatchSize * VerticesPerSprite * FloatsPerVertex];
         _spriteCount = 0;
         _isBegun = false;
@@ -342,6 +344,9 @@ public class SpriteBatch : IDisposable
             DrawElementsType.UnsignedInt, 
             null);
         _gl.BindVertexArray(0);
+        
+        // Record draw call
+        _performanceMonitor?.RecordDrawCall();
         
         // Reset for next batch
         _spriteCount = 0;

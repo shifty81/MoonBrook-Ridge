@@ -127,12 +127,15 @@ engine.Run();
 - [x] Input system integration
 - [x] Test application
 
-### Week 2-3 (In Progress)
-- [ ] SpriteBatch with automatic batching
-- [ ] Camera2D with zoom and pan
-- [ ] Rectangle and Vector2 math types
-- [ ] Font rendering (TrueType via FreeType)
+### Week 2 (✅ Complete)
+- [x] SpriteBatch with automatic batching
+- [x] Camera2D with zoom and pan
+- [x] Rectangle and Vector2 math types
+
+### Week 3 (In Progress)
+- [ ] Font rendering (TrueType via SixLabors.Fonts)
 - [ ] Performance profiling
+- [ ] Texture Atlas support
 
 ### Week 4 (Planned)
 - [ ] MonoGame compatibility layer
