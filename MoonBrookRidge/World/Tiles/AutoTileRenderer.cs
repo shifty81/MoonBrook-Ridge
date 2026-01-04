@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Tiles.AutoTiling;
 
 namespace MoonBrookRidge.World.Tiles;

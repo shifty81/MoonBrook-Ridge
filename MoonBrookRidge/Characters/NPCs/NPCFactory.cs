@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using System.Collections.Generic;
 
 namespace MoonBrookRidge.Characters.NPCs;

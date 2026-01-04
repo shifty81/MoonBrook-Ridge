@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Input;
+using MoonBrookRidge.Engine.MonoGameCompat;
 
 namespace MoonBrookRidge.Core.Systems;
 

@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Xna.Framework;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World;
 using MoonBrookRidge.World.Maps;

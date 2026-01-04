@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Tiles;
 
 namespace MoonBrookRidge.World.Mining;

@@ -24,8 +24,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
+    <!-- MoonBrook Engine - Custom Game Engine with MonoGame Compatibility -->
+    <ProjectReference Include="..\MoonBrookRidge.Engine\MoonBrookRidge.Engine.csproj" />
   </ItemGroup>
   <ItemGroup>
     <!-- Include WorldGen JSON configs in output -->

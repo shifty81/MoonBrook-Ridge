@@ -2,6 +2,15 @@
 
 An **auto-shooter roguelite** farming and life simulation game combining peaceful village life with intense underground combat. Built with MonoGame (C#).
 
+## 📚 Documentation
+
+**[Full Documentation →](docs/)**
+
+- **[Setup & Development](docs/guides/DEVELOPMENT.md)** - Getting started with development
+- **[Game Controls](docs/guides/CONTROLS.md)** - How to play
+- **[Architecture](docs/architecture/ARCHITECTURE.md)** - System architecture overview  
+- **[Custom Engine](docs/architecture/CUSTOM_ENGINE_CONVERSION_PLAN.md)** - Custom game engine migration plan
+
 ## 🎮 Game Concept
 
 **MoonBrook Valley** is a unique blend of farming simulation and auto-shooter roguelite. By day, you're a peaceful farmer tending crops, fishing, and building relationships with villagers across multiple biomes. By night, you descend into procedurally generated caves beneath the valley to fight endless waves of alien-like creatures with **automatically firing weapons** while your **pet companion** provides support.
@@ -227,7 +236,7 @@ The game combines assets from multiple high-quality pixel art packs for visual v
 1. **Sunnyside World** ⭐ **MAIN TILESET** - 16x16px tileset and asset pack for characters, buildings, and terrain (4,096 tiles)
 2. **16x16 Tilemap Collection** - Ground tiles and terrain (legacy/fallback)
 3. **Custom Generated Tileset** - Combined ground tileset (legacy/fallback)
-4. **Textured Placeholder Tiles** ⭐ **NEW!** - Procedurally generated textured tiles (grass, dirt, water, etc.) - See [VISUAL_IMPROVEMENTS.md](VISUAL_IMPROVEMENTS.md)
+4. **Textured Placeholder Tiles** ⭐ **NEW!** - Procedurally generated textured tiles (grass, dirt, water, etc.) - See [VISUAL_IMPROVEMENTS.md](docs/implementation/VISUAL_IMPROVEMENTS.md)
 
 ### Asset Categories
 - **Terrain**: Sunnyside World tileset with grass, dirt, stone, water, sand, and varied tiles
@@ -267,11 +276,11 @@ Assets are now extensively integrated through MonoGame's Content Pipeline:
 **Archived Assets:**
 - Slates Tileset v.2 integration has been archived. See [archived/README.md](archived/README.md) for details.
 
-See [ASSET_STATUS_SUMMARY.md](ASSET_STATUS_SUMMARY.md) for complete current status.  
-See [TILESET_GUIDE.md](TILESET_GUIDE.md) for details on the custom ground tileset.  
-See [ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
-See [ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md) for comprehensive status of what's loaded and what's available.  
-See [VISUAL_IMPROVEMENTS.md](VISUAL_IMPROVEMENTS.md) ⭐ **NEW!** for details on textured placeholder tiles.
+See [ASSET_STATUS_SUMMARY.md](docs/assets/ASSET_STATUS_SUMMARY.md) for complete current status.  
+See [TILESET_GUIDE.md](docs/assets/TILESET_GUIDE.md) for details on the custom ground tileset.  
+See [ASSET_LOADING_GUIDE.md](docs/assets/ASSET_LOADING_GUIDE.md) for details on how to add more assets.  
+See [ASSET_WORK_STATUS.md](docs/assets/ASSET_WORK_STATUS.md) for comprehensive status of what's loaded and what's available.  
+See [VISUAL_IMPROVEMENTS.md](docs/implementation/VISUAL_IMPROVEMENTS.md) ⭐ **NEW!** for details on textured placeholder tiles.
 
 ### Sprite Categories
 ```
@@ -414,7 +423,7 @@ cd MoonBrook-Ridge
 
 ### Playtest Guide
 
-**New!** See [PLAYTEST_GUIDE.md](PLAYTEST_GUIDE.md) for:
+**New!** See [PLAYTEST_GUIDE.md](docs/guides/PLAYTEST_GUIDE.md) for:
 - How to test the complete farming loop (till → plant → water → harvest)
 - Currently implemented features and controls
 - Tips for effective playtesting
@@ -474,32 +483,32 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Toggle Auto-Fire** ⭐ **PHASE 8!** | **`** (backtick/tilde) |
 | **Sort Inventory** ⭐ **PHASE 8!** | **I** |
 
-See [CONTROLS.md](CONTROLS.md) for complete control documentation.
+See [CONTROLS.md](docs/guides/CONTROLS.md) for complete control documentation.
 
 ## 📚 Documentation
 
 Comprehensive guides and references:
 
 ### For Players & Testers
-- **[PLAYTEST_GUIDE.md](PLAYTEST_GUIDE.md)** ⭐ **NEW!** - How to playtest the game and test features
-- **[DEV_SETUP.md](DEV_SETUP.md)** ⭐ **NEW!** - Development environment and debugging setup
-- **[CONTROLS.md](CONTROLS.md)** - Complete control reference
+- **[PLAYTEST_GUIDE.md](docs/guides/PLAYTEST_GUIDE.md)** ⭐ **NEW!** - How to playtest the game and test features
+- **[DEV_SETUP.md](docs/guides/DEV_SETUP.md)** ⭐ **NEW!** - Development environment and debugging setup
+- **[CONTROLS.md](docs/guides/CONTROLS.md)** - Complete control reference
 
 ### Game Development
-- **[WORLDGEN_ASSET_GUIDE.md](WORLDGEN_ASSET_GUIDE.md)** ⭐ **NEW!** - Asset-driven world generation configuration guide
-- **[WORLDGEN_INTEGRATION_EXAMPLE.md](WORLDGEN_INTEGRATION_EXAMPLE.md)** ⭐ **NEW!** - How to integrate JSON world configs
-- **[TILE_SIZE_GUIDE.md](TILE_SIZE_GUIDE.md)** - Why 16×16 is the ideal tile size for the game
-- **[ASSET_WORK_STATUS.md](ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
-- **[ASSET_LOADING_GUIDE.md](ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
-- **[TILESET_GUIDE.md](TILESET_GUIDE.md)** - Guide to using the custom ground tileset
-- **[SPRITE_GUIDE.md](SPRITE_GUIDE.md)** - Guide to using Sunnyside World assets
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design patterns
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development guide and best practices
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Overall project status and features
+- **[WORLDGEN_ASSET_GUIDE.md](docs/assets/WORLDGEN_ASSET_GUIDE.md)** ⭐ **NEW!** - Asset-driven world generation configuration guide
+- **[WORLDGEN_INTEGRATION_EXAMPLE.md](docs/implementation/WORLDGEN_INTEGRATION_EXAMPLE.md)** ⭐ **NEW!** - How to integrate JSON world configs
+- **[TILE_SIZE_GUIDE.md](docs/assets/TILE_SIZE_GUIDE.md)** - Why 16×16 is the ideal tile size for the game
+- **[ASSET_WORK_STATUS.md](docs/assets/ASSET_WORK_STATUS.md)** - What asset work is complete and what's still needed
+- **[ASSET_LOADING_GUIDE.md](docs/assets/ASSET_LOADING_GUIDE.md)** - How to add new sprites through Content Pipeline
+- **[TILESET_GUIDE.md](docs/assets/TILESET_GUIDE.md)** - Guide to using the custom ground tileset
+- **[SPRITE_GUIDE.md](docs/assets/SPRITE_GUIDE.md)** - Guide to using Sunnyside World assets
+- **[ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)** - Technical architecture and design patterns
+- **[DEVELOPMENT.md](docs/guides/DEVELOPMENT.md)** - Development guide and best practices
+- **[IMPLEMENTATION_SUMMARY.md](docs/implementation/IMPLEMENTATION_SUMMARY.md)** - Overall project status and features
 
 ### Contributing & Maintenance
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guidelines for contributing to the project
-- **[COPILOT_ERROR_INVESTIGATION.md](COPILOT_ERROR_INVESTIGATION.md)** - Investigation of PR #7 Copilot errors and lessons learned
+- **[COPILOT_ERROR_INVESTIGATION.md](docs/implementation/COPILOT_ERROR_INVESTIGATION.md)** - Investigation of PR #7 Copilot errors and lessons learned
 
 ## 🗺️ Roadmap
 
@@ -571,8 +580,8 @@ Comprehensive guides and references:
 - [x] **Save/Load for Phase 6** ⭐ **INTEGRATED** - All Phase 6 systems persist across sessions
 - [x] **Phase 6 Quest Integration** ⭐ **INTEGRATED** - 5 quests for dungeons, pets, skills, and magic
 
-See [PHASE_6_COMPLETION_SUMMARY.md](PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.  
-See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](PHASE_6_SAVE_AND_QUEST_INTEGRATION.md) for integration details.
+See [PHASE_6_COMPLETION_SUMMARY.md](docs/implementation/PHASE_6_COMPLETION_SUMMARY.md) for complete Phase 6 documentation.  
+See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](docs/implementation/PHASE_6_SAVE_AND_QUEST_INTEGRATION.md) for integration details.
 
 ### Phase 7: Performance & Polish ✅ **COMPLETE!**
 - [x] **Performance Monitoring** ⭐ **PHASE 7.1** - Real-time FPS, memory, and timing metrics (F3 to toggle)
@@ -593,10 +602,10 @@ See [PHASE_6_SAVE_AND_QUEST_INTEGRATION.md](PHASE_6_SAVE_AND_QUEST_INTEGRATION.m
 - [x] **Projectile Collision Integration** ⭐ **PHASE 7.4** - Already implemented in Phase 7.3
 - [x] **Quality-of-Life Features** ⭐ **PHASE 7.4** - Inventory helpers and fast travel waypoint system
 
-See [PHASE_7_IMPLEMENTATION_SUMMARY.md](PHASE_7_IMPLEMENTATION_SUMMARY.md) for Phase 7.1 and 7.2.  
-See [PHASE_7.2_COMPLETION_SUMMARY.md](PHASE_7.2_COMPLETION_SUMMARY.md) for Phase 7.2 details.  
-See [PHASE_7.3_COMPLETION_SUMMARY.md](PHASE_7.3_COMPLETION_SUMMARY.md) for Phase 7.3 details.  
-See [PHASE_7.4_COMPLETION_SUMMARY.md](PHASE_7.4_COMPLETION_SUMMARY.md) for Phase 7.4 details.
+See [PHASE_7_IMPLEMENTATION_SUMMARY.md](docs/implementation/PHASE_7_IMPLEMENTATION_SUMMARY.md) for Phase 7.1 and 7.2.  
+See [PHASE_7.2_COMPLETION_SUMMARY.md](docs/implementation/PHASE_7.2_COMPLETION_SUMMARY.md) for Phase 7.2 details.  
+See [PHASE_7.3_COMPLETION_SUMMARY.md](docs/implementation/PHASE_7.3_COMPLETION_SUMMARY.md) for Phase 7.3 details.  
+See [PHASE_7.4_COMPLETION_SUMMARY.md](docs/implementation/PHASE_7.4_COMPLETION_SUMMARY.md) for Phase 7.4 details.
 
 ### Phase 8: Auto-Shooter Combat System ✅ **COMPLETE!**
 - [x] **Auto-Fire System** ⭐ **PHASE 8** - Automatic weapon firing with multiple patterns (Circle360, Forward, Backward, etc.)
@@ -607,7 +616,7 @@ See [PHASE_7.4_COMPLETION_SUMMARY.md](PHASE_7.4_COMPLETION_SUMMARY.md) for Phase
 - [x] **Inventory Sorting** ⭐ **PHASE 8** - I key to sort inventory by type and name
 - [x] **Phase 7.4 Integration** ⭐ **PHASE 8** - Spatial partitioning, entity culling, and waypoint discovery
 
-See [PHASE_8_COMPLETION_SUMMARY.md](PHASE_8_COMPLETION_SUMMARY.md) for Phase 8 details.
+See [PHASE_8_COMPLETION_SUMMARY.md](docs/implementation/PHASE_8_COMPLETION_SUMMARY.md) for Phase 8 details.
 
 ### Phase 9: Fast Travel UI & Quality-of-Life ✅ **COMPLETE!**
 - [x] **Fast Travel Menu** ⭐ **PHASE 9** - Full UI for waypoint selection and fast travel (W key)
@@ -617,7 +626,7 @@ See [PHASE_8_COMPLETION_SUMMARY.md](PHASE_8_COMPLETION_SUMMARY.md) for Phase 8 d
 - [x] **Discovery Notifications** ⭐ **PHASE 9** - Toast notifications when discovering new waypoints
 - [x] **Visual Feedback** ⭐ **PHASE 9** - Color-coded waypoint icons and affordability indicators
 
-See [PHASE_9_COMPLETION_SUMMARY.md](PHASE_9_COMPLETION_SUMMARY.md) for Phase 9 details.
+See [PHASE_9_COMPLETION_SUMMARY.md](docs/implementation/PHASE_9_COMPLETION_SUMMARY.md) for Phase 9 details.
 
 ### Phase 10: Multi-Village & Core Keeper Underground ✅ **COMPLETE!**
 - [x] **Multi-Village System** ⭐ **PHASE 10** - 8 villages across all biomes with reputation tracking
@@ -635,7 +644,7 @@ See [PHASE_9_COMPLETION_SUMMARY.md](PHASE_9_COMPLETION_SUMMARY.md) for Phase 9 d
 
 **Note**: Core Keeper-inspired visual style deferred as future enhancement (requires significant asset work).
 
-See [PHASE_10_IMPLEMENTATION_SUMMARY.md](PHASE_10_IMPLEMENTATION_SUMMARY.md) for Phase 10 details.
+See [PHASE_10_IMPLEMENTATION_SUMMARY.md](docs/implementation/PHASE_10_IMPLEMENTATION_SUMMARY.md) for Phase 10 details.
 
 ## 🤝 Contributing
 

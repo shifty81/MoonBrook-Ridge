@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using MoonBrookRidge.Engine.MonoGameCompat;
+using MoonBrookRidge.Engine.MonoGameCompat;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Mining;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Core.Systems;
