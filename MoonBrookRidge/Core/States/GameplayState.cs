@@ -119,6 +119,7 @@ public class GameplayState : GameState
     private MouseState _previousMouseState;
     private GameEvent? _lastShownEvent;
     private int _previousDay; // Track day changes for marriage/family system
+    private Building _currentBuilding; // Track which building player is currently near/inside
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -1262,19 +1263,23 @@ public class GameplayState : GameState
             return;
         }
         
-        // Furniture menu (U key) - Phase 10
-        // TODO: Implement building interior detection to show furniture menu only when inside a building
-        /*if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
+        // Furniture menu (U key) - Phase 10: Building Interior Detection
+        if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
         {
-            // Need to detect which building player is in
-            Building currentBuilding = DetectPlayerBuilding();
-            if (currentBuilding != null)
+            // Detect which building player is near
+            _currentBuilding = _buildingManager.GetBuildingNearPlayer(_player.Position);
+            if (_currentBuilding != null)
             {
-                _furnitureMenu.Toggle(currentBuilding);
+                _furnitureMenu.Toggle(_currentBuilding);
+                _previousKeyboardState = keyboardState;
+                return;
             }
-            _previousKeyboardState = keyboardState;
-            return;
-        }*/
+            else
+            {
+                // Show notification if not near a building
+                _notificationSystem?.Show("You must be near a building entrance to open the furniture menu.", NotificationType.Warning, 3.0f);
+            }
+        }
         
         // Check for map menu (M key) - opens tabbed menu with World Map, Waypoints, and Fast Travel
         if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))

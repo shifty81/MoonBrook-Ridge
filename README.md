@@ -449,6 +449,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Open Crafting Menu** ⭐ | **K** |
 | **Open Shop Menu** ⭐ **NEW** | **B** |
 | **Open Building Menu** ⭐ **NEW** | **H** |
+| **Open Furniture Menu** ⭐ **PHASE 10!** | **U** (when near building) |
 | **Gift to NPC** ⭐ **NEW** | **G** |
 | **Open Achievement Menu** ⭐ **NEW!** | **A** |
 | **Open Settings Menu** ⭐ **NEW!** | **O** |
