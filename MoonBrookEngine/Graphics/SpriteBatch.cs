@@ -353,6 +353,54 @@ public class SpriteBatch : IDisposable
         _currentTexture = null;
     }
     
+    /// <summary>
+    /// Draw text using a bitmap font
+    /// </summary>
+    public void DrawString(BitmapFont font, string text, Vec2 position, Col color)
+    {
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin() must be called before DrawString()");
+        
+        if (string.IsNullOrEmpty(text) || font == null)
+            return;
+        
+        // If font has no atlas, we can't render (it's a stub font)
+        if (!font.HasAtlas)
+            return;
+        
+        var atlasTexture = font.GetAtlasTexture();
+        if (atlasTexture == null)
+            return;
+        
+        float x = position.X;
+        float y = position.Y;
+        
+        foreach (char c in text)
+        {
+            if (c == '\n')
+            {
+                // Move to next line
+                x = position.X;
+                y += font.LineSpacing;
+                continue;
+            }
+            
+            if (font.TryGetCharacter(c, out var charInfo))
+            {
+                // Draw character sprite
+                Vec2 charPos = new Vec2(
+                    x + charInfo.Offset.X,
+                    y + charInfo.Offset.Y
+                );
+                
+                Draw(atlasTexture, charPos, charInfo.SourceRect, color, 0f, Vec2.Zero, Vec2.One, 0f);
+                
+                // Advance position
+                x += charInfo.XAdvance + font.Spacing;
+            }
+        }
+    }
+    
     public void Dispose()
     {
         _shader?.Dispose();

@@ -27,9 +27,9 @@ public class ContentManager : IDisposable
         }
     }
     
-    internal ContentManager(GL gl, string rootDirectory = "Content")
+    internal ContentManager(GL gl, MoonBrookEngine.Audio.AudioEngine? audioEngine = null, string rootDirectory = "Content")
     {
-        _resourceManager = new MoonBrookEngine.Core.ResourceManager(gl, rootDirectory);
+        _resourceManager = new MoonBrookEngine.Core.ResourceManager(gl, audioEngine, rootDirectory);
         _loadedAssets = new Dictionary<string, object>();
     }
     
@@ -55,8 +55,11 @@ public class ContentManager : IDisposable
         }
         else if (typeof(T) == typeof(SpriteFont))
         {
-            // TODO: Implement font loading
-            throw new NotImplementedException("Font loading not yet implemented");
+            // Load font (creates default for now)
+            var engineFont = _resourceManager.LoadFont(assetName);
+            var font = new SpriteFont(engineFont);
+            _loadedAssets[assetName] = font;
+            return (T)(object)font;
         }
         
         throw new NotSupportedException($"Asset type {typeof(T).Name} is not supported");

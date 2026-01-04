@@ -186,15 +186,20 @@ public class SpriteBatch : IDisposable
         );
     }
     
-    // DrawString for text rendering (will need font implementation)
+    // DrawString for text rendering
     public void DrawString(
         SpriteFont font,
         string text,
         Vector2 position,
         Color color)
     {
-        // TODO: Implement font rendering
-        // For now, this is a stub
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin must be called before DrawString.");
+        
+        if (font?.InternalFont == null)
+            return; // Can't render without internal font
+        
+        _engineBatch.DrawString(font.InternalFont, text, position, color);
     }
     
     public void DrawString(
@@ -208,8 +213,16 @@ public class SpriteBatch : IDisposable
         SpriteEffects effects,
         float layerDepth)
     {
-        // TODO: Implement font rendering with transforms
-        // For now, this is a stub
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin must be called before DrawString.");
+        
+        // For now, ignore rotation, origin, scale, effects, and layerDepth
+        // Just render the text at the position
+        // TODO: Implement full text transform support
+        if (font?.InternalFont != null)
+        {
+            _engineBatch.DrawString(font.InternalFont, text, position, color);
+        }
     }
     
     public void Dispose()
