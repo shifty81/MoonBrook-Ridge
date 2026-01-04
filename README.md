@@ -1,15 +1,19 @@
 # MoonBrook Ridge 🌾⚔️
 
-An **auto-shooter roguelite** farming and life simulation game combining peaceful village life with intense underground combat. Built with MonoGame (C#).
+An **auto-shooter roguelite** farming and life simulation game combining peaceful village life with intense underground combat. Built with a custom game engine (MonoGame-compatible C# API).
+
+> **✨ Custom Engine Migration Complete!** The game now runs on a custom game engine with full MonoGame API compatibility. See [ENGINE_MIGRATION_STATUS.md](ENGINE_MIGRATION_STATUS.md) for details.
 
 ## 📚 Documentation
 
 **[Full Documentation →](docs/)**
 
 - **[Setup & Development](docs/guides/DEVELOPMENT.md)** - Getting started with development
+- **[Runtime Testing Guide](docs/guides/RUNTIME_TESTING_GUIDE.md)** ⭐ **NEW!** - Testing after engine migration
 - **[Game Controls](docs/guides/CONTROLS.md)** - How to play
 - **[Architecture](docs/architecture/ARCHITECTURE.md)** - System architecture overview  
 - **[Custom Engine](docs/architecture/CUSTOM_ENGINE_CONVERSION_PLAN.md)** - Custom game engine migration plan
+- **[Engine Migration Status](ENGINE_MIGRATION_STATUS.md)** ⭐ **NEW!** - Migration completion status
 
 ## 🎮 Game Concept
 
@@ -397,6 +401,21 @@ cd MoonBrook-Ridge
 ./play.sh
 ```
 
+### Validation & Testing
+
+**New!** After the custom engine migration, validate the build:
+```bash
+./validate-engine.sh
+```
+
+This checks:
+- Build status (0 errors, 0 warnings)
+- All critical engine files present
+- Engine implementations complete
+- Executable ready to run
+
+See [RUNTIME_TESTING_GUIDE.md](docs/guides/RUNTIME_TESTING_GUIDE.md) for comprehensive testing procedures.
+
 ### Manual Building
 
 1. **Clone the repository**
@@ -490,8 +509,9 @@ See [CONTROLS.md](docs/guides/CONTROLS.md) for complete control documentation.
 Comprehensive guides and references:
 
 ### For Players & Testers
-- **[PLAYTEST_GUIDE.md](docs/guides/PLAYTEST_GUIDE.md)** ⭐ **NEW!** - How to playtest the game and test features
-- **[DEV_SETUP.md](docs/guides/DEV_SETUP.md)** ⭐ **NEW!** - Development environment and debugging setup
+- **[RUNTIME_TESTING_GUIDE.md](docs/guides/RUNTIME_TESTING_GUIDE.md)** ⭐ **NEW!** - Comprehensive testing guide after engine migration
+- **[PLAYTEST_GUIDE.md](docs/guides/PLAYTEST_GUIDE.md)** ⭐ - How to playtest the game and test features
+- **[DEV_SETUP.md](docs/guides/DEV_SETUP.md)** ⭐ - Development environment and debugging setup
 - **[CONTROLS.md](docs/guides/CONTROLS.md)** - Complete control reference
 
 ### Game Development
