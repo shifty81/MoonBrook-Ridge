@@ -106,6 +106,7 @@ public class GameplayState : GameState
     private UI.Menus.FurnitureMenu _furnitureMenu;
     private Characters.DatingSystem _datingSystem;
     private World.Mining.UndergroundCraftingSystem _undergroundCraftingSystem;
+    private UI.Menus.UndergroundCraftingMenu _undergroundCraftingMenu;
     private World.Mining.AutomationSystem _automationSystem;
     private World.Mining.ExpandedOreSystem _expandedOreSystem;
     private FastTravelMenu _fastTravelMenu; // Legacy - kept for backwards compatibility
@@ -728,6 +729,8 @@ public class GameplayState : GameState
             _notificationSystem?.Show($"Workbench Tier {tier} Unlocked!", NotificationType.Success, 3.0f);
         };
         
+        _undergroundCraftingMenu = new UI.Menus.UndergroundCraftingMenu(_undergroundCraftingSystem, _inventory);
+        
         _automationSystem = new World.Mining.AutomationSystem();
         _automationSystem.OnItemHarvested += (device, itemName) =>
         {
@@ -1008,6 +1011,9 @@ public class GameplayState : GameState
         _performanceMonitor.Initialize(_pixelTexture);
         _notificationSystem.Initialize(_pixelTexture);
         
+        // Initialize Phase 10 UI components
+        _undergroundCraftingMenu.Initialize(_pixelTexture);
+        
         // Initialize starter quests
         InitializeQuests();
     }
@@ -1075,6 +1081,13 @@ public class GameplayState : GameState
             _shopMenu.Update(gameTime);
             _previousKeyboardState = keyboardState;
             return; // Don't update game while in shop menu
+        }
+        
+        if (_undergroundCraftingMenu.IsActive)
+        {
+            _undergroundCraftingMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in underground crafting menu
         }
         
         if (_fastTravelMenu.IsActive)
@@ -1259,6 +1272,14 @@ public class GameplayState : GameState
         if (keyboardState.IsKeyDown(Keys.H) && !_previousKeyboardState.IsKeyDown(Keys.H))
         {
             _buildingMenu.Show();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Underground Crafting menu (Z key) - Phase 10: Workbench Interaction
+        if (keyboardState.IsKeyDown(Keys.Z) && !_previousKeyboardState.IsKeyDown(Keys.Z))
+        {
+            _undergroundCraftingMenu.Toggle();
             _previousKeyboardState = keyboardState;
             return;
         }
@@ -2429,6 +2450,11 @@ public class GameplayState : GameState
         if (_shopMenu.IsActive)
         {
             _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
+        if (_undergroundCraftingMenu.IsActive)
+        {
+            _undergroundCraftingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         if (_mapMenu.IsActive)
