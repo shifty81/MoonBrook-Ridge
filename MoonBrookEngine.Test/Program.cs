@@ -1,25 +1,37 @@
 using MoonBrookEngine.Core;
 using MoonBrookEngine.Graphics;
-using MoonBrookEngine.Math;
 using Silk.NET.OpenGL;
+using Vec2 = MoonBrookEngine.Math.Vector2;
+using Col = MoonBrookEngine.Math.Color;
 
 namespace MoonBrookEngine.Test;
 
 /// <summary>
-/// Simple test application to demonstrate the engine
-/// Renders a colored quad to the screen
+/// Enhanced test application demonstrating SpriteBatch and Camera2D
 /// </summary>
 public class TestGame
 {
     private Engine _engine;
-    private Graphics.Shader? _shader;
-    private uint _vao;
-    private uint _vbo;
-    private Texture2D? _whiteTexture;
+    private SpriteBatch? _spriteBatch;
+    private Camera2D? _camera;
+    private Texture2D? _testTexture;
+    private List<SpriteData> _sprites;
+    private float _cameraSpeed = 200f;
+    private float _zoomSpeed = 0.5f;
+    
+    private struct SpriteData
+    {
+        public Vec2 Position;
+        public Vec2 Velocity;
+        public Col Color;
+        public float Rotation;
+        public float RotationSpeed;
+    }
     
     public TestGame()
     {
-        _engine = new Engine("MoonBrook Engine - Test", 1280, 720);
+        _engine = new Engine("MoonBrook Engine - SpriteBatch Demo", 1280, 720);
+        _sprites = new List<SpriteData>();
         
         _engine.OnInitialize += Initialize;
         _engine.OnUpdate += Update;
@@ -32,135 +44,165 @@ public class TestGame
         _engine.Run();
     }
     
-    private unsafe void Initialize()
+    private void Initialize()
     {
         Console.WriteLine("Test game initializing...");
         
-        // Create a simple vertex and fragment shader
-        string vertexShader = @"
-            #version 330 core
-            layout (location = 0) in vec2 aPosition;
-            layout (location = 1) in vec2 aTexCoord;
-            layout (location = 2) in vec4 aColor;
-            
-            out vec2 TexCoord;
-            out vec4 Color;
-            
-            void main()
-            {
-                gl_Position = vec4(aPosition, 0.0, 1.0);
-                TexCoord = aTexCoord;
-                Color = aColor;
-            }
-        ";
+        // Create SpriteBatch
+        _spriteBatch = new SpriteBatch(_engine.GL);
         
-        string fragmentShader = @"
-            #version 330 core
-            in vec2 TexCoord;
-            in vec4 Color;
-            out vec4 FragColor;
-            
-            uniform sampler2D uTexture;
-            
-            void main()
-            {
-                FragColor = texture(uTexture, TexCoord) * Color;
-            }
-        ";
+        // Create Camera
+        _camera = new Camera2D(_engine.Width, _engine.Height);
         
-        _shader = new Graphics.Shader(_engine.GL, vertexShader, fragmentShader);
+        // Create a 32x32 white texture
+        _testTexture = Texture2D.CreateSolidColor(_engine.GL, 32, 32, 255, 255, 255, 255);
         
-        // Create a white 1x1 texture for colored quads
-        _whiteTexture = Texture2D.CreateSolidColor(_engine.GL, 1, 1, 255, 255, 255, 255);
-        
-        // Create a colored quad (vertex format: x, y, u, v, r, g, b, a)
-        float[] vertices = new float[]
+        // Create 100 bouncing sprites with random colors, positions, and velocities
+        Random rand = new Random();
+        for (int i = 0; i < 100; i++)
         {
-            // Position        // TexCoord  // Color (RGBA normalized)
-            -0.5f, -0.5f,      0.0f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f,  // Bottom-left (red)
-             0.5f, -0.5f,      1.0f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,  // Bottom-right (green)
-             0.5f,  0.5f,      1.0f, 1.0f,  0.0f, 0.0f, 1.0f, 1.0f,  // Top-right (blue)
-            -0.5f,  0.5f,      0.0f, 1.0f,  1.0f, 1.0f, 0.0f, 1.0f,  // Top-left (yellow)
-        };
-        
-        // Create VAO and VBO
-        _vao = _engine.GL.GenVertexArray();
-        _vbo = _engine.GL.GenBuffer();
-        
-        _engine.GL.BindVertexArray(_vao);
-        _engine.GL.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
-        
-        unsafe
-        {
-            fixed (float* ptr = vertices)
+            _sprites.Add(new SpriteData
             {
-                _engine.GL.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)), ptr, BufferUsageARB.StaticDraw);
-            }
+                Position = new Vec2(
+                    rand.Next(0, 1280),
+                    rand.Next(0, 720)
+                ),
+                Velocity = new Vec2(
+                    rand.Next(-200, 200),
+                    rand.Next(-200, 200)
+                ),
+                Color = new Col(
+                    (byte)rand.Next(100, 255),
+                    (byte)rand.Next(100, 255),
+                    (byte)rand.Next(100, 255),
+                    (byte)255
+                ),
+                Rotation = 0f,
+                RotationSpeed = (float)(rand.NextDouble() * 4 - 2) // -2 to 2 radians/sec
+            });
         }
         
-        // Position attribute (location 0)
-        _engine.GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), (void*)0);
-        _engine.GL.EnableVertexAttribArray(0);
-        
-        // TexCoord attribute (location 1)
-        _engine.GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), (void*)(2 * sizeof(float)));
-        _engine.GL.EnableVertexAttribArray(1);
-        
-        // Color attribute (location 2)
-        _engine.GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 8 * sizeof(float), (void*)(4 * sizeof(float)));
-        _engine.GL.EnableVertexAttribArray(2);
-        
-        _engine.GL.BindVertexArray(0);
-        
         Console.WriteLine("Test game initialized successfully!");
-        Console.WriteLine("You should see a colored quad on the screen.");
-        Console.WriteLine("Press ESC to close.");
+        Console.WriteLine($"Created {_sprites.Count} sprites");
+        Console.WriteLine();
+        Console.WriteLine("Controls:");
+        Console.WriteLine("  WASD - Move camera");
+        Console.WriteLine("  Q/E - Zoom out/in");
+        Console.WriteLine("  R - Reset camera");
+        Console.WriteLine("  ESC - Exit");
     }
     
     private void Update(GameTime gameTime)
     {
+        float dt = (float)gameTime.DeltaTime;
+        
         // Check for ESC key to exit
         var keyboards = _engine.Input.Keyboards;
         if (keyboards.Count > 0)
         {
             var keyboard = keyboards[0];
+            
             if (keyboard.IsKeyPressed(Silk.NET.Input.Key.Escape))
             {
                 _engine.Stop();
             }
+            
+            // Camera controls
+            if (_camera != null)
+            {
+                Vec2 movement = Vec2.Zero;
+                
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.W))
+                    movement.Y -= _cameraSpeed * dt;
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.S))
+                    movement.Y += _cameraSpeed * dt;
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.A))
+                    movement.X -= _cameraSpeed * dt;
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.D))
+                    movement.X += _cameraSpeed * dt;
+                
+                _camera.Move(movement);
+                
+                // Zoom controls
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.Q))
+                    _camera.Zoom -= _zoomSpeed * dt;
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.E))
+                    _camera.Zoom += _zoomSpeed * dt;
+                
+                // Reset camera
+                if (keyboard.IsKeyPressed(Silk.NET.Input.Key.R))
+                {
+                    _camera.Position = Vec2.Zero;
+                    _camera.Zoom = 1.0f;
+                }
+            }
+        }
+        
+        // Update sprites (bouncing)
+        for (int i = 0; i < _sprites.Count; i++)
+        {
+            var sprite = _sprites[i];
+            
+            // Update position
+            sprite.Position += sprite.Velocity * dt;
+            
+            // Update rotation
+            sprite.Rotation += sprite.RotationSpeed * dt;
+            
+            // Bounce off edges
+            if (sprite.Position.X < 0 || sprite.Position.X > 1280)
+            {
+                sprite.Velocity.X = -sprite.Velocity.X;
+                sprite.Position.X = System.Math.Clamp(sprite.Position.X, 0, 1280);
+            }
+            if (sprite.Position.Y < 0 || sprite.Position.Y > 720)
+            {
+                sprite.Velocity.Y = -sprite.Velocity.Y;
+                sprite.Position.Y = System.Math.Clamp(sprite.Position.Y, 0, 720);
+            }
+            
+            _sprites[i] = sprite;
         }
         
         // Display FPS every second
         if ((int)gameTime.TotalSeconds % 1 == 0 && gameTime.TotalSeconds > 0 && (int)(gameTime.TotalSeconds * 10) % 10 == 0)
         {
-            Console.WriteLine($"FPS: {gameTime.FPS:F2}");
+            Console.WriteLine($"FPS: {gameTime.FPS:F2} | Sprites: {_sprites.Count} | Camera Pos: {_camera?.Position} | Zoom: {_camera?.Zoom:F2}");
         }
     }
     
     private void Render(GameTime gameTime)
     {
-        if (_shader == null || _whiteTexture == null) return;
+        if (_spriteBatch == null || _camera == null || _testTexture == null) return;
         
-        // Use shader and bind texture
-        _shader.Use();
-        _whiteTexture.Bind(0);
-        _shader.SetUniform("uTexture", 0);
+        // Begin sprite batch with camera
+        _spriteBatch.Begin(_camera);
         
-        // Draw the quad
-        _engine.GL.BindVertexArray(_vao);
-        _engine.GL.DrawArrays(PrimitiveType.TriangleFan, 0, 4);
-        _engine.GL.BindVertexArray(0);
+        // Draw all sprites
+        foreach (var sprite in _sprites)
+        {
+            _spriteBatch.Draw(
+                _testTexture,
+                sprite.Position,
+                null,
+                sprite.Color,
+                sprite.Rotation,
+                new Vec2(16, 16), // origin at center (32x32 texture)
+                Vec2.One,
+                0f
+            );
+        }
+        
+        // End sprite batch (flushes to GPU)
+        _spriteBatch.End();
     }
     
     private void Shutdown()
     {
         Console.WriteLine("Test game shutting down...");
         
-        _shader?.Dispose();
-        _whiteTexture?.Dispose();
-        
-        if (_vao != 0) _engine.GL.DeleteVertexArray(_vao);
-        if (_vbo != 0) _engine.GL.DeleteBuffer(_vbo);
+        _spriteBatch?.Dispose();
+        _testTexture?.Dispose();
     }
 }
 
