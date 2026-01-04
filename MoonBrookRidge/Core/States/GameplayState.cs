@@ -191,6 +191,8 @@ public class GameplayState : GameState
         _craftingSystem.OnItemCrafted += (itemName) =>
         {
             // Award crafting XP (Phase 10)
+            // TODO: Add rarity detection to CraftingSystem for accurate XP rewards
+            // For now, all items treated as common rarity
             _skillProgressionSystem?.OnItemCrafted(itemName, "common");
         };
         _craftingMenu = new CraftingMenu(_craftingSystem, _inventory);
@@ -1712,8 +1714,8 @@ public class GameplayState : GameState
                 }
                 break;
             case Axe:
-                // Chopping wood XP
-                _skillProgressionSystem.OnResourceMined("wood");
+                // Chopping wood XP (forestry = farming skill)
+                _skillProgressionSystem.OnWoodChopped(1);
                 break;
         }
     }

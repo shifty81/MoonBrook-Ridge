@@ -114,6 +114,16 @@ public class SkillProgressionSystem
         AddExperience(SkillCategory.Mining, xp);
     }
     
+    /// <summary>
+    /// Award XP for chopping wood (uses farming category for forestry)
+    /// </summary>
+    public void OnWoodChopped(int woodCount = 1)
+    {
+        // Wood chopping counts as farming (forestry)
+        float xp = 3f * woodCount; // 3 XP per wood
+        AddExperience(SkillCategory.Farming, xp);
+    }
+    
     #endregion
     
     #region Combat Actions
