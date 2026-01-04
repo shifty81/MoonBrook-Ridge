@@ -10,6 +10,7 @@ public class DemoGame : Game
 {
     private SpriteBatch? _spriteBatch;
     private Texture2D? _whitePixel;
+    private SpriteFont? _font;
     
     // Game state
     private Vector2 _playerPosition;
@@ -83,6 +84,9 @@ public class DemoGame : Game
         // Create SpriteBatch (MonoGame-compatible API)
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         
+        // Load font (MonoGame-compatible API)
+        _font = Content.Load<SpriteFont>("Fonts/Default");
+        
         // Create a white pixel texture for drawing primitives
         // In a real game, you'd load actual textures with Content.Load<Texture2D>()
         // For this demo, we'll use the engine's solid color texture creator
@@ -93,6 +97,7 @@ public class DemoGame : Game
         _whitePixel = new Texture2D(engineTexture);
         
         Console.WriteLine("✅ Content loaded successfully!");
+        Console.WriteLine("✅ Font loaded successfully!");
         Console.WriteLine();
     }
     
@@ -194,6 +199,15 @@ public class DemoGame : Game
             SpriteEffects.None,
             0f
         );
+        
+        // Draw text overlay (MonoGame-compatible font rendering)
+        if (_font != null)
+        {
+            _spriteBatch.DrawString(_font, "MoonBrook Engine - Font Demo", new Vector2(10, 10), Color.White);
+            _spriteBatch.DrawString(_font, $"Particles: {_particles.Count}", new Vector2(10, 30), Color.Yellow);
+            _spriteBatch.DrawString(_font, $"Position: ({_playerPosition.X:F0}, {_playerPosition.Y:F0})", new Vector2(10, 50), Color.Cyan);
+            _spriteBatch.DrawString(_font, "Note: Font is default/stub - atlas rendering not yet implemented", new Vector2(10, 680), new Color(180, 180, 180));
+        }
         
         // End sprite batch
         _spriteBatch.End();

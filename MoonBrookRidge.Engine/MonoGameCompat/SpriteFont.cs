@@ -1,18 +1,38 @@
 namespace MoonBrookRidge.Engine.MonoGameCompat;
 
 /// <summary>
-/// MonoGame-compatible SpriteFont stub for MoonBrookEngine
-/// TODO: Implement actual font rendering
+/// MonoGame-compatible SpriteFont for MoonBrookEngine
 /// </summary>
 public class SpriteFont
 {
-    // Stub properties
-    public float LineSpacing { get; set; } = 16f;
-    public float Spacing { get; set; } = 0f;
-    public char? DefaultCharacter { get; set; } = '?';
+    internal MoonBrookEngine.Graphics.BitmapFont? InternalFont { get; set; }
+    
+    // Stub properties for compatibility
+    public float LineSpacing 
+    { 
+        get => InternalFont?.LineSpacing ?? 16f;
+        set { if (InternalFont != null) InternalFont.LineSpacing = value; }
+    }
+    
+    public float Spacing 
+    { 
+        get => InternalFont?.Spacing ?? 0f;
+        set { if (InternalFont != null) InternalFont.Spacing = value; }
+    }
+    
+    public char? DefaultCharacter 
+    { 
+        get => InternalFont?.DefaultCharacter ?? '?';
+        set { if (InternalFont != null) InternalFont.DefaultCharacter = value ?? '?'; }
+    }
     
     internal SpriteFont()
     {
+    }
+    
+    internal SpriteFont(MoonBrookEngine.Graphics.BitmapFont font)
+    {
+        InternalFont = font;
     }
     
     /// <summary>
@@ -20,8 +40,13 @@ public class SpriteFont
     /// </summary>
     public Vector2 MeasureString(string text)
     {
-        // Stub implementation - returns approximate size
-        // TODO: Implement actual text measurement
+        if (InternalFont != null)
+        {
+            var size = InternalFont.MeasureString(text);
+            return new Vector2(size.X, size.Y);
+        }
+        
+        // Fallback stub implementation
         if (string.IsNullOrEmpty(text))
             return Vector2.Zero;
         

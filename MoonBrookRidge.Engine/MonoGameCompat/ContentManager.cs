@@ -55,8 +55,11 @@ public class ContentManager : IDisposable
         }
         else if (typeof(T) == typeof(SpriteFont))
         {
-            // TODO: Implement font loading
-            throw new NotImplementedException("Font loading not yet implemented");
+            // Load font (creates default for now)
+            var engineFont = _resourceManager.LoadFont(assetName);
+            var font = new SpriteFont(engineFont);
+            _loadedAssets[assetName] = font;
+            return (T)(object)font;
         }
         
         throw new NotSupportedException($"Asset type {typeof(T).Name} is not supported");

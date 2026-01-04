@@ -11,6 +11,7 @@ public class ResourceManager : IDisposable
 {
     private readonly GL _gl;
     private readonly Dictionary<string, Texture2D> _textures;
+    private readonly Dictionary<string, BitmapFont> _fonts;
     private readonly string _rootDirectory;
     
     public string RootDirectory
@@ -23,6 +24,7 @@ public class ResourceManager : IDisposable
         _gl = gl;
         _rootDirectory = rootDirectory;
         _textures = new Dictionary<string, Texture2D>();
+        _fonts = new Dictionary<string, BitmapFont>();
     }
     
     /// <summary>
@@ -88,6 +90,53 @@ public class ResourceManager : IDisposable
     }
     
     /// <summary>
+    /// Load or create a bitmap font
+    /// For now, creates a default font since we don't have font atlas support yet
+    /// </summary>
+    public BitmapFont LoadFont(string assetName, int fontSize = 16)
+    {
+        // Normalize path separators
+        assetName = assetName.Replace('\\', '/');
+        
+        // Check if already loaded
+        if (_fonts.TryGetValue(assetName, out var cached))
+        {
+            return cached;
+        }
+        
+        // For now, create a default font
+        // TODO: Load actual font atlas from .fnt/.png files
+        var font = BitmapFont.CreateDefault(_gl, fontSize);
+        _fonts[assetName] = font;
+        
+        return font;
+    }
+    
+    /// <summary>
+    /// Unload a specific font
+    /// </summary>
+    public void UnloadFont(string assetName)
+    {
+        assetName = assetName.Replace('\\', '/');
+        
+        if (_fonts.TryGetValue(assetName, out var font))
+        {
+            font.Dispose();
+            _fonts.Remove(assetName);
+        }
+    }
+    
+    /// <summary>
+    /// Get number of loaded textures
+    /// </summary>
+    public int LoadedTextureCount => _textures.Count;
+    
+    /// <summary>
+    /// Get number of loaded fonts
+    /// </summary>
+    public int LoadedFontCount => _fonts.Count;
+    
+    /// <summary>
     /// Unload all resources
     /// </summary>
     public void UnloadAll()
@@ -97,12 +146,13 @@ public class ResourceManager : IDisposable
             texture.Dispose();
         }
         _textures.Clear();
+        
+        foreach (var font in _fonts.Values)
+        {
+            font.Dispose();
+        }
+        _fonts.Clear();
     }
-    
-    /// <summary>
-    /// Get number of loaded textures
-    /// </summary>
-    public int LoadedTextureCount => _textures.Count;
     
     public void Dispose()
     {
