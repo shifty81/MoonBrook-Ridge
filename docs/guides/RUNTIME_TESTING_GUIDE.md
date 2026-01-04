@@ -499,11 +499,11 @@ Or use the convenience script:
 - [ ] Large farms don't lag
 
 **How to Test:**
-1. Press F3 for performance monitor
+1. Press F3 to toggle performance monitor (implemented in Phase 7)
 2. Play for 30+ minutes
-3. Monitor FPS
-4. Monitor memory usage
-5. Check frame times
+3. Monitor FPS displayed in performance overlay
+4. Monitor memory usage in performance overlay
+5. Check frame times in performance overlay
 
 **Performance Targets:**
 - FPS: 60 (constant)

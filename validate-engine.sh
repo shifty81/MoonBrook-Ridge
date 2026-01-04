@@ -95,9 +95,9 @@ done
 echo ""
 echo "🎮 Checking game entry point..."
 if grep -q "MoonBrookRidge.Engine.MonoGameCompat" MoonBrookRidge/Program.cs; then
-    print_status 0 "Game1.cs uses custom engine namespace"
+    print_status 0 "Program.cs uses custom engine namespace"
 else
-    print_status 1 "Game1.cs not using custom engine namespace"
+    print_status 1 "Program.cs not using custom engine namespace"
 fi
 
 # 6. Check for MonoGame dependencies
@@ -155,10 +155,11 @@ fi
 # 9. Check for executable
 echo ""
 echo "🚀 Checking executable..."
-if [ -x "MoonBrookRidge/bin/Debug/net9.0/MoonBrookRidge" ]; then
-    print_status 0 "Game executable exists and is executable"
+# Check for both Unix and Windows executables
+if [ -x "MoonBrookRidge/bin/Debug/net9.0/MoonBrookRidge" ] || [ -f "MoonBrookRidge/bin/Debug/net9.0/MoonBrookRidge.exe" ]; then
+    print_status 0 "Game executable exists"
 else
-    print_status 1 "Game executable not found or not executable"
+    print_status 1 "Game executable not found"
 fi
 
 # 10. Validate key engine implementations
