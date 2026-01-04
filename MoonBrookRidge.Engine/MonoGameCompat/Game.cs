@@ -18,6 +18,11 @@ public abstract class Game : IDisposable
     public GraphicsDevice GraphicsDevice => _graphics?.GraphicsDevice ?? throw new InvalidOperationException("GraphicsDevice not initialized");
     public ContentManager Content => _content ?? throw new InvalidOperationException("Content not initialized");
     
+    /// <summary>
+    /// Internal engine instance (for compatibility layer use)
+    /// </summary>
+    internal MoonBrookEngine.Core.Engine? Engine => _engine;
+    
     private string _contentRootDirectory = "Content";
     
     /// <summary>
@@ -82,6 +87,10 @@ public abstract class Game : IDisposable
         
         // Create content manager with audio engine support
         _content = new ContentManager(_engine.GL, _engine.AudioEngine, _contentRootDirectory);
+        
+        // Initialize static input classes
+        Keyboard.Initialize(this);
+        Mouse.Initialize(this);
         
         // Call game initialization
         if (!_isInitialized)

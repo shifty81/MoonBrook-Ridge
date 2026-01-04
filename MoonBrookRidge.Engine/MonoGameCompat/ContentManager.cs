@@ -1,4 +1,5 @@
 using Silk.NET.OpenGL;
+using System;
 
 namespace MoonBrookRidge.Engine.MonoGameCompat;
 
@@ -60,6 +61,23 @@ public class ContentManager : IDisposable
             var font = new SpriteFont(engineFont);
             _loadedAssets[assetName] = font;
             return (T)(object)font;
+        }
+        else if (typeof(T) == typeof(SoundEffect))
+        {
+            // Load sound effect
+            var engineSound = _resourceManager.LoadSoundEffect(assetName);
+            if (engineSound == null)
+                throw new System.IO.FileNotFoundException($"Sound effect not found: {assetName}");
+            var sound = new SoundEffect(engineSound);
+            _loadedAssets[assetName] = sound;
+            return (T)(object)sound;
+        }
+        else if (typeof(T) == typeof(Song))
+        {
+            // Load song (stub for now)
+            var song = new Song(assetName, TimeSpan.Zero);
+            _loadedAssets[assetName] = song;
+            return (T)(object)song;
         }
         
         throw new NotSupportedException($"Asset type {typeof(T).Name} is not supported");
