@@ -1,0 +1,127 @@
+using Silk.NET.Windowing;
+using Silk.NET.OpenGL;
+using Silk.NET.Input;
+using Silk.NET.Maths;
+
+namespace MoonBrookEngine.Core;
+
+/// <summary>
+/// Core game engine class - manages window, rendering context, and game loop
+/// </summary>
+public class Engine : IDisposable
+{
+    private IWindow _window;
+    private GL? _gl;
+    private IInputContext? _inputContext;
+    private bool _isRunning;
+    private double _totalTime;
+    
+    public int Width { get; private set; }
+    public int Height { get; private set; }
+    public string Title { get; private set; }
+    public GL GL => _gl ?? throw new InvalidOperationException("OpenGL context not initialized");
+    public IInputContext Input => _inputContext ?? throw new InvalidOperationException("Input context not initialized");
+    
+    // Events for derived classes or game logic
+    public event Action? OnInitialize;
+    public event Action<GameTime>? OnUpdate;
+    public event Action<GameTime>? OnRender;
+    public event Action? OnShutdown;
+    
+    public Engine(string title, int width, int height)
+    {
+        Title = title;
+        Width = width;
+        Height = height;
+        _totalTime = 0.0;
+        
+        var options = WindowOptions.Default;
+        options.Size = new Vector2D<int>(width, height);
+        options.Title = title;
+        options.VSync = true;
+        options.PreferredDepthBufferBits = 24;
+        
+        _window = Window.Create(options);
+        
+        _window.Load += OnLoad;
+        _window.Update += OnUpdateInternal;
+        _window.Render += OnRenderInternal;
+        _window.Closing += OnClosing;
+        _window.Resize += OnResize;
+    }
+    
+    public void Run()
+    {
+        _isRunning = true;
+        _window.Run();
+    }
+    
+    public void Stop()
+    {
+        _isRunning = false;
+        _window?.Close();
+    }
+    
+    private void OnLoad()
+    {
+        // Initialize OpenGL
+        _gl = _window.CreateOpenGL();
+        _gl.ClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        _gl.Enable(EnableCap.Blend);
+        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        
+        // Initialize input
+        _inputContext = _window.CreateInput();
+        
+        Console.WriteLine($"MoonBrook Engine initialized");
+        Console.WriteLine($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
+        Console.WriteLine($"OpenGL Renderer: {_gl.GetStringS(StringName.Renderer)}");
+        
+        // Call initialization hook
+        OnInitialize?.Invoke();
+    }
+    
+    private void OnUpdateInternal(double deltaTime)
+    {
+        if (!_isRunning) return;
+        
+        _totalTime += deltaTime;
+        
+        var gameTime = new GameTime(_totalTime, deltaTime);
+        OnUpdate?.Invoke(gameTime);
+    }
+    
+    private void OnRenderInternal(double deltaTime)
+    {
+        if (!_isRunning || _gl == null) return;
+        
+        _gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+        
+        var gameTime = new GameTime(_totalTime, deltaTime);
+        OnRender?.Invoke(gameTime);
+    }
+    
+    private void OnResize(Vector2D<int> newSize)
+    {
+        Width = newSize.X;
+        Height = newSize.Y;
+        
+        if (_gl != null)
+        {
+            _gl.Viewport(0, 0, (uint)Width, (uint)Height);
+        }
+    }
+    
+    private void OnClosing()
+    {
+        OnShutdown?.Invoke();
+        Dispose();
+    }
+    
+    public void Dispose()
+    {
+        _inputContext?.Dispose();
+        _gl?.Dispose();
+        _window?.Dispose();
+    }
+}
