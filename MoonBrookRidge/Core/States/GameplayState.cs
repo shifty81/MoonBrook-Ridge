@@ -1036,8 +1036,8 @@ public class GameplayState : GameState
         _fishingManager.OnFishCaught += (fish) =>
         {
             // Determine rarity from fish name/description
-            string rarity = DetermineFishRarity(fish.Name);
-            _skillProgressionSystem?.OnFishCaught(rarity);
+            (bool isRare, bool isLegendary) = DetermineFishRarity(fish.Name);
+            _skillProgressionSystem?.OnFishCaught(fish.Name, isRare, isLegendary);
         };
         
         // Link managers to tool manager
@@ -3237,15 +3237,16 @@ public class GameplayState : GameState
     
     /// <summary>
     /// Determine fish rarity based on name for skill progression XP calculation.
+    /// Returns (isRare, isLegendary) tuple.
     /// </summary>
-    private string DetermineFishRarity(string fishName)
+    private (bool isRare, bool isLegendary) DetermineFishRarity(string fishName)
     {
         // Legendary fish names (high rarity)
         string[] legendaryFish = { "Legend", "Crimsonfish", "Angler", "Glacierfish", "Mutant Carp" };
         foreach (var legendary in legendaryFish)
         {
             if (fishName.Contains(legendary, StringComparison.OrdinalIgnoreCase))
-                return "legendary";
+                return (false, true); // isRare=false, isLegendary=true
         }
         
         // Rare fish names (medium rarity)
@@ -3253,10 +3254,10 @@ public class GameplayState : GameState
         foreach (var rare in rareFish)
         {
             if (fishName.Contains(rare, StringComparison.OrdinalIgnoreCase))
-                return "rare";
+                return (true, false); // isRare=true, isLegendary=false
         }
         
         // All other fish are common
-        return "common";
+        return (false, false); // Neither rare nor legendary
     }
 }
