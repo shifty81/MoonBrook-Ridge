@@ -108,6 +108,7 @@ public class GameplayState : GameState
     private World.Mining.UndergroundCraftingSystem _undergroundCraftingSystem;
     private UI.Menus.UndergroundCraftingMenu _undergroundCraftingMenu;
     private World.Mining.AutomationSystem _automationSystem;
+    private UI.Menus.AutomationPlacementMenu _automationPlacementMenu;
     private World.Mining.ExpandedOreSystem _expandedOreSystem;
     private FastTravelMenu _fastTravelMenu; // Legacy - kept for backwards compatibility
     private MapMenu _mapMenu; // New consolidated map interface (M key)
@@ -738,6 +739,8 @@ public class GameplayState : GameState
             // Can be disabled if too spammy
         };
         
+        _automationPlacementMenu = new UI.Menus.AutomationPlacementMenu(_automationSystem, _undergroundCraftingSystem, _inventory);
+        
         _expandedOreSystem = new World.Mining.ExpandedOreSystem();
         
         // Initialize fast travel menu (legacy)
@@ -1013,6 +1016,7 @@ public class GameplayState : GameState
         
         // Initialize Phase 10 UI components
         _undergroundCraftingMenu.Initialize(_pixelTexture);
+        _automationPlacementMenu.Initialize(_pixelTexture);
         
         // Initialize starter quests
         InitializeQuests();
@@ -1116,6 +1120,13 @@ public class GameplayState : GameState
             _buildingMenu.Update(gameTime, _player.Money);
             _previousKeyboardState = keyboardState;
             return; // Don't update game while in building menu
+        }
+        
+        if (_automationPlacementMenu.IsActive)
+        {
+            _automationPlacementMenu.Update(gameTime, _player.Position);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in automation menu
         }
         
         if (_achievementMenu.IsVisible)
@@ -1284,6 +1295,14 @@ public class GameplayState : GameState
             return;
         }
         
+        // Automation Placement menu (N key) - Phase 10: Device Placement
+        if (keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N))
+        {
+            _automationPlacementMenu.Toggle();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
         // Furniture menu (U key) - Phase 10: Building Interior Detection
         if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
         {
@@ -1351,6 +1370,14 @@ public class GameplayState : GameState
         if (_buildingMenu.IsPlacementMode)
         {
             HandleBuildingPlacement();
+            _previousKeyboardState = keyboardState;
+            return; // Don't update other game logic during placement
+        }
+        
+        // Handle automation device placement mode
+        if (_automationPlacementMenu.IsPlacementMode)
+        {
+            HandleAutomationPlacement();
             _previousKeyboardState = keyboardState;
             return; // Don't update other game logic during placement
         }
@@ -2176,6 +2203,54 @@ public class GameplayState : GameState
         _previousMouseState = mouseState;
     }
     
+    private void HandleAutomationPlacement()
+    {
+        var mouseState = Mouse.GetState();
+        var keyboardState = Keyboard.GetState();
+        
+        // Get tile position under mouse cursor
+        Vector2 mouseWorldPos = GetMouseWorldPosition();
+        Vector2 tilePos = new Vector2(
+            (int)(mouseWorldPos.X / GameConstants.TILE_SIZE),
+            (int)(mouseWorldPos.Y / GameConstants.TILE_SIZE)
+        );
+        
+        // R key to rotate direction (for conveyors)
+        if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
+        {
+            _automationPlacementMenu.RotateDirection();
+        }
+        
+        // Left click to place device
+        if (mouseState.LeftButton == ButtonState.Pressed && 
+            _previousMouseState.LeftButton == ButtonState.Released)
+        {
+            // Convert tile position to world position in pixels
+            Vector2 worldPos = tilePos * GameConstants.TILE_SIZE;
+            
+            if (_automationPlacementMenu.TryPlaceDevice(worldPos))
+            {
+                _automationPlacementMenu.ExitPlacementMode();
+                _notificationSystem?.Show("Device placed successfully!", NotificationType.Success, 2.0f);
+            }
+            else
+            {
+                _notificationSystem?.Show("Cannot place device here!", NotificationType.Warning, 2.0f);
+            }
+        }
+        
+        // Right click or Escape to cancel placement
+        if ((mouseState.RightButton == ButtonState.Pressed && 
+             _previousMouseState.RightButton == ButtonState.Released) ||
+            (keyboardState.IsKeyDown(Keys.Escape) && 
+             !_previousKeyboardState.IsKeyDown(Keys.Escape)))
+        {
+            _automationPlacementMenu.ExitPlacementMode();
+        }
+        
+        _previousMouseState = mouseState;
+    }
+    
     private Vector2 GetMouseWorldPosition()
     {
         var mouseState = Mouse.GetState();
@@ -2399,6 +2474,13 @@ public class GameplayState : GameState
                                               _camera.Position, _camera.Zoom);
         }
         
+        // Draw automation device placement preview (in world space with camera transform)
+        if (_automationPlacementMenu.IsPlacementMode)
+        {
+            Vector2 mouseWorldPos = GetMouseWorldPosition();
+            _automationPlacementMenu.DrawPlacementPreview(spriteBatch, mouseWorldPos, _camera);
+        }
+        
         spriteBatch.End();
         
         // Draw biome screen tint overlay (between world and UI)
@@ -2480,6 +2562,11 @@ public class GameplayState : GameState
         if (_buildingMenu.IsActive_Menu)
         {
             _buildingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice, _player.Money);
+        }
+        
+        if (_automationPlacementMenu.IsActive)
+        {
+            _automationPlacementMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         if (_achievementMenu.IsVisible)
