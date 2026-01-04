@@ -103,7 +103,7 @@ public class DemoGame : Game
     
     protected override void Update(GameTime gameTime)
     {
-        float deltaTime = (float)gameTime.ElapsedGameTime;
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
         
         // Simple particle system - spawn particles continuously
         if (_particles.Count < 500)
@@ -144,9 +144,9 @@ public class DemoGame : Game
         }
         
         // Simple stats display (throttled to reduce console spam)
-        if ((int)gameTime.TotalGameTime % StatsUpdateInterval == 0 && gameTime.TotalGameTime > 0.1)
+        if ((int)gameTime.TotalGameTime.TotalSeconds % StatsUpdateInterval == 0 && gameTime.TotalGameTime.TotalSeconds > 0.1)
         {
-            if ((int)(gameTime.TotalGameTime * TimeCheckModulo) % ThrottleThreshold < 2)
+            if ((int)(gameTime.TotalGameTime.TotalSeconds * TimeCheckModulo) % ThrottleThreshold < 2)
             {
                 // Calculate actual FPS from delta time
                 float fps = deltaTime > 0 ? 1.0f / deltaTime : 0;
