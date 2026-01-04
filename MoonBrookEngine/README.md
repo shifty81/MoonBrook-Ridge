@@ -147,10 +147,24 @@ engine.Run();
 - [x] SoundEffect and SoundEffectInstance classes
 - [x] Audio integration with ResourceManager
 
-### Week 6+ (In Progress)
-- [ ] Scene Management System
-- [ ] Entity Component System (ECS)
-- [ ] Collision detection with spatial partitioning
+### Week 6 (✅ Complete)
+- [x] Scene Management System
+- [x] Entity Component System (ECS)
+- [x] Collision detection with spatial partitioning
+- [x] Built-in components (Transform, Sprite, Collider)
+- [x] World entity management
+
+### Week 7 (✅ Complete)
+- [x] Physics System with forces and gravity
+- [x] VelocityComponent and PhysicsComponent
+- [x] Collision response with impulses
+- [x] Drag and restitution simulation
+- [x] Physics test scene
+
+### Week 7+ (In Progress)
+- [ ] Additional components (Animation, Particle, Audio)
+- [ ] Rendering improvements (sprite sorting, frustum culling)
+- [ ] Advanced physics (friction, angular velocity, constraints)
 - [ ] Particle system
 - [ ] Advanced resource management
 

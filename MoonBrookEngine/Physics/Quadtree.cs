@@ -15,7 +15,7 @@ public class Quadtree<T> where T : class
     private readonly int _level;
     private readonly Rectangle _bounds;
     private readonly List<QuadtreeObject> _objects;
-    private readonly Quadtree<T>[] _nodes;
+    private readonly Quadtree<T>?[] _nodes;
     
     public struct QuadtreeObject
     {
@@ -28,7 +28,7 @@ public class Quadtree<T> where T : class
         _level = level;
         _bounds = bounds;
         _objects = new List<QuadtreeObject>();
-        _nodes = new Quadtree<T>[4];
+        _nodes = new Quadtree<T>?[4];
     }
     
     public Quadtree(Rectangle bounds) : this(0, bounds)
@@ -46,7 +46,7 @@ public class Quadtree<T> where T : class
         {
             if (_nodes[i] != null)
             {
-                _nodes[i].Clear();
+                _nodes[i]!.Clear();
                 _nodes[i] = null;
             }
         }
@@ -109,7 +109,7 @@ public class Quadtree<T> where T : class
             
             if (index != -1)
             {
-                _nodes[index].Insert(bounds, data);
+                _nodes[index]!.Insert(bounds, data);
                 return;
             }
         }
@@ -128,7 +128,7 @@ public class Quadtree<T> where T : class
                 if (index != -1)
                 {
                     var obj = _objects[i];
-                    _nodes[index].Insert(obj.Bounds, obj.Data);
+                    _nodes[index]!.Insert(obj.Bounds, obj.Data);
                     _objects.RemoveAt(i);
                 }
                 else
@@ -154,7 +154,7 @@ public class Quadtree<T> where T : class
         int index = GetIndex(bounds);
         if (index != -1 && _nodes[0] != null)
         {
-            _nodes[index].Retrieve(bounds, returnObjects);
+            _nodes[index]!.Retrieve(bounds, returnObjects);
         }
         
         foreach (var obj in _objects)
