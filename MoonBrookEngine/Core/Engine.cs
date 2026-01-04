@@ -19,6 +19,9 @@ public class Engine : IDisposable
     private bool _isRunning;
     private double _totalTime;
     private PerformanceMonitor _performanceMonitor;
+    private Logger _logger;
+    private DebugOverlay _debugOverlay;
+    private ObjectPoolManager _poolManager;
     
     public int Width { get; private set; }
     public int Height { get; private set; }
@@ -29,6 +32,9 @@ public class Engine : IDisposable
     public Audio.AudioEngine? AudioEngine => _audioEngine;
     public PerformanceMonitor Performance => _performanceMonitor;
     public Scene.SceneManager? SceneManager => _sceneManager;
+    public Logger Logger => _logger;
+    public DebugOverlay DebugOverlay => _debugOverlay;
+    public ObjectPoolManager PoolManager => _poolManager;
     
     // Events for derived classes or game logic
     public event Action? OnInitialize;
@@ -43,6 +49,11 @@ public class Engine : IDisposable
         Height = height;
         _totalTime = 0.0;
         _performanceMonitor = new PerformanceMonitor();
+        _logger = LoggerFactory.GetLogger("Engine");
+        _debugOverlay = new DebugOverlay(_performanceMonitor);
+        _poolManager = new ObjectPoolManager();
+        
+        _logger.Info($"Initializing MoonBrook Engine: {title} ({width}x{height})");
         
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
@@ -73,30 +84,39 @@ public class Engine : IDisposable
     
     private void OnLoad()
     {
+        _logger.Info("Initializing OpenGL context");
+        
         // Initialize OpenGL
         _gl = _window.CreateOpenGL();
         _gl.ClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         
+        _logger.Info($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
+        _logger.Info($"OpenGL Renderer: {_gl.GetStringS(StringName.Renderer)}");
+        
         // Initialize input
         _inputContext = _window.CreateInput();
         _inputManager = new Input.InputManager(_inputContext);
+        _logger.Info("Input system initialized");
         
         // Initialize audio (optional - may fail on headless systems)
         _audioEngine = new Audio.AudioEngine();
         if (!_audioEngine.Initialize())
         {
-            Console.WriteLine("⚠️  Audio engine initialization failed - audio will be disabled");
+            _logger.Warning("Audio engine initialization failed - audio will be disabled");
             _audioEngine = null;
+        }
+        else
+        {
+            _logger.Info("Audio engine initialized");
         }
         
         // Initialize scene manager (optional - for state-based games)
         _sceneManager = new Scene.SceneManager(_gl);
+        _logger.Info("Scene manager initialized");
         
-        Console.WriteLine($"MoonBrook Engine initialized");
-        Console.WriteLine($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
-        Console.WriteLine($"OpenGL Renderer: {_gl.GetStringS(StringName.Renderer)}");
+        _logger.Info("✅ MoonBrook Engine ready");
         
         // Call initialization hook
         OnInitialize?.Invoke();
