@@ -65,10 +65,10 @@ public class PhysicsSystem
                 // Apply acceleration to velocity
                 velocity.Velocity += velocity.Acceleration * deltaTime;
                 
-                // Apply drag
+                // Apply drag using exponential decay (more efficient than Pow)
                 if (physics.Drag > 0)
                 {
-                    var dragFactor = MathF.Pow(1.0f - physics.Drag, deltaTime);
+                    var dragFactor = MathF.Exp(-physics.Drag * deltaTime);
                     velocity.Velocity *= dragFactor;
                 }
                 
@@ -102,14 +102,16 @@ public class PhysicsSystem
     /// </summary>
     private void ResolveCollisions()
     {
-        var colliderEntities = _world.GetEntitiesWith<ColliderComponent, TransformComponent>().ToList();
+        // Avoid ToList() allocation by materializing only once or using array
+        var colliderEntities = _world.GetEntitiesWith<ColliderComponent, TransformComponent>();
+        var entityArray = colliderEntities as Entity[] ?? colliderEntities.ToArray();
         
-        for (int i = 0; i < colliderEntities.Count; i++)
+        for (int i = 0; i < entityArray.Length; i++)
         {
-            for (int j = i + 1; j < colliderEntities.Count; j++)
+            for (int j = i + 1; j < entityArray.Length; j++)
             {
-                var entity1 = colliderEntities[i];
-                var entity2 = colliderEntities[j];
+                var entity1 = entityArray[i];
+                var entity2 = entityArray[j];
                 
                 var collider1 = _world.GetComponent<ColliderComponent>(entity1);
                 var collider2 = _world.GetComponent<ColliderComponent>(entity2);
@@ -160,13 +162,28 @@ public class PhysicsSystem
                             if (velocity2 != null && physics2 != null && !physics2.IsStatic)
                                 velocity2.Velocity -= impulse;
                             
-                            // Separate objects to prevent overlap
-                            var separation = (collider1.Shape.GetBounds(transform1.Position).Width / 2 + 
-                                            collider2.Shape.GetBounds(transform2.Position).Width / 2) * 0.01f;
+                            // Separate objects to prevent overlap (use simple approximation)
+                            // For circles, use radius; for rectangles, use half-width
+                            // This is more efficient than calling GetBounds() twice
+                            float separation1 = 16f; // Default approximate size
+                            float separation2 = 16f;
+                            
+                            if (collider1.Shape is CircleCollisionShape circle1)
+                                separation1 = circle1.Radius;
+                            else if (collider1.Shape is RectangleCollisionShape rect1)
+                                separation1 = MathF.Max(rect1.Width, rect1.Height) / 2;
+                            
+                            if (collider2.Shape is CircleCollisionShape circle2)
+                                separation2 = circle2.Radius;
+                            else if (collider2.Shape is RectangleCollisionShape rect2)
+                                separation2 = MathF.Max(rect2.Width, rect2.Height) / 2;
+                            
+                            var totalSeparation = (separation1 + separation2) * 0.01f;
+                            
                             if (!physics1.IsStatic)
-                                transform1.Position += normal * separation;
+                                transform1.Position += normal * totalSeparation;
                             if (physics2 != null && !physics2.IsStatic)
-                                transform2.Position -= normal * separation;
+                                transform2.Position -= normal * totalSeparation;
                         }
                     }
                 }
