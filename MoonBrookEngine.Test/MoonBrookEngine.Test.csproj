@@ -10,6 +10,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <StartupObject>MoonBrookEngine.Test.ProgramPhysicsDemo</StartupObject>
   </PropertyGroup>
 
 </Project>
