@@ -13,6 +13,7 @@ public class Engine : IDisposable
     private IWindow _window;
     private GL? _gl;
     private IInputContext? _inputContext;
+    private Input.InputManager? _inputManager;
     private bool _isRunning;
     private double _totalTime;
     private PerformanceMonitor _performanceMonitor;
@@ -22,6 +23,7 @@ public class Engine : IDisposable
     public string Title { get; private set; }
     public GL GL => _gl ?? throw new InvalidOperationException("OpenGL context not initialized");
     public IInputContext Input => _inputContext ?? throw new InvalidOperationException("Input context not initialized");
+    public Input.InputManager InputManager => _inputManager ?? throw new InvalidOperationException("Input manager not initialized");
     public PerformanceMonitor Performance => _performanceMonitor;
     
     // Events for derived classes or game logic
@@ -75,6 +77,7 @@ public class Engine : IDisposable
         
         // Initialize input
         _inputContext = _window.CreateInput();
+        _inputManager = new Input.InputManager(_inputContext);
         
         Console.WriteLine($"MoonBrook Engine initialized");
         Console.WriteLine($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
@@ -89,6 +92,9 @@ public class Engine : IDisposable
         if (!_isRunning) return;
         
         _performanceMonitor.BeginUpdate();
+        
+        // Update input state
+        _inputManager?.Update();
         
         _totalTime += deltaTime;
         
