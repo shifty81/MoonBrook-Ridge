@@ -15,6 +15,7 @@ public class Engine : IDisposable
     private IInputContext? _inputContext;
     private Input.InputManager? _inputManager;
     private Audio.AudioEngine? _audioEngine;
+    private Scene.SceneManager? _sceneManager;
     private bool _isRunning;
     private double _totalTime;
     private PerformanceMonitor _performanceMonitor;
@@ -27,6 +28,7 @@ public class Engine : IDisposable
     public Input.InputManager InputManager => _inputManager ?? throw new InvalidOperationException("Input manager not initialized");
     public Audio.AudioEngine? AudioEngine => _audioEngine;
     public PerformanceMonitor Performance => _performanceMonitor;
+    public Scene.SceneManager? SceneManager => _sceneManager;
     
     // Events for derived classes or game logic
     public event Action? OnInitialize;
@@ -89,6 +91,9 @@ public class Engine : IDisposable
             _audioEngine = null;
         }
         
+        // Initialize scene manager (optional - for state-based games)
+        _sceneManager = new Scene.SceneManager(_gl);
+        
         Console.WriteLine($"MoonBrook Engine initialized");
         Console.WriteLine($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
         Console.WriteLine($"OpenGL Renderer: {_gl.GetStringS(StringName.Renderer)}");
@@ -109,6 +114,10 @@ public class Engine : IDisposable
         _totalTime += deltaTime;
         
         var gameTime = new GameTime(_totalTime, deltaTime);
+        
+        // Update scene manager if it's being used
+        _sceneManager?.Update(gameTime);
+        
         OnUpdate?.Invoke(gameTime);
         
         _performanceMonitor.EndUpdate();
@@ -123,6 +132,10 @@ public class Engine : IDisposable
         _gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         
         var gameTime = new GameTime(_totalTime, deltaTime);
+        
+        // Render scene manager if it's being used
+        _sceneManager?.Render(gameTime);
+        
         OnRender?.Invoke(gameTime);
         
         _performanceMonitor.EndRender();
@@ -148,6 +161,7 @@ public class Engine : IDisposable
     
     public void Dispose()
     {
+        _sceneManager?.Dispose();
         _audioEngine?.Dispose();
         _inputContext?.Dispose();
         _gl?.Dispose();
