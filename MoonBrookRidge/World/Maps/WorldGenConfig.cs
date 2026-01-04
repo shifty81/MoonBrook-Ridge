@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Collections.Generic;
 using MoonBrookRidge.World.Tiles;
 
@@ -90,7 +91,7 @@ public static class WorldGenConfigApplier
             for (int y = 0; y < config.Height; y++)
             {
                 TileType tileType = SelectTileType(config.DefaultTerrain.TileWeights, random);
-                tiles[x, y] = new Tile(tileType, new Microsoft.Xna.Framework.Vector2(x, y));
+                tiles[x, y] = new Tile(tileType, new Vector2(x, y));
             }
         }
         
@@ -111,7 +112,7 @@ public static class WorldGenConfigApplier
             config.MineEntrance.Y >= 0 && config.MineEntrance.Y < config.Height)
         {
             tiles[config.MineEntrance.X, config.MineEntrance.Y] = 
-                new Tile(TileType.MineEntrance, new Microsoft.Xna.Framework.Vector2(config.MineEntrance.X, config.MineEntrance.Y));
+                new Tile(TileType.MineEntrance, new Vector2(config.MineEntrance.X, config.MineEntrance.Y));
         }
         
         return tiles;
@@ -129,7 +130,7 @@ public static class WorldGenConfigApplier
                 if (IsInBiome(x, y, biome))
                 {
                     TileType tileType = SelectTileType(biome.TileWeights, random);
-                    tiles[x, y] = new Tile(tileType, new Microsoft.Xna.Framework.Vector2(x, y));
+                    tiles[x, y] = new Tile(tileType, new Vector2(x, y));
                 }
             }
         }
@@ -196,7 +197,7 @@ public static class WorldGenConfigApplier
                     if (px >= 0 && px < width && py >= 0 && py < height)
                     {
                         TileType tileType = SelectTileType(path.TileWeights, random);
-                        tiles[px, py] = new Tile(tileType, new Microsoft.Xna.Framework.Vector2(px, py));
+                        tiles[px, py] = new Tile(tileType, new Vector2(px, py));
                     }
                 }
             }

@@ -41,6 +41,16 @@ public struct Color : IEquatable<Color>
     public static readonly Color Silver = new Color(192, 192, 192, 255);
     public static readonly Color Violet = new Color(238, 130, 238, 255);
     public static readonly Color LightYellow = new Color(255, 255, 224, 255);
+    public static readonly Color DarkGoldenrod = new Color(184, 134, 11, 255);
+    public static readonly Color DarkOliveGreen = new Color(85, 107, 47, 255);
+    public static readonly Color DarkBlue = new Color(0, 0, 139, 255);
+    public static readonly Color YellowGreen = new Color(154, 205, 50, 255);
+    public static readonly Color LightSeaGreen = new Color(32, 178, 170, 255);
+    public static readonly Color Pink = new Color(255, 192, 203, 255);
+    public static readonly Color MediumPurple = new Color(147, 112, 219, 255);
+    public static readonly Color LightPink = new Color(255, 182, 193, 255);
+    public static readonly Color DarkSlateGray = new Color(47, 79, 79, 255);
+    public static readonly Color SaddleBrown = new Color(139, 69, 19, 255);
     
     public Color(byte r, byte g, byte b, byte a = 255)
     {

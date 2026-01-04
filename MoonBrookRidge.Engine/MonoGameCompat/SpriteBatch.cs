@@ -157,6 +157,58 @@ public class SpriteBatch : IDisposable
         );
     }
     
+    // Full Draw overload with destination rectangle and all parameters
+    public void Draw(
+        Texture2D texture,
+        Rectangle destinationRectangle,
+        Rectangle? sourceRectangle,
+        Color color,
+        float rotation,
+        Vector2 origin,
+        SpriteEffects effects,
+        float layerDepth)
+    {
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin must be called before Draw.");
+        
+        // Convert destination rectangle to position
+        var position = new MoonBrookEngine.Math.Vector2(destinationRectangle.X, destinationRectangle.Y);
+        
+        MoonBrookEngine.Math.Rectangle? srcRect = null;
+        if (sourceRectangle.HasValue)
+        {
+            var src = sourceRectangle.Value;
+            srcRect = new MoonBrookEngine.Math.Rectangle(src.X, src.Y, src.Width, src.Height);
+        }
+        
+        // Calculate scale based on destination vs source (or texture) size
+        float srcWidth = sourceRectangle?.Width ?? texture.Width;
+        float srcHeight = sourceRectangle?.Height ?? texture.Height;
+        
+        var scale = new MoonBrookEngine.Math.Vector2(
+            destinationRectangle.Width / srcWidth,
+            destinationRectangle.Height / srcHeight
+        );
+        
+        // Convert effects to flags (bit field)
+        float flipFlags = 0f;
+        if ((effects & SpriteEffects.FlipHorizontally) != 0)
+            flipFlags += 1f;
+        if ((effects & SpriteEffects.FlipVertically) != 0)
+            flipFlags += 2f;
+        
+        _engineBatch.Draw(
+            texture.InternalTexture,
+            position,
+            srcRect,
+            color,
+            rotation,
+            origin,
+            scale,
+            flipFlags
+        );
+    }
+    
     // Full Draw overload with all parameters
     public void Draw(
         Texture2D texture,

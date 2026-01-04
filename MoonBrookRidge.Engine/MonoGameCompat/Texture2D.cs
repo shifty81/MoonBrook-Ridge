@@ -21,6 +21,21 @@ public class Texture2D : IDisposable
     }
     
     /// <summary>
+    /// Load a texture from a file stream
+    /// </summary>
+    public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
+    {
+        // Load texture using StbImageSharp (same as MoonBrookEngine)
+        StbImageSharp.StbImage.stbi_set_flip_vertically_on_load(1);
+        var image = StbImageSharp.ImageResult.FromStream(stream, StbImageSharp.ColorComponents.RedGreenBlueAlpha);
+        
+        var gl = graphicsDevice.GetInternalGL();
+        var engineTexture = new MoonBrookEngine.Graphics.Texture2D(gl, image.Data, image.Width, image.Height);
+        
+        return new Texture2D(engineTexture);
+    }
+    
+    /// <summary>
     /// Creates a new Texture2D with the specified width and height
     /// </summary>
     public Texture2D(GraphicsDevice graphicsDevice, int width, int height)

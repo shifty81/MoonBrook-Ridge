@@ -199,6 +199,12 @@ public class GameTime
         TotalGameTime = TimeSpan.FromSeconds(totalSeconds);
         ElapsedGameTime = TimeSpan.FromSeconds(elapsedSeconds);
     }
+    
+    public GameTime(TimeSpan totalGameTime, TimeSpan elapsedGameTime)
+    {
+        TotalGameTime = totalGameTime;
+        ElapsedGameTime = elapsedGameTime;
+    }
 }
 
 /// <summary>

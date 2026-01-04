@@ -67,4 +67,12 @@ public struct Point
     {
         return new Vector2(X, Y);
     }
+    
+    /// <summary>
+    /// Implicit conversion from Point to Vector2
+    /// </summary>
+    public static implicit operator Vector2(Point point)
+    {
+        return new Vector2(point.X, point.Y);
+    }
 }
