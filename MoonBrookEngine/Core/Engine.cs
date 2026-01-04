@@ -13,14 +13,18 @@ public class Engine : IDisposable
     private IWindow _window;
     private GL? _gl;
     private IInputContext? _inputContext;
+    private Input.InputManager? _inputManager;
     private bool _isRunning;
     private double _totalTime;
+    private PerformanceMonitor _performanceMonitor;
     
     public int Width { get; private set; }
     public int Height { get; private set; }
     public string Title { get; private set; }
     public GL GL => _gl ?? throw new InvalidOperationException("OpenGL context not initialized");
     public IInputContext Input => _inputContext ?? throw new InvalidOperationException("Input context not initialized");
+    public Input.InputManager InputManager => _inputManager ?? throw new InvalidOperationException("Input manager not initialized");
+    public PerformanceMonitor Performance => _performanceMonitor;
     
     // Events for derived classes or game logic
     public event Action? OnInitialize;
@@ -34,6 +38,7 @@ public class Engine : IDisposable
         Width = width;
         Height = height;
         _totalTime = 0.0;
+        _performanceMonitor = new PerformanceMonitor();
         
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
@@ -72,6 +77,7 @@ public class Engine : IDisposable
         
         // Initialize input
         _inputContext = _window.CreateInput();
+        _inputManager = new Input.InputManager(_inputContext);
         
         Console.WriteLine($"MoonBrook Engine initialized");
         Console.WriteLine($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
@@ -85,20 +91,32 @@ public class Engine : IDisposable
     {
         if (!_isRunning) return;
         
+        _performanceMonitor.BeginUpdate();
+        
+        // Update input state
+        _inputManager?.Update();
+        
         _totalTime += deltaTime;
         
         var gameTime = new GameTime(_totalTime, deltaTime);
         OnUpdate?.Invoke(gameTime);
+        
+        _performanceMonitor.EndUpdate();
     }
     
     private void OnRenderInternal(double deltaTime)
     {
         if (!_isRunning || _gl == null) return;
         
+        _performanceMonitor.BeginRender();
+        
         _gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         
         var gameTime = new GameTime(_totalTime, deltaTime);
         OnRender?.Invoke(gameTime);
+        
+        _performanceMonitor.EndRender();
+        _performanceMonitor.EndFrame();
     }
     
     private void OnResize(Vector2D<int> newSize)

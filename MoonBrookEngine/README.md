@@ -22,10 +22,9 @@ MoonBrook Engine is a lightweight, high-performance 2D game engine designed spec
 - **Color System**: RGBA color with normalization and common presets
 
 ### In Progress
-- Sprite Batching (reduces draw calls by 10x)
-- Camera2D with zoom and pan
-- Particle System
-- Audio System
+- Input Manager (keyboard and mouse abstraction)
+- Font Rendering (bitmap fonts)
+- Resource Manager
 
 ## Technology Stack
 
@@ -127,18 +126,26 @@ engine.Run();
 - [x] Input system integration
 - [x] Test application
 
-### Week 2-3 (In Progress)
-- [ ] SpriteBatch with automatic batching
-- [ ] Camera2D with zoom and pan
-- [ ] Rectangle and Vector2 math types
-- [ ] Font rendering (TrueType via FreeType)
-- [ ] Performance profiling
+### Week 2 (✅ Complete)
+- [x] SpriteBatch with automatic batching
+- [x] Camera2D with zoom and pan
+- [x] Rectangle and Vector2 math types
 
-### Week 4 (Planned)
+### Week 3 (✅ Complete)
+- [x] Performance profiling (PerformanceMonitor)
+- [x] Draw call tracking
+- [x] Memory usage monitoring
+
+### Week 4 (In Progress)
+- [x] Input Manager abstraction layer
+- [ ] Font rendering (bitmap fonts)
+- [ ] Resource Manager
 - [ ] MonoGame compatibility layer
+
+### Week 5+ (Planned)
 - [ ] Basic particle system
 - [ ] Audio system (OpenAL)
-- [ ] Resource manager
+- [ ] Advanced resource management
 
 ## Compatibility with MonoGame
 

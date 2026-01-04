@@ -48,8 +48,8 @@ public class TestGame
     {
         Console.WriteLine("Test game initializing...");
         
-        // Create SpriteBatch
-        _spriteBatch = new SpriteBatch(_engine.GL);
+        // Create SpriteBatch with performance monitoring
+        _spriteBatch = new SpriteBatch(_engine.GL, _engine.Performance);
         
         // Create Camera
         _camera = new Camera2D(_engine.Width, _engine.Height);
@@ -164,10 +164,11 @@ public class TestGame
             _sprites[i] = sprite;
         }
         
-        // Display FPS every second
+        // Display performance metrics every second
         if ((int)gameTime.TotalSeconds % 1 == 0 && gameTime.TotalSeconds > 0 && (int)(gameTime.TotalSeconds * 10) % 10 == 0)
         {
-            Console.WriteLine($"FPS: {gameTime.FPS:F2} | Sprites: {_sprites.Count} | Camera Pos: {_camera?.Position} | Zoom: {_camera?.Zoom:F2}");
+            var stats = _engine.Performance.GetStats();
+            Console.WriteLine($"{stats.ToString()} | Sprites: {_sprites.Count} | Camera Pos: {_camera?.Position} | Zoom: {_camera?.Zoom:F2}");
         }
     }
     
