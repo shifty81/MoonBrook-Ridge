@@ -51,21 +51,74 @@ public class BitmapFont : IDisposable
         };
         
         // Create a simple texture atlas with fixed-width characters
-        // For now, we'll create character info but use solid rectangles
-        // In a real implementation, this would load from a font atlas image
-        
         int charWidth = fontSize / 2;
         int charHeight = fontSize;
         int charsPerRow = 16;
+        int numChars = 95; // ASCII 32-126
+        int rows = (numChars + charsPerRow - 1) / charsPerRow;
         
-        // Generate character info for printable ASCII (32-126)
+        int atlasWidth = charsPerRow * charWidth;
+        int atlasHeight = rows * charHeight;
+        
+        // Generate a simple monochrome font atlas using simple rasterizer
+        byte[] atlasData = new byte[atlasWidth * atlasHeight * 4];
+        
+        // Fill with transparent background
+        for (int i = 0; i < atlasData.Length; i += 4)
+        {
+            atlasData[i + 0] = 255; // R
+            atlasData[i + 1] = 255; // G
+            atlasData[i + 2] = 255; // B
+            atlasData[i + 3] = 0;   // A (transparent)
+        }
+        
+        // Rasterize each character into the atlas
+        for (int i = 32; i < 127; i++)
+        {
+            int charIndex = i - 32;
+            int col = charIndex % charsPerRow;
+            int row = charIndex / charsPerRow;
+            
+            int startX = col * charWidth;
+            int startY = row * charHeight;
+            
+            // Rasterize the character
+            var charPixels = SimpleFontRasterizer.RasterizeCharacter((char)i, charWidth, charHeight);
+            
+            // Copy character pixels into atlas
+            for (int y = 0; y < charHeight && startY + y < atlasHeight; y++)
+            {
+                for (int x = 0; x < charWidth && startX + x < atlasWidth; x++)
+                {
+                    int srcIdx = (y * charWidth + x) * 4;
+                    int dstIdx = ((startY + y) * atlasWidth + (startX + x)) * 4;
+                    
+                    if (srcIdx >= 0 && srcIdx < charPixels.Length - 4 &&
+                        dstIdx >= 0 && dstIdx < atlasData.Length - 4)
+                    {
+                        // Copy RGBA
+                        atlasData[dstIdx + 0] = charPixels[srcIdx + 0];
+                        atlasData[dstIdx + 1] = charPixels[srcIdx + 1];
+                        atlasData[dstIdx + 2] = charPixels[srcIdx + 2];
+                        atlasData[dstIdx + 3] = charPixels[srcIdx + 3];
+                    }
+                }
+            }
+        }
+        
+        // Create texture from atlas data
+        var atlasTexture = new Texture2D(gl, atlasData, atlasWidth, atlasHeight);
+        
+        // Set up character information
+        var characterData = new Dictionary<char, CharacterInfo>();
         for (int i = 32; i < 127; i++)
         {
             char c = (char)i;
-            int col = (i - 32) % charsPerRow;
-            int row = (i - 32) / charsPerRow;
+            int charIndex = i - 32;
+            int col = charIndex % charsPerRow;
+            int row = charIndex / charsPerRow;
             
-            font._characters[c] = new CharacterInfo
+            characterData[c] = new CharacterInfo
             {
                 SourceRect = new Math.Rectangle(
                     col * charWidth,
@@ -77,6 +130,8 @@ public class BitmapFont : IDisposable
                 XAdvance = charWidth + 1
             };
         }
+        
+        font.LoadFromAtlas(atlasTexture, characterData);
         
         return font;
     }
