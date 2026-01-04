@@ -156,7 +156,9 @@ public class World
     /// </summary>
     public void Clear()
     {
-        foreach (var entity in _entities.ToList())
+        // Create a copy of entities to avoid modification during iteration
+        var entitiesToDestroy = _entities.ToList();
+        foreach (var entity in entitiesToDestroy)
         {
             DestroyEntity(entity);
         }

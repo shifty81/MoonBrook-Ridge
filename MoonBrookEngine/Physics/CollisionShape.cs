@@ -85,7 +85,7 @@ public class CircleCollisionShape : CollisionShape
             var thisCenter = thisPosition + Offset;
             var otherCenter = otherPosition + circle.Offset;
             var distance = Vector2.Distance(thisCenter, otherCenter);
-            return distance < (Radius + circle.Radius);
+            return distance <= (Radius + circle.Radius);
         }
         else if (other is RectangleCollisionShape rect)
         {

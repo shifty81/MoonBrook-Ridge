@@ -47,7 +47,7 @@ public class Quadtree<T> where T : class
             if (_nodes[i] != null)
             {
                 _nodes[i].Clear();
-                _nodes[i] = null!;
+                _nodes[i] = null;
             }
         }
     }
