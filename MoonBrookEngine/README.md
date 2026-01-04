@@ -142,11 +142,10 @@ engine.Run();
 - [ ] Resource Manager
 - [ ] MonoGame compatibility layer
 
-### Week 4 (Planned)
-- [ ] MonoGame compatibility layer
+### Week 5+ (Planned)
 - [ ] Basic particle system
 - [ ] Audio system (OpenAL)
-- [ ] Resource manager
+- [ ] Advanced resource management
 
 ## Compatibility with MonoGame
 

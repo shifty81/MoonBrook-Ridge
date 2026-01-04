@@ -11,9 +11,9 @@ public class InputManager
     private IKeyboard? _keyboard;
     private IMouse? _mouse;
     
-    private HashSet<Key> _pressedKeys;
+    private HashSet<Key> _currentPressedKeys;
     private HashSet<Key> _previousPressedKeys;
-    private HashSet<MouseButton> _pressedButtons;
+    private HashSet<MouseButton> _currentPressedButtons;
     private HashSet<MouseButton> _previousPressedButtons;
     
     public Math.Vector2 MousePosition { get; private set; }
@@ -23,9 +23,9 @@ public class InputManager
     public InputManager(IInputContext inputContext)
     {
         _inputContext = inputContext;
-        _pressedKeys = new HashSet<Key>();
+        _currentPressedKeys = new HashSet<Key>();
         _previousPressedKeys = new HashSet<Key>();
-        _pressedButtons = new HashSet<MouseButton>();
+        _currentPressedButtons = new HashSet<MouseButton>();
         _previousPressedButtons = new HashSet<MouseButton>();
         
         MousePosition = Math.Vector2.Zero;
@@ -36,11 +36,15 @@ public class InputManager
         if (_inputContext.Keyboards.Count > 0)
         {
             _keyboard = _inputContext.Keyboards[0];
+            _keyboard.KeyDown += OnKeyDown;
+            _keyboard.KeyUp += OnKeyUp;
         }
         
         if (_inputContext.Mice.Count > 0)
         {
             _mouse = _inputContext.Mice[0];
+            _mouse.MouseDown += OnMouseDown;
+            _mouse.MouseUp += OnMouseUp;
             _mouse.MouseMove += OnMouseMove;
             _mouse.Scroll += OnMouseScroll;
         }
@@ -51,40 +55,44 @@ public class InputManager
     /// </summary>
     public void Update()
     {
-        // Save previous frame state
-        _previousPressedKeys = new HashSet<Key>(_pressedKeys);
-        _previousPressedButtons = new HashSet<MouseButton>(_pressedButtons);
+        // Swap current and previous state (no allocations)
+        var temp = _previousPressedKeys;
+        _previousPressedKeys = _currentPressedKeys;
+        _currentPressedKeys = temp;
+        _currentPressedKeys.Clear();
         
-        // Update current state
-        _pressedKeys.Clear();
+        // Copy current key state from Silk.NET (event-driven tracking is better but this works)
         if (_keyboard != null)
         {
-            foreach (var key in Enum.GetValues<Key>())
+            // Only check keys that are likely to be pressed
+            foreach (var key in _keyboard.SupportedKeys)
             {
                 if (_keyboard.IsKeyPressed(key))
                 {
-                    _pressedKeys.Add(key);
+                    _currentPressedKeys.Add(key);
                 }
             }
         }
         
-        _pressedButtons.Clear();
+        // Swap mouse button state
+        var tempButtons = _previousPressedButtons;
+        _previousPressedButtons = _currentPressedButtons;
+        _currentPressedButtons = tempButtons;
+        _currentPressedButtons.Clear();
+        
         if (_mouse != null)
         {
-            foreach (var button in Enum.GetValues<MouseButton>())
-            {
-                if (_mouse.IsButtonPressed(button))
-                {
-                    _pressedButtons.Add(button);
-                }
-            }
+            if (_mouse.IsButtonPressed(MouseButton.Left))
+                _currentPressedButtons.Add(MouseButton.Left);
+            if (_mouse.IsButtonPressed(MouseButton.Right))
+                _currentPressedButtons.Add(MouseButton.Right);
+            if (_mouse.IsButtonPressed(MouseButton.Middle))
+                _currentPressedButtons.Add(MouseButton.Middle);
             
             MousePosition = new Math.Vector2(_mouse.Position.X, _mouse.Position.Y);
         }
         
-        // Reset per-frame deltas
-        MouseDelta = Math.Vector2.Zero;
-        ScrollDelta = 0f;
+        // Mouse delta and scroll are updated via events
     }
     
     /// <summary>
@@ -92,7 +100,7 @@ public class InputManager
     /// </summary>
     public bool IsKeyDown(Key key)
     {
-        return _pressedKeys.Contains(key);
+        return _currentPressedKeys.Contains(key);
     }
     
     /// <summary>
@@ -100,7 +108,7 @@ public class InputManager
     /// </summary>
     public bool IsKeyPressed(Key key)
     {
-        return _pressedKeys.Contains(key) && !_previousPressedKeys.Contains(key);
+        return _currentPressedKeys.Contains(key) && !_previousPressedKeys.Contains(key);
     }
     
     /// <summary>
@@ -108,7 +116,7 @@ public class InputManager
     /// </summary>
     public bool IsKeyReleased(Key key)
     {
-        return !_pressedKeys.Contains(key) && _previousPressedKeys.Contains(key);
+        return !_currentPressedKeys.Contains(key) && _previousPressedKeys.Contains(key);
     }
     
     /// <summary>
@@ -116,7 +124,7 @@ public class InputManager
     /// </summary>
     public bool IsButtonDown(MouseButton button)
     {
-        return _pressedButtons.Contains(button);
+        return _currentPressedButtons.Contains(button);
     }
     
     /// <summary>
@@ -124,7 +132,7 @@ public class InputManager
     /// </summary>
     public bool IsButtonPressed(MouseButton button)
     {
-        return _pressedButtons.Contains(button) && !_previousPressedButtons.Contains(button);
+        return _currentPressedButtons.Contains(button) && !_previousPressedButtons.Contains(button);
     }
     
     /// <summary>
@@ -132,7 +140,7 @@ public class InputManager
     /// </summary>
     public bool IsButtonReleased(MouseButton button)
     {
-        return !_pressedButtons.Contains(button) && _previousPressedButtons.Contains(button);
+        return !_currentPressedButtons.Contains(button) && _previousPressedButtons.Contains(button);
     }
     
     /// <summary>
@@ -140,7 +148,7 @@ public class InputManager
     /// </summary>
     public bool IsAnyKeyDown()
     {
-        return _pressedKeys.Count > 0;
+        return _currentPressedKeys.Count > 0;
     }
     
     /// <summary>
@@ -148,7 +156,27 @@ public class InputManager
     /// </summary>
     public bool IsAnyKeyPressed()
     {
-        return _pressedKeys.Except(_previousPressedKeys).Any();
+        return _currentPressedKeys.Except(_previousPressedKeys).Any();
+    }
+    
+    private void OnKeyDown(IKeyboard keyboard, Key key, int arg3)
+    {
+        _currentPressedKeys.Add(key);
+    }
+    
+    private void OnKeyUp(IKeyboard keyboard, Key key, int arg3)
+    {
+        _currentPressedKeys.Remove(key);
+    }
+    
+    private void OnMouseDown(IMouse mouse, MouseButton button)
+    {
+        _currentPressedButtons.Add(button);
+    }
+    
+    private void OnMouseUp(IMouse mouse, MouseButton button)
+    {
+        _currentPressedButtons.Remove(button);
     }
     
     private void OnMouseMove(IMouse mouse, System.Numerics.Vector2 position)

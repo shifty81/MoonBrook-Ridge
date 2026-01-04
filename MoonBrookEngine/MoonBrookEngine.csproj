@@ -11,7 +11,6 @@
     <PackageReference Include="Silk.NET.Input" Version="2.21.0" />
     <PackageReference Include="Silk.NET.OpenGL" Version="2.21.0" />
     <PackageReference Include="Silk.NET.Windowing" Version="2.21.0" />
-    <PackageReference Include="SixLabors.Fonts" Version="2.0.4" />
     <PackageReference Include="StbImageSharp" Version="2.27.14" />
   </ItemGroup>
 
