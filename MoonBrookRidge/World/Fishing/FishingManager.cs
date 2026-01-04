@@ -33,6 +33,12 @@ public class FishingManager : IDisposable
     public FishingState CurrentState => _currentState;
     public FishingMinigame Minigame => _minigame;
     
+    /// <summary>
+    /// Event fired when a fish is successfully caught.
+    /// Parameters: fishItem
+    /// </summary>
+    public event Action<FishItem> OnFishCaught;
+    
     public FishingManager()
     {
         _minigame = new FishingMinigame();
@@ -153,6 +159,10 @@ public class FishingManager : IDisposable
                         // Caught a fish!
                         FishItem fish = FishFactory.GetRandomFish(_currentHabitat, _currentSeason, _random);
                         inventory.AddItem(fish, 1);
+                        
+                        // Fire the event for skill progression
+                        OnFishCaught?.Invoke(fish);
+                        
                         _currentState = FishingState.Caught;
                         _stateTimer = CATCH_DISPLAY_DURATION;
                     }

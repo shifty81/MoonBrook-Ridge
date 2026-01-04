@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.World;
@@ -21,6 +22,12 @@ public class ToolManager
     private InventorySystem _inventory;
     private MiningManager _miningManager;
     private FishingManager _fishingManager;
+    
+    /// <summary>
+    /// Event fired when a crop is successfully harvested. 
+    /// Parameters: cropType, quality
+    /// </summary>
+    public event Action<string, Quality> OnCropHarvested;
     
     public ToolManager(WorldMap worldMap, PlayerCharacter player, InventorySystem inventory = null)
     {
@@ -151,15 +158,21 @@ public class ToolManager
             // Get the crop type to create harvest item
             string cropType = tile.Crop.CropType;
             
+            // Determine quality (for now always Normal, but could be based on factors)
+            Quality quality = Quality.Normal;
+            
             // Calculate harvest quantity (watered tiles give more)
-            int quantity = HarvestFactory.CalculateHarvestQuantity(tile.IsWatered, Quality.Normal);
+            int quantity = HarvestFactory.CalculateHarvestQuantity(tile.IsWatered, quality);
             
             // Add harvested crop to inventory
             if (_inventory != null)
             {
-                HarvestItem harvest = HarvestFactory.GetHarvestItem(cropType, quantity);
+                HarvestItem harvest = HarvestFactory.GetHarvestItem(cropType, quantity, quality);
                 _inventory.AddItem(harvest, quantity);
             }
+            
+            // Fire the harvest event for skill progression
+            OnCropHarvested?.Invoke(cropType, quality);
             
             // Remove the crop from the tile
             tile.RemoveCrop();
