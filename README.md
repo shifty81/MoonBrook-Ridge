@@ -442,7 +442,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Plant Seed / Interact | X |
 | Open Menu/Inventory | E or Esc |
 | Open Journal/Quests | F |
-| **Open Magic Spell Book** ⭐ **NEW!** | **M** |
+| **Open Map/Fast Travel Menu** ⭐ **NEW!** | **M** |
 | **Open Alchemy Lab** ⭐ **NEW!** | **L** |
 | **Open Skills Menu** ⭐ **NEW!** | **J** |
 | **Open Pet Menu** ⭐ **NEW!** | **P** |
@@ -471,6 +471,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Quick Save** ⭐ | **F5** |
 | **Quick Load** ⭐ | **F9** |
 | **Toggle Performance Monitor** ⭐ **PHASE 7!** | **F3** |
+| **Toggle Auto-Fire** ⭐ **PHASE 8!** | **`** (backtick/tilde) |
+| **Sort Inventory** ⭐ **PHASE 8!** | **I** |
 
 See [CONTROLS.md](CONTROLS.md) for complete control documentation.
 

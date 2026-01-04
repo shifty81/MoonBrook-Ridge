@@ -1329,8 +1329,8 @@ public class GameplayState : GameState
             return;
         }
         
-        // Check for auto-fire toggle (N key) - Phase 8
-        if (keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N))
+        // Check for auto-fire toggle (` key - backtick/tilde) - Phase 8
+        if (keyboardState.IsKeyDown(Keys.OemTilde) && !_previousKeyboardState.IsKeyDown(Keys.OemTilde))
         {
             _autoFireSystem.ToggleAutoFire();
             string status = _autoFireSystem.IsAutoFireEnabled ? "Enabled" : "Disabled";
