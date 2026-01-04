@@ -15,6 +15,7 @@ public class ResourceManager : IDisposable
     private readonly Dictionary<string, Texture2D> _textures;
     private readonly Dictionary<string, BitmapFont> _fonts;
     private readonly Dictionary<string, SoundEffect> _soundEffects;
+    private readonly Dictionary<string, uint> _musicBuffers;
     private readonly string _rootDirectory;
     
     public string RootDirectory
@@ -30,6 +31,7 @@ public class ResourceManager : IDisposable
         _textures = new Dictionary<string, Texture2D>();
         _fonts = new Dictionary<string, BitmapFont>();
         _soundEffects = new Dictionary<string, SoundEffect>();
+        _musicBuffers = new Dictionary<string, uint>();
     }
     
     /// <summary>
@@ -212,6 +214,132 @@ public class ResourceManager : IDisposable
     }
     
     /// <summary>
+    /// Load music from WAV file and return buffer ID
+    /// </summary>
+    public uint LoadMusic(string assetName)
+    {
+        if (_audioEngine == null)
+        {
+            Console.WriteLine("Audio engine not available - cannot load music");
+            return 0;
+        }
+        
+        // Normalize path separators
+        assetName = assetName.Replace('\\', '/');
+        
+        // Check if already loaded
+        if (_musicBuffers.TryGetValue(assetName, out var cached))
+        {
+            return cached;
+        }
+        
+        // Build full path
+        string fullPath = Path.Combine(_rootDirectory, assetName);
+        
+        // Try common extensions if no extension specified
+        if (!Path.HasExtension(fullPath))
+        {
+            string[] extensions = { ".wav", ".ogg", ".mp3" };
+            string? foundPath = null;
+            
+            foreach (var ext in extensions)
+            {
+                string testPath = fullPath + ext;
+                if (File.Exists(testPath))
+                {
+                    foundPath = testPath;
+                    break;
+                }
+            }
+            
+            if (foundPath == null)
+            {
+                Console.WriteLine($"Could not find music file: {assetName}");
+                return 0;
+            }
+            
+            fullPath = foundPath;
+        }
+        
+        // Load music file
+        if (!File.Exists(fullPath))
+        {
+            Console.WriteLine($"Music file not found: {fullPath}");
+            return 0;
+        }
+        
+        byte[] audioData = File.ReadAllBytes(fullPath);
+        
+        // Parse WAV header (simplified - assumes standard WAV format)
+        // WAV format: RIFF header (12 bytes) + fmt chunk (24 bytes) + data chunk (8+ bytes)
+        if (audioData.Length < 44)
+        {
+            Console.WriteLine($"Invalid WAV file (too small): {fullPath}");
+            return 0;
+        }
+        
+        // Check RIFF header
+        if (audioData[0] != 'R' || audioData[1] != 'I' || audioData[2] != 'F' || audioData[3] != 'F')
+        {
+            Console.WriteLine($"Not a WAV file: {fullPath}");
+            return 0;
+        }
+        
+        // Parse WAV format
+        int channels = BitConverter.ToInt16(audioData, 22);
+        int sampleRate = BitConverter.ToInt32(audioData, 24);
+        int bitsPerSample = BitConverter.ToInt16(audioData, 34);
+        
+        // Find data chunk
+        int dataOffset = 36;
+        while (dataOffset < audioData.Length - 8)
+        {
+            if (audioData[dataOffset] == 'd' && audioData[dataOffset + 1] == 'a' &&
+                audioData[dataOffset + 2] == 't' && audioData[dataOffset + 3] == 'a')
+            {
+                break;
+            }
+            dataOffset++;
+        }
+        
+        if (dataOffset >= audioData.Length - 8)
+        {
+            Console.WriteLine($"Could not find data chunk in WAV file: {fullPath}");
+            return 0;
+        }
+        
+        int dataSize = BitConverter.ToInt32(audioData, dataOffset + 4);
+        byte[] pcmData = new byte[dataSize];
+        Array.Copy(audioData, dataOffset + 8, pcmData, 0, dataSize);
+        
+        // Create buffer
+        uint buffer = _audioEngine.CreateBuffer(pcmData, channels, sampleRate, bitsPerSample);
+        
+        if (buffer != 0)
+        {
+            _musicBuffers[assetName] = buffer;
+        }
+        
+        return buffer;
+    }
+    
+    /// <summary>
+    /// Unload a specific music buffer
+    /// </summary>
+    public void UnloadMusic(string assetName)
+    {
+        if (_audioEngine == null) return;
+        
+        assetName = assetName.Replace('\\', '/');
+        
+        if (_musicBuffers.TryGetValue(assetName, out var buffer))
+        {
+            _audioEngine.DeleteBuffer(buffer);
+            _musicBuffers.Remove(assetName);
+        }
+    }
+    
+    /// <summary>
     /// Get number of loaded textures
     /// </summary>
     public int LoadedTextureCount => _textures.Count;
@@ -248,6 +376,15 @@ public class ResourceManager : IDisposable
             soundEffect.Dispose();
         }
         _soundEffects.Clear();
+        
+        if (_audioEngine != null)
+        {
+            foreach (var buffer in _musicBuffers.Values)
+            {
+                _audioEngine.DeleteBuffer(buffer);
+            }
+        }
+        _musicBuffers.Clear();
     }
     
     public void Dispose()

@@ -74,8 +74,14 @@ public class ContentManager : IDisposable
         }
         else if (typeof(T) == typeof(Song))
         {
-            // Load song (stub for now)
-            var song = new Song(assetName, TimeSpan.Zero);
+            // Load song using music buffer
+            uint buffer = _resourceManager.LoadMusic(assetName);
+            if (buffer == 0)
+                throw new System.IO.FileNotFoundException($"Music file not found: {assetName}");
+            
+            // For now, we don't know the duration without parsing the audio file
+            // So we'll just use TimeSpan.Zero as a placeholder
+            var song = new Song(assetName, TimeSpan.Zero, buffer);
             _loadedAssets[assetName] = song;
             return (T)(object)song;
         }

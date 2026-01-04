@@ -304,12 +304,10 @@ public class SpriteBatch : IDisposable
         if (!_isBegun)
             throw new InvalidOperationException("Begin must be called before DrawString.");
         
-        // For now, ignore rotation, origin, scale, effects, and layerDepth
-        // Just render the text at the position
-        // TODO: Implement full text transform support
+        // Use scale parameter (rotation, origin, effects, and layerDepth are not yet supported)
         if (font?.InternalFont != null)
         {
-            _engineBatch.DrawString(font.InternalFont, text, position, color);
+            _engineBatch.DrawString(font.InternalFont, text, position, color, scale);
         }
     }
     
