@@ -17,7 +17,10 @@ public class FarmhouseScene : Scene
     private SpriteBatch? _spriteBatch;
     private Camera2D? _camera;
     private Texture2D? _whitePixel;
+    // Reserved for future sprite integration - will load actual player sprite texture
+#pragma warning disable CS0649 // Field is never assigned to - reserved for future use
     private Texture2D? _playerTexture;
+#pragma warning restore CS0649
     
     // Player state
     private Vector2 _playerPosition;
