@@ -442,7 +442,7 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | Plant Seed / Interact | X |
 | Open Menu/Inventory | E or Esc |
 | Open Journal/Quests | F |
-| **Open Magic Spell Book** ⭐ **NEW!** | **M** |
+| **Open Map/Fast Travel Menu** ⭐ **NEW!** | **M** |
 | **Open Alchemy Lab** ⭐ **NEW!** | **L** |
 | **Open Skills Menu** ⭐ **NEW!** | **J** |
 | **Open Pet Menu** ⭐ **NEW!** | **P** |
@@ -471,6 +471,8 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Quick Save** ⭐ | **F5** |
 | **Quick Load** ⭐ | **F9** |
 | **Toggle Performance Monitor** ⭐ **PHASE 7!** | **F3** |
+| **Toggle Auto-Fire** ⭐ **PHASE 8!** | **`** (backtick/tilde) |
+| **Sort Inventory** ⭐ **PHASE 8!** | **I** |
 
 See [CONTROLS.md](CONTROLS.md) for complete control documentation.
 
@@ -617,20 +619,21 @@ See [PHASE_8_COMPLETION_SUMMARY.md](PHASE_8_COMPLETION_SUMMARY.md) for Phase 8 d
 
 See [PHASE_9_COMPLETION_SUMMARY.md](PHASE_9_COMPLETION_SUMMARY.md) for Phase 9 details.
 
-### Phase 10: Multi-Village & Core Keeper Underground ⭐ **INTEGRATED!**
+### Phase 10: Multi-Village & Core Keeper Underground ✅ **COMPLETE!**
 - [x] **Multi-Village System** ⭐ **PHASE 10** - 8 villages across all biomes with reputation tracking
 - [x] **Village Fast Travel** ⭐ **PHASE 10** - All villages integrated with waypoint system
-- [x] **Advanced Furniture** ⭐ **PHASE 10** - 15 furniture types for building interiors (system ready, needs interior detection)
+- [x] **Advanced Furniture** ⭐ **PHASE 10** - 15 furniture types for building interiors (U key when near building)
 - [x] **Enhanced Dating** ⭐ **PHASE 10** - Dating stages (Friend → Dating → Engaged → Married) - Auto-syncs with NPC friendship
 - [x] **Jealousy System** ⭐ **PHASE 10** - NPCs get jealous when dating multiple people
 - [x] **NPC Relationships** ⭐ **PHASE 10** - NPCs have friendships and rivalries with each other
-- [x] **Underground Crafting** ⭐ **PHASE 10** - Core Keeper-inspired 8-tier workbench system (integrated, needs UI)
-- [x] **Automation System** ⭐ **PHASE 10** - Drills, conveyors, auto-smelters for resource automation (integrated, needs placement)
+- [x] **Underground Crafting** ⭐ **PHASE 10** - Core Keeper-inspired 8-tier workbench system (Z key in underground)
+- [x] **Automation System** ⭐ **PHASE 10** - Drills, conveyors, auto-smelters for resource automation (N key, requires Scarlet tier)
 - [x] **Expanded Ores** ⭐ **PHASE 10** - 11 ore types (Copper → Tin → Iron → Scarlet → Octarine → Galaxite → Solarite)
 - [x] **Underground Biomes** ⭐ **PHASE 10** - 8 unique underground biomes with ore distributions
+- [x] **Skill Progression System** ✅ **COMPLETE** - XP gain for all actions (farming, mining, combat, crafting)
 - [x] Integration with existing systems ✅ **COMPLETE** - All systems initialized and updating in GameplayState
-- [ ] Core Keeper-inspired visual style
-- [ ] Skill progression system
+
+**Note**: Core Keeper-inspired visual style deferred as future enhancement (requires significant asset work).
 
 See [PHASE_10_IMPLEMENTATION_SUMMARY.md](PHASE_10_IMPLEMENTATION_SUMMARY.md) for Phase 10 details.
 

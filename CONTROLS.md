@@ -30,13 +30,13 @@
 | **Open Crafting Menu** ⭐ | **K** | - |
 | **Open Shop Menu** ⭐ | **B** | - |
 | **Gift to NPC** ⭐ | **G** | - |
-| **Toggle Auto-Fire** ⭐ **PHASE 8** | **N** | - |
+| **Toggle Auto-Fire** ⭐ **PHASE 8** | **`** (backtick/tilde) | - |
 | **Sort Inventory** ⭐ **PHASE 8** | **I** | - |
 | **Switch Weapon Loadout** ⭐ **AUTO-COMBAT** | **Tab** | - |
 | **Quick Save** ⭐ | **F5** | - |
 | **Quick Load** ⭐ | **F9** | - |
 
-**Note on Combat**: Your weapons fire automatically when in caves (auto-fire enabled by default). Press N to toggle auto-fire on/off. Press Space to manually throw grenades for AoE damage/effects.
+**Note on Combat**: Your weapons fire automatically when in caves (auto-fire enabled by default). Press ` (backtick/tilde key) to toggle auto-fire on/off. Press Space to manually throw grenades for AoE damage/effects.
 
 **Note on Map Menu**: Press M to open the Map Menu, which contains tabs for:
 - **World Map**: View the minimap and world overview
@@ -303,6 +303,63 @@ Appear on left side when stats are critical:
 3. **Mining for Marcus** (Marcus): Collect 10 Copper Ore
 4. **Lily's Supply Run** (Lily): Collect 20 Wood & 15 Stone
 5. **The Big Catch** (Oliver): Catch 15 Fish
+
+## Phase 10 Systems ⭐ **NEW!**
+
+### Underground Crafting
+- Press **Z** to open Underground Workbench menu
+- 8-tier progression system (Copper → Tin → Iron → Scarlet → Octarine → Galaxite → Solarite → Pandorium)
+- Craft tools, weapons, and automation devices
+- Each tier requires specific ore types
+- Navigate with **↑/↓ arrow keys**
+- Press **Enter** to craft selected item
+- Press **Esc** or **Z** to close menu
+
+### Automation Devices
+- Press **N** to open Automation Placement menu (requires Scarlet tier unlock)
+- Available devices:
+  - **Drill**: Automatically mines resources from ore nodes
+  - **Conveyor Belt**: Transport items between devices
+  - **Auto-Smelter**: Smelt ores into bars automatically
+  - **Storage Chest**: Store harvested items
+- Use **arrow keys** to position device
+- Press **Enter** to place (if you have resources)
+- Press **Esc** or **N** to cancel
+
+### Furniture System
+- Press **U** when near a building entrance to open Furniture menu
+- Browse categories with **Left/Right arrow keys**
+- Select furniture with **Up/Down arrow keys**
+- Press **Enter** to enter placement mode
+- Use **arrow keys** to position furniture
+- Press **Enter** to place (if you have resources)
+- Press **Esc** or **U** to close menu
+
+### Multi-Village System
+- Discover villages by walking near them (within 4 tiles)
+- 8 villages across the world in different biomes:
+  - MoonBrook Valley (Grassland) - Home village
+  - Pinewood Village (Forest)
+  - Stonehelm Village (Mountain)
+  - Sandshore Village (Desert)
+  - Frostpeak Village (Frozen)
+  - Marshwood Village (Swamp)
+  - Crystalgrove Village (Crystal Cave)
+  - Ruinwatch Village (Ruins)
+- Build reputation with each village (-1000 to +2000)
+- Use **M** key to open Map Menu, then select Fast Travel tab
+- Discovered villages appear as waypoints for fast travel
+
+### Enhanced NPC Relationships
+- Dating stages automatically update based on friendship level:
+  - 0-4 hearts: None
+  - 5-6 hearts: Friends
+  - 7-8 hearts: Dating
+  - 9 hearts: Engaged
+  - 10 hearts: Can marry
+- Date multiple NPCs → jealousy system activates
+- High jealousy (100+) → automatic breakup
+- NPCs have relationships with each other (friends/rivals)
 
 ## Auto-Combat System ⭐ **AUTO-SHOOTER ROGUELITE**
 
