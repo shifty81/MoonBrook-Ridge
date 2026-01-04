@@ -8,8 +8,8 @@ namespace MoonBrookEngine.Audio;
 /// </summary>
 public class AudioEngine : IDisposable
 {
-    private readonly AL _al;
-    private ALContext _alc;
+    private AL? _al;
+    private ALContext? _alc;
     private unsafe Device* _device;
     private unsafe Context* _context;
     private bool _isInitialized;
@@ -18,8 +18,7 @@ public class AudioEngine : IDisposable
     
     public AudioEngine()
     {
-        _al = AL.GetApi();
-        _alc = ALContext.GetApi();
+        // API initialization moved to Initialize() to allow proper error handling
     }
     
     /// <summary>
@@ -29,6 +28,10 @@ public class AudioEngine : IDisposable
     {
         try
         {
+            // Initialize OpenAL APIs - this may fail if OpenAL library is not installed
+            _al = AL.GetApi();
+            _alc = ALContext.GetApi();
+            
             // Open the default audio device
             _device = _alc.OpenDevice(deviceName);
             if (_device == null)
@@ -71,7 +74,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetListenerPosition(float x, float y, float z)
     {
-        if (!_isInitialized) return;
+        if (!_isInitialized || _al == null) return;
         _al.SetListenerProperty(ListenerVector3.Position, x, y, z);
     }
     
@@ -80,7 +83,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetListenerVelocity(float x, float y, float z)
     {
-        if (!_isInitialized) return;
+        if (!_isInitialized || _al == null) return;
         _al.SetListenerProperty(ListenerVector3.Velocity, x, y, z);
     }
     
@@ -90,7 +93,7 @@ public class AudioEngine : IDisposable
     public unsafe void SetListenerOrientation(float forwardX, float forwardY, float forwardZ, 
                                               float upX, float upY, float upZ)
     {
-        if (!_isInitialized) return;
+        if (!_isInitialized || _al == null) return;
         
         float[] orientation = new float[6] 
         { 
@@ -109,7 +112,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetMasterVolume(float volume)
     {
-        if (!_isInitialized) return;
+        if (!_isInitialized || _al == null) return;
         _al.SetListenerProperty(ListenerFloat.Gain, System.Math.Clamp(volume, 0f, 1f));
     }
     
@@ -118,7 +121,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public unsafe uint CreateBuffer(byte[] data, int channels, int sampleRate, int bitsPerSample)
     {
-        if (!_isInitialized) return 0;
+        if (!_isInitialized || _al == null) return 0;
         
         // Determine format
         BufferFormat format;
@@ -153,7 +156,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void DeleteBuffer(uint buffer)
     {
-        if (!_isInitialized || buffer == 0) return;
+        if (!_isInitialized || _al == null || buffer == 0) return;
         _al.DeleteBuffer(buffer);
     }
     
@@ -162,7 +165,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public uint CreateSource()
     {
-        if (!_isInitialized) return 0;
+        if (!_isInitialized || _al == null) return 0;
         return _al.GenSource();
     }
     
@@ -171,7 +174,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void DeleteSource(uint source)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.DeleteSource(source);
     }
     
@@ -180,7 +183,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void Play(uint source)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SourcePlay(source);
     }
     
@@ -189,7 +192,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void Pause(uint source)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SourcePause(source);
     }
     
@@ -198,7 +201,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void Stop(uint source)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SourceStop(source);
     }
     
@@ -207,7 +210,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void Rewind(uint source)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SourceRewind(source);
     }
     
@@ -216,7 +219,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public bool IsPlaying(uint source)
     {
-        if (!_isInitialized || source == 0) return false;
+        if (!_isInitialized || _al == null || source == 0) return false;
         _al.GetSourceProperty(source, GetSourceInteger.SourceState, out int state);
         return state == (int)SourceState.Playing;
     }
@@ -226,7 +229,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetSourceBuffer(uint source, uint buffer)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SetSourceProperty(source, SourceInteger.Buffer, (int)buffer);
     }
     
@@ -235,7 +238,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetSourceVolume(uint source, float volume)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SetSourceProperty(source, SourceFloat.Gain, System.Math.Clamp(volume, 0f, 1f));
     }
     
@@ -244,7 +247,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetSourcePitch(uint source, float pitch)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SetSourceProperty(source, SourceFloat.Pitch, pitch);
     }
     
@@ -253,7 +256,7 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetSourcePosition(uint source, float x, float y, float z)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SetSourceProperty(source, SourceVector3.Position, x, y, z);
     }
     
@@ -262,13 +265,13 @@ public class AudioEngine : IDisposable
     /// </summary>
     public void SetSourceLooping(uint source, bool looping)
     {
-        if (!_isInitialized || source == 0) return;
+        if (!_isInitialized || _al == null || source == 0) return;
         _al.SetSourceProperty(source, SourceBoolean.Looping, looping);
     }
     
     public unsafe void Dispose()
     {
-        if (!_isInitialized) return;
+        if (!_isInitialized || _alc == null) return;
         
         if (_context != null)
         {
