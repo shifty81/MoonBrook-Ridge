@@ -10,6 +10,9 @@ public class CraftingSystem
 {
     private Dictionary<string, Recipe> _recipes;
     
+    // Event fired when an item is successfully crafted (Phase 10)
+    public event System.Action<string> OnItemCrafted;
+    
     public CraftingSystem()
     {
         _recipes = new Dictionary<string, Recipe>();
@@ -175,6 +178,9 @@ public class CraftingSystem
         // Add crafted item
         Item craftedItem = new Item(recipe.OutputName, ItemType.Crafting);
         inventory.AddItem(craftedItem, recipe.OutputQuantity);
+        
+        // Fire event for skill progression (Phase 10)
+        OnItemCrafted?.Invoke(recipe.OutputName);
         
         return true;
     }

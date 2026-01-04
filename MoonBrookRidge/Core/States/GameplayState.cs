@@ -73,6 +73,7 @@ public class GameplayState : GameState
     private AlchemySystem _alchemySystem;
     private AlchemyMenu _alchemyMenu;
     private SkillTreeSystem _skillSystem;
+    private SkillProgressionSystem _skillProgressionSystem; // Phase 10: Skill progression
     private SkillsMenu _skillsMenu;
     private PetSystem _petSystem;
     private PetMenu _petMenu;
@@ -187,6 +188,11 @@ public class GameplayState : GameState
         
         // Initialize crafting system
         _craftingSystem = new CraftingSystem();
+        _craftingSystem.OnItemCrafted += (itemName) =>
+        {
+            // Award crafting XP (Phase 10)
+            _skillProgressionSystem?.OnItemCrafted(itemName, "common");
+        };
         _craftingMenu = new CraftingMenu(_craftingSystem, _inventory);
         
         // Initialize shop system
@@ -229,6 +235,19 @@ public class GameplayState : GameState
         _alchemyMenu = new AlchemyMenu(_alchemySystem, _inventory);
         
         _skillSystem = new SkillTreeSystem();
+        _skillProgressionSystem = new SkillProgressionSystem(_skillSystem);
+        
+        // Subscribe to skill progression events
+        _skillProgressionSystem.OnExperienceGained += (category, amount) =>
+        {
+            // Optional: Show XP gain notification (can be disabled if too spammy)
+            // _notificationSystem?.Show($"+{amount:F0} {category} XP", NotificationType.Info, 1.0f);
+        };
+        _skillSystem.OnSkillLevelUp += (category, newLevel) =>
+        {
+            _notificationSystem?.Show($"{category} Level Up! Now level {newLevel}", NotificationType.Success, 3.0f);
+        };
+        
         _skillsMenu = new SkillsMenu(_skillSystem);
         
         _petSystem = new PetSystem();
@@ -240,6 +259,22 @@ public class GameplayState : GameState
         
         // Initialize Combat System
         _combatSystem = new CombatSystem();
+        
+        // Hook up combat events to skill progression (Phase 10)
+        _combatSystem.OnEnemyDamaged += (enemy, damage) =>
+        {
+            _skillProgressionSystem?.OnDamageDealt(damage);
+        };
+        _combatSystem.OnEnemyDefeated += (enemy) =>
+        {
+            // Award XP for killing enemy (Phase 10)
+            // Use Experience property as level proxy (Experience is 10 * level in most cases)
+            int enemyLevel = Math.Max(1, enemy.Experience / 10);
+            _skillProgressionSystem?.OnEnemyKilled(enemy.Name, enemyLevel, enemy.IsBoss);
+            
+            // Optional: Show XP notification
+            // _notificationSystem?.Show($"+{10 * enemyLevel} Combat XP", NotificationType.Info, 1.5f);
+        };
         
         // Initialize Auto-Fire System (Phase 8)
         _autoFireSystem = new AutoFireSystem();
@@ -1546,7 +1581,13 @@ public class GameplayState : GameState
                 Vector2 toolPosition = CalculateToolTargetPosition();
                 
                 // Use the tool at that position
-                _toolManager.UseTool(toolPosition, _player.Stats);
+                bool toolUsed = _toolManager.UseTool(toolPosition, _player.Stats);
+                
+                // Award skill progression XP for tool usage (Phase 10)
+                if (toolUsed)
+                {
+                    AwardToolUsageXP(currentTool, toolPosition);
+                }
                 
                 // Spawn particles based on tool type
                 SpawnToolParticles(currentTool, toolPosition);
@@ -1630,7 +1671,50 @@ public class GameplayState : GameState
             Vector2 plantPosition = CalculateToolTargetPosition();
             
             // Try to plant a seed
-            _seedManager.TryPlantSeed(plantPosition);
+            bool planted = _seedManager.TryPlantSeed(plantPosition);
+            
+            // Award farming XP for planting (Phase 10)
+            if (planted)
+            {
+                _skillProgressionSystem?.OnCropPlanted();
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Award skill progression XP based on tool usage (Phase 10)
+    /// </summary>
+    private void AwardToolUsageXP(Tool tool, Vector2 position)
+    {
+        if (_skillProgressionSystem == null) return;
+        
+        switch (tool)
+        {
+            case Hoe:
+                _skillProgressionSystem.OnSoilTilled();
+                break;
+            case WateringCan:
+                // Award XP for watering - count how many crops were watered
+                // For now, assume 1 crop watered per use
+                _skillProgressionSystem.OnCropWatered(1);
+                break;
+            case Scythe:
+                // Harvesting is handled separately when crop is actually harvested
+                // This is just the tool swing, so we don't award XP here
+                break;
+            case Pickaxe:
+                // Mining XP - check what was mined
+                Vector2 gridPos = position / GameConstants.TILE_SIZE;
+                Tile tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
+                if (tile != null && tile.Type == TileType.Rock)
+                {
+                    _skillProgressionSystem.OnResourceMined("stone");
+                }
+                break;
+            case Axe:
+                // Chopping wood XP
+                _skillProgressionSystem.OnResourceMined("wood");
+                break;
         }
     }
     
