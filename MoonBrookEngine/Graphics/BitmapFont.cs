@@ -60,8 +60,7 @@ public class BitmapFont : IDisposable
         int atlasWidth = charsPerRow * charWidth;
         int atlasHeight = rows * charHeight;
         
-        // Generate a simple monochrome font atlas
-        // Each character is represented as a simple rectangle for now
+        // Generate a simple monochrome font atlas using simple rasterizer
         byte[] atlasData = new byte[atlasWidth * atlasHeight * 4];
         
         // Fill with transparent background
@@ -73,7 +72,7 @@ public class BitmapFont : IDisposable
             atlasData[i + 3] = 0;   // A (transparent)
         }
         
-        // Draw simple box glyphs for each character (for visibility)
+        // Rasterize each character into the atlas
         for (int i = 32; i < 127; i++)
         {
             int charIndex = i - 32;
@@ -83,50 +82,30 @@ public class BitmapFont : IDisposable
             int startX = col * charWidth;
             int startY = row * charHeight;
             
-            // Draw a simple border for each character (makes them visible)
-            // Top and bottom borders
-            for (int x = startX + 1; x < startX + charWidth - 1; x++)
-            {
-                // Top border
-                int topIdx = ((startY + 1) * atlasWidth + x) * 4;
-                if (topIdx >= 0 && topIdx < atlasData.Length - 3)
-                {
-                    atlasData[topIdx + 3] = 255; // A (opaque)
-                }
-                
-                // Bottom border
-                int bottomIdx = ((startY + charHeight - 2) * atlasWidth + x) * 4;
-                if (bottomIdx >= 0 && bottomIdx < atlasData.Length - 3)
-                {
-                    atlasData[bottomIdx + 3] = 255; // A (opaque)
-                }
-            }
+            // Rasterize the character
+            var charPixels = SimpleFontRasterizer.RasterizeCharacter((char)i, charWidth, charHeight);
             
-            // Left and right borders
-            for (int y = startY + 1; y < startY + charHeight - 1; y++)
+            if (charPixels != null)
             {
-                // Left border
-                int leftIdx = (y * atlasWidth + startX + 1) * 4;
-                if (leftIdx >= 0 && leftIdx < atlasData.Length - 3)
+                // Copy character pixels into atlas
+                for (int y = 0; y < charHeight && startY + y < atlasHeight; y++)
                 {
-                    atlasData[leftIdx + 3] = 255; // A (opaque)
+                    for (int x = 0; x < charWidth && startX + x < atlasWidth; x++)
+                    {
+                        int srcIdx = (y * charWidth + x) * 4;
+                        int dstIdx = ((startY + y) * atlasWidth + (startX + x)) * 4;
+                        
+                        if (srcIdx >= 0 && srcIdx < charPixels.Length - 3 &&
+                            dstIdx >= 0 && dstIdx < atlasData.Length - 3)
+                        {
+                            // Copy RGBA
+                            atlasData[dstIdx + 0] = charPixels[srcIdx + 0];
+                            atlasData[dstIdx + 1] = charPixels[srcIdx + 1];
+                            atlasData[dstIdx + 2] = charPixels[srcIdx + 2];
+                            atlasData[dstIdx + 3] = charPixels[srcIdx + 3];
+                        }
+                    }
                 }
-                
-                // Right border
-                int rightIdx = (y * atlasWidth + (startX + charWidth - 2)) * 4;
-                if (rightIdx >= 0 && rightIdx < atlasData.Length - 3)
-                {
-                    atlasData[rightIdx + 3] = 255; // A (opaque)
-                }
-            }
-            
-            // Add a small dot in the center for better visibility
-            int centerX = startX + charWidth / 2;
-            int centerY = startY + charHeight / 2;
-            int centerIdx = (centerY * atlasWidth + centerX) * 4;
-            if (centerIdx >= 0 && centerIdx < atlasData.Length - 3)
-            {
-                atlasData[centerIdx + 3] = 255; // A (opaque)
             }
         }
         
