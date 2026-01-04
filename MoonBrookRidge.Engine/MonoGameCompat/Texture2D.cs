@@ -1,3 +1,5 @@
+using StbImageSharp;
+
 namespace MoonBrookRidge.Engine.MonoGameCompat;
 
 /// <summary>
@@ -26,8 +28,8 @@ public class Texture2D : IDisposable
     public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
     {
         // Load texture using StbImageSharp (same as MoonBrookEngine)
-        StbImageSharp.StbImage.stbi_set_flip_vertically_on_load(1);
-        var image = StbImageSharp.ImageResult.FromStream(stream, StbImageSharp.ColorComponents.RedGreenBlueAlpha);
+        StbImage.stbi_set_flip_vertically_on_load(1);
+        var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
         
         var gl = graphicsDevice.GetInternalGL();
         var engineTexture = new MoonBrookEngine.Graphics.Texture2D(gl, image.Data, image.Width, image.Height);

@@ -8,16 +8,25 @@ namespace MoonBrookRidge.Engine.MonoGameCompat;
 /// </summary>
 public class SpriteBatch : IDisposable
 {
+    // Flip flag constants for engine batch
+    private const float FLIP_NONE = 0f;
+    private const float FLIP_HORIZONTAL = 1f;
+    private const float FLIP_VERTICAL = 2f;
+    
     private MoonBrookEngine.Graphics.SpriteBatch _engineBatch;
     private GraphicsDevice _graphicsDevice;
     private bool _isBegun;
     
     public GraphicsDevice GraphicsDevice => _graphicsDevice;
     
-    public SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch)
+    /// <summary>
+    /// Internal constructor for wrapping an existing engine batch
+    /// Note: GraphicsDevice property will not be available when using this constructor
+    /// </summary>
+    internal SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch, GraphicsDevice? graphicsDevice = null)
     {
         _engineBatch = engineBatch;
-        _graphicsDevice = null!; // Will be set when needed
+        _graphicsDevice = graphicsDevice!;
         _isBegun = false;
     }
     
@@ -191,11 +200,11 @@ public class SpriteBatch : IDisposable
         );
         
         // Convert effects to flags (bit field)
-        float flipFlags = 0f;
+        float flipFlags = FLIP_NONE;
         if ((effects & SpriteEffects.FlipHorizontally) != 0)
-            flipFlags += 1f;
+            flipFlags += FLIP_HORIZONTAL;
         if ((effects & SpriteEffects.FlipVertically) != 0)
-            flipFlags += 2f;
+            flipFlags += FLIP_VERTICAL;
         
         _engineBatch.Draw(
             texture.InternalTexture,
@@ -247,11 +256,11 @@ public class SpriteBatch : IDisposable
         }
         
         // Convert effects to flags (bit field)
-        float flipFlags = 0f;
+        float flipFlags = FLIP_NONE;
         if ((effects & SpriteEffects.FlipHorizontally) != 0)
-            flipFlags += 1f;
+            flipFlags += FLIP_HORIZONTAL;
         if ((effects & SpriteEffects.FlipVertically) != 0)
-            flipFlags += 2f;
+            flipFlags += FLIP_VERTICAL;
         
         _engineBatch.Draw(
             texture.InternalTexture,
