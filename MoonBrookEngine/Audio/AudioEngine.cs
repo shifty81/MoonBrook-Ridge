@@ -32,6 +32,13 @@ public class AudioEngine : IDisposable
             _al = AL.GetApi();
             _alc = ALContext.GetApi();
             
+            // Ensure APIs were initialized successfully
+            if (_al == null || _alc == null)
+            {
+                Console.WriteLine("Failed to initialize OpenAL APIs");
+                return false;
+            }
+            
             // Open the default audio device
             _device = _alc.OpenDevice(deviceName);
             if (_device == null)
@@ -287,6 +294,8 @@ public class AudioEngine : IDisposable
         }
         
         _isInitialized = false;
+        _al = null;
+        _alc = null;
         Console.WriteLine("Audio engine disposed");
     }
 }
