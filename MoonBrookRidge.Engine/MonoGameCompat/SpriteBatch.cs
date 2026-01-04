@@ -11,9 +11,16 @@ public class SpriteBatch : IDisposable
     private MoonBrookEngine.Graphics.SpriteBatch _engineBatch;
     private bool _isBegun;
     
-    internal SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch)
+    public SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch)
     {
         _engineBatch = engineBatch;
+        _isBegun = false;
+    }
+    
+    public SpriteBatch(GraphicsDevice graphicsDevice)
+    {
+        var gl = graphicsDevice.GetInternalGL();
+        _engineBatch = new MoonBrookEngine.Graphics.SpriteBatch(gl);
         _isBegun = false;
     }
     

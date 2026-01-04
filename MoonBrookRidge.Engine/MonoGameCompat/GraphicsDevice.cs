@@ -19,6 +19,11 @@ public class GraphicsDevice
     }
     
     /// <summary>
+    /// Get internal OpenGL context (for compatibility layer internals and advanced usage)
+    /// </summary>
+    public Silk.NET.OpenGL.GL GetInternalGL() => _gl;
+    
+    /// <summary>
     /// Clear the screen with a color
     /// </summary>
     public void Clear(Color color)

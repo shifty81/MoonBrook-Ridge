@@ -29,12 +29,12 @@ public struct Color : IEquatable<Color>
         A = a;
     }
     
-    public Color(int r, int g, int b, int a = 255)
+    public Color(int r, int g, int b, int a)
     {
-        R = (byte)r;
-        G = (byte)g;
-        B = (byte)b;
-        A = (byte)a;
+        R = (byte)Math.Clamp(r, 0, 255);
+        G = (byte)Math.Clamp(g, 0, 255);
+        B = (byte)Math.Clamp(b, 0, 255);
+        A = (byte)Math.Clamp(a, 0, 255);
     }
     
     public Color(float r, float g, float b, float a = 1.0f)

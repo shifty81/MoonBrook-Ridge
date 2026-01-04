@@ -18,10 +18,16 @@ public abstract class Game : IDisposable
     public GraphicsDevice GraphicsDevice => _graphics?.GraphicsDevice ?? throw new InvalidOperationException("GraphicsDevice not initialized");
     public ContentManager Content => _content ?? throw new InvalidOperationException("Content not initialized");
     
+    private string _contentRootDirectory = "Content";
+    
     /// <summary>
     /// Root directory for content files
     /// </summary>
-    public string ContentRootDirectory { get; set; } = "Content";
+    public string ContentRootDirectory
+    {
+        get => _contentRootDirectory;
+        set => _contentRootDirectory = value;
+    }
     
     /// <summary>
     /// Is the mouse cursor visible?
@@ -37,13 +43,6 @@ public abstract class Game : IDisposable
     {
         Window = new GameWindow();
         _gameTime = new GameTime(0, 0);
-    }
-    
-    /// <summary>
-    /// Initialize graphics device manager (called by derived class constructor)
-    /// </summary>
-    protected void InitializeGraphicsDeviceManager()
-    {
         _graphics = new GraphicsDeviceManager(this);
     }
     
@@ -82,7 +81,7 @@ public abstract class Game : IDisposable
         );
         
         // Create content manager
-        _content = new ContentManager(_engine.GL, ContentRootDirectory);
+        _content = new ContentManager(_engine.GL, _contentRootDirectory);
         
         // Call game initialization
         if (!_isInitialized)

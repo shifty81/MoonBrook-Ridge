@@ -13,6 +13,15 @@ public class ContentManager : IDisposable
     public string RootDirectory
     {
         get => _resourceManager.RootDirectory;
+        set
+        {
+            // Note: Cannot change root directory after creation
+            // This is a limitation compared to MonoGame
+            if (value != _resourceManager.RootDirectory)
+            {
+                throw new NotSupportedException("Cannot change RootDirectory after ContentManager creation");
+            }
+        }
     }
     
     internal ContentManager(GL gl, string rootDirectory = "Content")

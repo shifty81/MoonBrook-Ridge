@@ -12,7 +12,7 @@ public class Texture2D : IDisposable
     
     public Rectangle Bounds => new Rectangle(0, 0, Width, Height);
     
-    internal Texture2D(MoonBrookEngine.Graphics.Texture2D engineTexture)
+    public Texture2D(MoonBrookEngine.Graphics.Texture2D engineTexture)
     {
         InternalTexture = engineTexture;
     }

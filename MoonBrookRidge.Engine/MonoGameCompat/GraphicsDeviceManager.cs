@@ -37,7 +37,7 @@ public class GraphicsDeviceManager
     
     public GraphicsDevice? GraphicsDevice { get; internal set; }
     
-    internal GraphicsDeviceManager(Game game)
+    public GraphicsDeviceManager(Game game)
     {
         _game = game;
     }
