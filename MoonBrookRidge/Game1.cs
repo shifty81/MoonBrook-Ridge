@@ -21,7 +21,7 @@ public class Game1 : Game
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
+        ContentRootDirectory = "Content";
         IsMouseVisible = true;
         
         // Load settings (Phase 7.4)

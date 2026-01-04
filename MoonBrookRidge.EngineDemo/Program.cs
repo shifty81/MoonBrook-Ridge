@@ -37,7 +37,7 @@ public class DemoGame : Game
     
     public DemoGame()
     {
-        Content.RootDirectory = "Content";
+        ContentRootDirectory = "Content";
         IsMouseVisible = true;
         
         // Set window size
