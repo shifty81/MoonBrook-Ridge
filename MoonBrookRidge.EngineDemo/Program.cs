@@ -20,6 +20,11 @@ public class DemoGame : Game
     private List<Particle> _particles;
     private Random _random;
     
+    // Performance display constants
+    private const int StatsUpdateInterval = 2; // seconds between stats updates
+    private const int TimeCheckModulo = 10; // for time-based throttling
+    private const int ThrottleThreshold = 20; // throttle threshold
+    
     private struct Particle
     {
         public Vector2 Position;
@@ -133,12 +138,14 @@ public class DemoGame : Game
             }
         }
         
-        // Simple stats every 2 seconds
-        if ((int)gameTime.TotalGameTime % 2 == 0 && gameTime.TotalGameTime > 0.1)
+        // Simple stats display (throttled to reduce console spam)
+        if ((int)gameTime.TotalGameTime % StatsUpdateInterval == 0 && gameTime.TotalGameTime > 0.1)
         {
-            if ((int)(gameTime.TotalGameTime * 10) % 20 < 2)
+            if ((int)(gameTime.TotalGameTime * TimeCheckModulo) % ThrottleThreshold < 2)
             {
-                Console.WriteLine($"Particles: {_particles.Count}, FPS: ~60, Position: {_playerPosition}");
+                // Calculate actual FPS from delta time
+                float fps = deltaTime > 0 ? 1.0f / deltaTime : 0;
+                Console.WriteLine($"Particles: {_particles.Count}, FPS: {fps:F1}, Position: {_playerPosition}");
             }
         }
         

@@ -15,11 +15,14 @@ public class ContentManager : IDisposable
         get => _resourceManager.RootDirectory;
         set
         {
-            // Note: Cannot change root directory after creation
-            // This is a limitation compared to MonoGame
+            // Note: Changing root directory is limited compared to MonoGame
+            // The underlying ResourceManager cannot change root directory after creation
+            // This is documented as a known limitation in ENGINE_INTEGRATION_GUIDE.md
             if (value != _resourceManager.RootDirectory)
             {
-                throw new NotSupportedException("Cannot change RootDirectory after ContentManager creation");
+                throw new NotSupportedException(
+                    "Cannot change RootDirectory after ContentManager creation. " +
+                    "This is a known limitation - see ENGINE_INTEGRATION_GUIDE.md");
             }
         }
     }

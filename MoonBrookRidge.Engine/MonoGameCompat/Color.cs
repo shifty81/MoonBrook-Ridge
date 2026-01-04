@@ -20,6 +20,7 @@ public struct Color : IEquatable<Color>
     public static readonly Color Yellow = new Color(255, 255, 0, 255);
     public static readonly Color Cyan = new Color(0, 255, 255, 255);
     public static readonly Color Magenta = new Color(255, 0, 255, 255);
+    public static readonly Color CornflowerBlue = new Color(100, 149, 237, 255); // Classic MonoGame default
     
     public Color(byte r, byte g, byte b, byte a = 255)
     {
