@@ -154,17 +154,6 @@ namespace MoonBrookEngine.UI
             }
         }
 
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
-
-            // Handle dragging
-            if (_isDragging && IsEnabled)
-            {
-                // Value will be updated in OnMouseDown when dragging
-            }
-        }
-
         public override void OnMouseDown(Vec2 mousePosition)
         {
             base.OnMouseDown(mousePosition);
