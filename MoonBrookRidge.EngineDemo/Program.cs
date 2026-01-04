@@ -274,13 +274,35 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Starting MoonBrook Engine Compatibility Demo...");
+        Console.WriteLine("=== MoonBrook Engine Demo Launcher ===");
+        Console.WriteLine();
+        Console.WriteLine("Select demo to run:");
+        Console.WriteLine("  1. Compatibility Demo (particle effects)");
+        Console.WriteLine("  2. Farmhouse Scene (first game scene)");
+        Console.WriteLine();
+        Console.Write("Enter choice (1 or 2): ");
+        
+        string? choice = Console.ReadLine();
         Console.WriteLine();
         
         try
         {
-            using var game = new DemoGame();
-            game.Run();
+            if (choice == "2")
+            {
+                // Run farmhouse scene demo
+                Console.WriteLine("Starting Farmhouse Scene Demo...");
+                Console.WriteLine();
+                using var game = new FarmhouseGame();
+                game.Run();
+            }
+            else
+            {
+                // Default to compatibility demo
+                Console.WriteLine("Starting Compatibility Demo...");
+                Console.WriteLine();
+                using var game = new DemoGame();
+                game.Run();
+            }
         }
         catch (Exception ex)
         {
