@@ -12,6 +12,9 @@ public class SoundEffectInstance : IDisposable
     private readonly uint _buffer;
     private readonly uint _source;
     private bool _isDisposed;
+    private float _volume = 1.0f;
+    private float _pitch = 0f;
+    private float _pan = 0f;
     
     public string Name { get; }
     
@@ -27,31 +30,34 @@ public class SoundEffectInstance : IDisposable
     
     public float Volume
     {
-        get => 1.0f; // TODO: Store and return actual value
+        get => _volume;
         set
         {
+            _volume = System.Math.Clamp(value, 0f, 1f);
             if (!_isDisposed)
-                _audioEngine.SetSourceVolume(_source, value);
+                _audioEngine.SetSourceVolume(_source, _volume);
         }
     }
     
     public float Pitch
     {
-        get => 0f; // TODO: Store and return actual value
+        get => _pitch;
         set
         {
+            _pitch = System.Math.Clamp(value, -1f, 1f);
             if (!_isDisposed)
-                _audioEngine.SetSourcePitch(_source, 1.0f + value);
+                _audioEngine.SetSourcePitch(_source, 1.0f + _pitch);
         }
     }
     
     public float Pan
     {
-        get => 0f; // TODO: Store and return actual value
+        get => _pan;
         set
         {
+            _pan = System.Math.Clamp(value, -1f, 1f);
             if (!_isDisposed)
-                _audioEngine.SetSourcePosition(_source, value, 0, 0);
+                _audioEngine.SetSourcePosition(_source, _pan, 0, 0);
         }
     }
     

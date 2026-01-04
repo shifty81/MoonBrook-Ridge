@@ -3,71 +3,101 @@ using System;
 namespace MoonBrookRidge.Engine.MonoGameCompat;
 
 /// <summary>
-/// MonoGame-compatible Song class (stub for now)
+/// MonoGame-compatible Song class
 /// </summary>
 public class Song : IDisposable
 {
     public string Name { get; }
     public TimeSpan Duration { get; }
+    internal uint Buffer { get; }
 
-    internal Song(string name, TimeSpan duration)
+    internal Song(string name, TimeSpan duration, uint buffer)
     {
         Name = name;
         Duration = duration;
+        Buffer = buffer;
     }
 
     public void Dispose()
     {
-        // TODO: Implement when engine has music support
+        // Buffer is managed by ResourceManager, so no cleanup needed here
     }
 }
 
 /// <summary>
-/// MonoGame-compatible MediaPlayer static class (stub for now)
+/// MonoGame-compatible MediaPlayer static class
 /// </summary>
 public static class MediaPlayer
 {
-    private static float _volume = 1.0f;
-    private static bool _isRepeating = false;
-    private static MediaState _state = MediaState.Stopped;
+    private static MoonBrookEngine.Audio.MusicPlayer? _musicPlayer;
+    private static Song? _currentSong;
+
+    internal static void Initialize(MoonBrookEngine.Audio.MusicPlayer? musicPlayer)
+    {
+        _musicPlayer = musicPlayer;
+    }
 
     public static float Volume
     {
-        get => _volume;
-        set => _volume = Math.Clamp(value, 0f, 1f);
+        get => _musicPlayer?.Volume ?? 1.0f;
+        set
+        {
+            if (_musicPlayer != null)
+                _musicPlayer.Volume = value;
+        }
     }
 
     public static bool IsRepeating
     {
-        get => _isRepeating;
-        set => _isRepeating = value;
+        get => _musicPlayer?.IsRepeating ?? false;
+        set
+        {
+            if (_musicPlayer != null)
+                _musicPlayer.IsRepeating = value;
+        }
     }
 
-    public static MediaState State => _state;
+    public static MediaState State
+    {
+        get
+        {
+            if (_musicPlayer == null) return MediaState.Stopped;
+            
+            return _musicPlayer.State switch
+            {
+                MoonBrookEngine.Audio.MusicState.Playing => MediaState.Playing,
+                MoonBrookEngine.Audio.MusicState.Paused => MediaState.Paused,
+                _ => MediaState.Stopped
+            };
+        }
+    }
 
     public static void Play(Song song)
     {
-        // TODO: Implement when engine has music support
-        _state = MediaState.Playing;
-        Console.WriteLine($"MediaPlayer.Play stub called for: {song.Name}");
+        if (_musicPlayer == null)
+        {
+            Console.WriteLine($"MediaPlayer not initialized - cannot play: {song.Name}");
+            return;
+        }
+
+        _currentSong = song;
+        _musicPlayer.Play(song.Buffer, song.Name);
     }
 
     public static void Pause()
     {
-        // TODO: Implement when engine has music support
-        _state = MediaState.Paused;
+        _musicPlayer?.Pause();
     }
 
     public static void Resume()
     {
-        // TODO: Implement when engine has music support
-        _state = MediaState.Playing;
+        _musicPlayer?.Resume();
     }
 
     public static void Stop()
     {
-        // TODO: Implement when engine has music support
-        _state = MediaState.Stopped;
+        _musicPlayer?.Stop();
+        _currentSong = null;
     }
 }
 

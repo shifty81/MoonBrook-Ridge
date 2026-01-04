@@ -15,6 +15,7 @@ public class Engine : IDisposable
     private IInputContext? _inputContext;
     private Input.InputManager? _inputManager;
     private Audio.AudioEngine? _audioEngine;
+    private Audio.MusicPlayer? _musicPlayer;
     private Scene.SceneManager? _sceneManager;
     private bool _isRunning;
     private double _totalTime;
@@ -30,6 +31,7 @@ public class Engine : IDisposable
     public IInputContext Input => _inputContext ?? throw new InvalidOperationException("Input context not initialized");
     public Input.InputManager InputManager => _inputManager ?? throw new InvalidOperationException("Input manager not initialized");
     public Audio.AudioEngine? AudioEngine => _audioEngine;
+    public Audio.MusicPlayer? MusicPlayer => _musicPlayer;
     public PerformanceMonitor Performance => _performanceMonitor;
     public Scene.SceneManager? SceneManager => _sceneManager;
     public Logger Logger => _logger;
@@ -110,6 +112,8 @@ public class Engine : IDisposable
         else
         {
             _logger.Info("Audio engine initialized");
+            _musicPlayer = new Audio.MusicPlayer(_audioEngine);
+            _logger.Info("Music player initialized");
         }
         
         // Initialize scene manager (optional - for state-based games)
@@ -130,6 +134,9 @@ public class Engine : IDisposable
         
         // Update input state
         _inputManager?.Update();
+        
+        // Update music player
+        _musicPlayer?.Update();
         
         _totalTime += deltaTime;
         
@@ -182,6 +189,7 @@ public class Engine : IDisposable
     public void Dispose()
     {
         _sceneManager?.Dispose();
+        _musicPlayer?.Dispose();
         _audioEngine?.Dispose();
         _inputContext?.Dispose();
         _gl?.Dispose();

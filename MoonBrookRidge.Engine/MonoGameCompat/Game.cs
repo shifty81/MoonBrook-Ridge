@@ -88,6 +88,9 @@ public abstract class Game : IDisposable
         // Create content manager with audio engine support
         _content = new ContentManager(_engine.GL, _engine.AudioEngine, _contentRootDirectory);
         
+        // Initialize MediaPlayer with engine's music player
+        MediaPlayer.Initialize(_engine.MusicPlayer);
+        
         // Initialize static input classes
         Keyboard.Initialize(this);
         Mouse.Initialize(this);
