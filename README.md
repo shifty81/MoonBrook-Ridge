@@ -447,8 +447,11 @@ The project uses MonoGame's Content Pipeline for asset management. To add new sp
 | **Open Skills Menu** ⭐ **NEW!** | **J** |
 | **Open Pet Menu** ⭐ **NEW!** | **P** |
 | **Open Crafting Menu** ⭐ | **K** |
+| **Underground Workbench** ⭐ **PHASE 10!** | **Z** |
+| **Automation Devices** ⭐ **PHASE 10!** | **N** (requires Scarlet tier) |
 | **Open Shop Menu** ⭐ **NEW** | **B** |
 | **Open Building Menu** ⭐ **NEW** | **H** |
+| **Open Furniture Menu** ⭐ **PHASE 10!** | **U** (when near building) |
 | **Gift to NPC** ⭐ **NEW** | **G** |
 | **Open Achievement Menu** ⭐ **NEW!** | **A** |
 | **Open Settings Menu** ⭐ **NEW!** | **O** |

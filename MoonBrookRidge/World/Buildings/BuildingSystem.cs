@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -257,6 +258,16 @@ public class BuildingManager
 {
     private List<Building> _placedBuildings;
     
+    /// <summary>
+    /// Event fired when player enters a building interior
+    /// </summary>
+    public event Action<Building> OnBuildingEntered;
+    
+    /// <summary>
+    /// Event fired when player exits a building interior
+    /// </summary>
+    public event Action<Building> OnBuildingExited;
+    
     public BuildingManager()
     {
         _placedBuildings = new List<Building>();
@@ -392,5 +403,104 @@ public class BuildingManager
     public bool RemoveBuilding(Building building)
     {
         return _placedBuildings.Remove(building);
+    }
+    
+    /// <summary>
+    /// Check if player can enter a building at the given position
+    /// Player must be within interaction distance from the building's entrance (bottom center)
+    /// </summary>
+    /// <param name="playerPosition">Player world position in pixels</param>
+    /// <param name="interactionDistance">Max distance in pixels to interact (default 32px = 2 tiles)</param>
+    /// <returns>Building that can be entered, or null</returns>
+    public Building GetBuildingNearPlayer(Vector2 playerPosition, float interactionDistance = 32f)
+    {
+        foreach (var building in _placedBuildings)
+        {
+            // Only allow entering certain building types that have interiors
+            if (!CanBuildingHaveInterior(building.Type))
+                continue;
+            
+            // Calculate entrance position (bottom center of building)
+            Vector2 entrancePosition = GetBuildingEntrancePosition(building);
+            
+            // Check distance
+            float distance = Vector2.Distance(playerPosition, entrancePosition);
+            if (distance <= interactionDistance)
+            {
+                return building;
+            }
+        }
+        
+        return null;
+    }
+    
+    /// <summary>
+    /// Get the entrance position for a building (world position in pixels)
+    /// Entrance is at the bottom-center of the building
+    /// </summary>
+    private Vector2 GetBuildingEntrancePosition(Building building)
+    {
+        // Convert tile position to pixel position
+        Vector2 pixelPosition = building.Position * GameConstants.TILE_SIZE;
+        
+        // Calculate center X and bottom Y
+        float centerX = pixelPosition.X + (building.Width / 2f);
+        float bottomY = pixelPosition.Y + building.Height;
+        
+        return new Vector2(centerX, bottomY);
+    }
+    
+    /// <summary>
+    /// Check if a building type can have an interior
+    /// </summary>
+    private bool CanBuildingHaveInterior(BuildingType type)
+    {
+        switch (type)
+        {
+            case BuildingType.Barn:
+            case BuildingType.Coop:
+            case BuildingType.Shed:
+            case BuildingType.Greenhouse:
+            case BuildingType.Mill:
+            case BuildingType.Workshop:
+                return true;
+            
+            case BuildingType.Well:
+            case BuildingType.Silo:
+                return false; // These are outdoor-only structures
+            
+            default:
+                return false;
+        }
+    }
+    
+    /// <summary>
+    /// Notify that player has entered a building
+    /// </summary>
+    public void EnterBuilding(Building building)
+    {
+        if (building != null)
+        {
+            OnBuildingEntered?.Invoke(building);
+        }
+    }
+    
+    /// <summary>
+    /// Notify that player has exited a building
+    /// </summary>
+    public void ExitBuilding(Building building)
+    {
+        if (building != null)
+        {
+            OnBuildingExited?.Invoke(building);
+        }
+    }
+    
+    /// <summary>
+    /// Check if player has built a specific building type
+    /// </summary>
+    public bool HasBuilding(BuildingType type)
+    {
+        return _placedBuildings.Any(b => b.Type == type);
     }
 }

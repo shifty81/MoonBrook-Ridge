@@ -106,7 +106,9 @@ public class GameplayState : GameState
     private UI.Menus.FurnitureMenu _furnitureMenu;
     private Characters.DatingSystem _datingSystem;
     private World.Mining.UndergroundCraftingSystem _undergroundCraftingSystem;
+    private UI.Menus.UndergroundCraftingMenu _undergroundCraftingMenu;
     private World.Mining.AutomationSystem _automationSystem;
+    private UI.Menus.AutomationPlacementMenu _automationPlacementMenu;
     private World.Mining.ExpandedOreSystem _expandedOreSystem;
     private FastTravelMenu _fastTravelMenu; // Legacy - kept for backwards compatibility
     private MapMenu _mapMenu; // New consolidated map interface (M key)
@@ -119,6 +121,7 @@ public class GameplayState : GameState
     private MouseState _previousMouseState;
     private GameEvent? _lastShownEvent;
     private int _previousDay; // Track day changes for marriage/family system
+    private Building _currentBuilding; // Track which building player is currently near/inside
 
     public GameplayState(Game1 game) : base(game) { }
 
@@ -727,12 +730,16 @@ public class GameplayState : GameState
             _notificationSystem?.Show($"Workbench Tier {tier} Unlocked!", NotificationType.Success, 3.0f);
         };
         
+        _undergroundCraftingMenu = new UI.Menus.UndergroundCraftingMenu(_undergroundCraftingSystem, _inventory);
+        
         _automationSystem = new World.Mining.AutomationSystem();
         _automationSystem.OnItemHarvested += (device, itemName) =>
         {
             // Optional: Show notification for automation harvests
             // Can be disabled if too spammy
         };
+        
+        _automationPlacementMenu = new UI.Menus.AutomationPlacementMenu(_automationSystem, _undergroundCraftingSystem, _inventory);
         
         _expandedOreSystem = new World.Mining.ExpandedOreSystem();
         
@@ -1007,6 +1014,10 @@ public class GameplayState : GameState
         _performanceMonitor.Initialize(_pixelTexture);
         _notificationSystem.Initialize(_pixelTexture);
         
+        // Initialize Phase 10 UI components
+        _undergroundCraftingMenu.Initialize(_pixelTexture);
+        _automationPlacementMenu.Initialize(_pixelTexture);
+        
         // Initialize starter quests
         InitializeQuests();
     }
@@ -1076,6 +1087,13 @@ public class GameplayState : GameState
             return; // Don't update game while in shop menu
         }
         
+        if (_undergroundCraftingMenu.IsActive)
+        {
+            _undergroundCraftingMenu.Update(gameTime);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in underground crafting menu
+        }
+        
         if (_fastTravelMenu.IsActive)
         {
             _fastTravelMenu.Update(gameTime);
@@ -1102,6 +1120,13 @@ public class GameplayState : GameState
             _buildingMenu.Update(gameTime, _player.Money);
             _previousKeyboardState = keyboardState;
             return; // Don't update game while in building menu
+        }
+        
+        if (_automationPlacementMenu.IsActive)
+        {
+            _automationPlacementMenu.Update(gameTime, _player.Position);
+            _previousKeyboardState = keyboardState;
+            return; // Don't update game while in automation menu
         }
         
         if (_achievementMenu.IsVisible)
@@ -1262,19 +1287,39 @@ public class GameplayState : GameState
             return;
         }
         
-        // Furniture menu (U key) - Phase 10
-        // TODO: Implement building interior detection to show furniture menu only when inside a building
-        /*if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
+        // Underground Crafting menu (Z key) - Phase 10: Workbench Interaction
+        if (keyboardState.IsKeyDown(Keys.Z) && !_previousKeyboardState.IsKeyDown(Keys.Z))
         {
-            // Need to detect which building player is in
-            Building currentBuilding = DetectPlayerBuilding();
-            if (currentBuilding != null)
-            {
-                _furnitureMenu.Toggle(currentBuilding);
-            }
+            _undergroundCraftingMenu.Toggle();
             _previousKeyboardState = keyboardState;
             return;
-        }*/
+        }
+        
+        // Automation Placement menu (N key) - Phase 10: Device Placement
+        if (keyboardState.IsKeyDown(Keys.N) && !_previousKeyboardState.IsKeyDown(Keys.N))
+        {
+            _automationPlacementMenu.Toggle();
+            _previousKeyboardState = keyboardState;
+            return;
+        }
+        
+        // Furniture menu (U key) - Phase 10: Building Interior Detection
+        if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
+        {
+            // Detect which building player is near
+            _currentBuilding = _buildingManager.GetBuildingNearPlayer(_player.Position);
+            if (_currentBuilding != null)
+            {
+                _furnitureMenu.Toggle(_currentBuilding);
+                _previousKeyboardState = keyboardState;
+                return;
+            }
+            else
+            {
+                // Show notification if not near a building
+                _notificationSystem?.Show("You must be near a building entrance to open the furniture menu.", NotificationType.Warning, 3.0f);
+            }
+        }
         
         // Check for map menu (M key) - opens tabbed menu with World Map, Waypoints, and Fast Travel
         if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
@@ -1325,6 +1370,14 @@ public class GameplayState : GameState
         if (_buildingMenu.IsPlacementMode)
         {
             HandleBuildingPlacement();
+            _previousKeyboardState = keyboardState;
+            return; // Don't update other game logic during placement
+        }
+        
+        // Handle automation device placement mode
+        if (_automationPlacementMenu.IsPlacementMode)
+        {
+            HandleAutomationPlacement();
             _previousKeyboardState = keyboardState;
             return; // Don't update other game logic during placement
         }
@@ -2150,6 +2203,54 @@ public class GameplayState : GameState
         _previousMouseState = mouseState;
     }
     
+    private void HandleAutomationPlacement()
+    {
+        var mouseState = Mouse.GetState();
+        var keyboardState = Keyboard.GetState();
+        
+        // Get tile position under mouse cursor
+        Vector2 mouseWorldPos = GetMouseWorldPosition();
+        Vector2 tilePos = new Vector2(
+            (int)(mouseWorldPos.X / GameConstants.TILE_SIZE),
+            (int)(mouseWorldPos.Y / GameConstants.TILE_SIZE)
+        );
+        
+        // R key to rotate direction (for conveyors)
+        if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
+        {
+            _automationPlacementMenu.RotateDirection();
+        }
+        
+        // Left click to place device
+        if (mouseState.LeftButton == ButtonState.Pressed && 
+            _previousMouseState.LeftButton == ButtonState.Released)
+        {
+            // Convert tile position to world position in pixels
+            Vector2 worldPos = tilePos * GameConstants.TILE_SIZE;
+            
+            if (_automationPlacementMenu.TryPlaceDevice(worldPos))
+            {
+                _automationPlacementMenu.ExitPlacementMode();
+                _notificationSystem?.Show("Device placed successfully!", NotificationType.Success, 2.0f);
+            }
+            else
+            {
+                _notificationSystem?.Show("Cannot place device here!", NotificationType.Warning, 2.0f);
+            }
+        }
+        
+        // Right click or Escape to cancel placement
+        if ((mouseState.RightButton == ButtonState.Pressed && 
+             _previousMouseState.RightButton == ButtonState.Released) ||
+            (keyboardState.IsKeyDown(Keys.Escape) && 
+             !_previousKeyboardState.IsKeyDown(Keys.Escape)))
+        {
+            _automationPlacementMenu.ExitPlacementMode();
+        }
+        
+        _previousMouseState = mouseState;
+    }
+    
     private Vector2 GetMouseWorldPosition()
     {
         var mouseState = Mouse.GetState();
@@ -2373,6 +2474,13 @@ public class GameplayState : GameState
                                               _camera.Position, _camera.Zoom);
         }
         
+        // Draw automation device placement preview (in world space with camera transform)
+        if (_automationPlacementMenu.IsPlacementMode)
+        {
+            Vector2 mouseWorldPos = GetMouseWorldPosition();
+            _automationPlacementMenu.DrawPlacementPreview(spriteBatch, mouseWorldPos, _camera);
+        }
+        
         spriteBatch.End();
         
         // Draw biome screen tint overlay (between world and UI)
@@ -2426,6 +2534,11 @@ public class GameplayState : GameState
             _shopMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
+        if (_undergroundCraftingMenu.IsActive)
+        {
+            _undergroundCraftingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
+        }
+        
         if (_mapMenu.IsActive)
         {
             _mapMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
@@ -2449,6 +2562,11 @@ public class GameplayState : GameState
         if (_buildingMenu.IsActive_Menu)
         {
             _buildingMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice, _player.Money);
+        }
+        
+        if (_automationPlacementMenu.IsActive)
+        {
+            _automationPlacementMenu.Draw(spriteBatch, Game.DefaultFont, Game.GraphicsDevice);
         }
         
         if (_achievementMenu.IsVisible)
