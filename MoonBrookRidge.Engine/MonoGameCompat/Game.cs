@@ -80,8 +80,8 @@ public abstract class Game : IDisposable
             _graphics.PreferredBackBufferHeight
         );
         
-        // Create content manager
-        _content = new ContentManager(_engine.GL, _contentRootDirectory);
+        // Create content manager with audio engine support
+        _content = new ContentManager(_engine.GL, _engine.AudioEngine, _contentRootDirectory);
         
         // Call game initialization
         if (!_isInitialized)

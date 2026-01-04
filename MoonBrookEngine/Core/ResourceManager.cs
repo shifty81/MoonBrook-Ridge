@@ -1,5 +1,6 @@
 using Silk.NET.OpenGL;
 using MoonBrookEngine.Graphics;
+using MoonBrookEngine.Audio;
 
 namespace MoonBrookEngine.Core;
 
@@ -10,8 +11,10 @@ namespace MoonBrookEngine.Core;
 public class ResourceManager : IDisposable
 {
     private readonly GL _gl;
+    private readonly AudioEngine? _audioEngine;
     private readonly Dictionary<string, Texture2D> _textures;
     private readonly Dictionary<string, BitmapFont> _fonts;
+    private readonly Dictionary<string, SoundEffect> _soundEffects;
     private readonly string _rootDirectory;
     
     public string RootDirectory
@@ -19,12 +22,14 @@ public class ResourceManager : IDisposable
         get => _rootDirectory;
     }
     
-    public ResourceManager(GL gl, string rootDirectory = "Content")
+    public ResourceManager(GL gl, AudioEngine? audioEngine = null, string rootDirectory = "Content")
     {
         _gl = gl;
+        _audioEngine = audioEngine;
         _rootDirectory = rootDirectory;
         _textures = new Dictionary<string, Texture2D>();
         _fonts = new Dictionary<string, BitmapFont>();
+        _soundEffects = new Dictionary<string, SoundEffect>();
     }
     
     /// <summary>
@@ -127,6 +132,86 @@ public class ResourceManager : IDisposable
     }
     
     /// <summary>
+    /// Load a sound effect from WAV file
+    /// </summary>
+    public SoundEffect? LoadSoundEffect(string assetName)
+    {
+        if (_audioEngine == null)
+        {
+            Console.WriteLine("Audio engine not available - cannot load sound effects");
+            return null;
+        }
+        
+        // Normalize path separators
+        assetName = assetName.Replace('\\', '/');
+        
+        // Check if already loaded
+        if (_soundEffects.TryGetValue(assetName, out var cached))
+        {
+            return cached;
+        }
+        
+        // Build full path
+        string fullPath = Path.Combine(_rootDirectory, assetName);
+        
+        // Try common extensions if no extension specified
+        if (!Path.HasExtension(fullPath))
+        {
+            string[] extensions = { ".wav" };
+            string? foundPath = null;
+            
+            foreach (var ext in extensions)
+            {
+                string testPath = fullPath + ext;
+                if (File.Exists(testPath))
+                {
+                    foundPath = testPath;
+                    break;
+                }
+            }
+            
+            if (foundPath == null)
+            {
+                Console.WriteLine($"Could not find sound effect: {assetName}");
+                return null;
+            }
+            
+            fullPath = foundPath;
+        }
+        
+        // Load WAV file
+        if (!File.Exists(fullPath))
+        {
+            Console.WriteLine($"Sound file not found: {fullPath}");
+            return null;
+        }
+        
+        byte[] wavData = File.ReadAllBytes(fullPath);
+        var soundEffect = SoundEffect.FromWavData(_audioEngine, wavData, assetName);
+        
+        if (soundEffect != null)
+        {
+            _soundEffects[assetName] = soundEffect;
+        }
+        
+        return soundEffect;
+    }
+    
+    /// <summary>
+    /// Unload a specific sound effect
+    /// </summary>
+    public void UnloadSoundEffect(string assetName)
+    {
+        assetName = assetName.Replace('\\', '/');
+        
+        if (_soundEffects.TryGetValue(assetName, out var soundEffect))
+        {
+            soundEffect.Dispose();
+            _soundEffects.Remove(assetName);
+        }
+    }
+    
+    /// <summary>
     /// Get number of loaded textures
     /// </summary>
     public int LoadedTextureCount => _textures.Count;
@@ -135,6 +220,11 @@ public class ResourceManager : IDisposable
     /// Get number of loaded fonts
     /// </summary>
     public int LoadedFontCount => _fonts.Count;
+    
+    /// <summary>
+    /// Get number of loaded sound effects
+    /// </summary>
+    public int LoadedSoundEffectCount => _soundEffects.Count;
     
     /// <summary>
     /// Unload all resources
@@ -152,6 +242,12 @@ public class ResourceManager : IDisposable
             font.Dispose();
         }
         _fonts.Clear();
+        
+        foreach (var soundEffect in _soundEffects.Values)
+        {
+            soundEffect.Dispose();
+        }
+        _soundEffects.Clear();
     }
     
     public void Dispose()

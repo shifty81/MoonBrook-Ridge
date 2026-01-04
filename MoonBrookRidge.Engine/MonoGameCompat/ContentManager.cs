@@ -27,9 +27,9 @@ public class ContentManager : IDisposable
         }
     }
     
-    internal ContentManager(GL gl, string rootDirectory = "Content")
+    internal ContentManager(GL gl, MoonBrookEngine.Audio.AudioEngine? audioEngine = null, string rootDirectory = "Content")
     {
-        _resourceManager = new MoonBrookEngine.Core.ResourceManager(gl, rootDirectory);
+        _resourceManager = new MoonBrookEngine.Core.ResourceManager(gl, audioEngine, rootDirectory);
         _loadedAssets = new Dictionary<string, object>();
     }
     

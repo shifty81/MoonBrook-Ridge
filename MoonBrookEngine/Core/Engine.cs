@@ -14,6 +14,7 @@ public class Engine : IDisposable
     private GL? _gl;
     private IInputContext? _inputContext;
     private Input.InputManager? _inputManager;
+    private Audio.AudioEngine? _audioEngine;
     private bool _isRunning;
     private double _totalTime;
     private PerformanceMonitor _performanceMonitor;
@@ -24,6 +25,7 @@ public class Engine : IDisposable
     public GL GL => _gl ?? throw new InvalidOperationException("OpenGL context not initialized");
     public IInputContext Input => _inputContext ?? throw new InvalidOperationException("Input context not initialized");
     public Input.InputManager InputManager => _inputManager ?? throw new InvalidOperationException("Input manager not initialized");
+    public Audio.AudioEngine? AudioEngine => _audioEngine;
     public PerformanceMonitor Performance => _performanceMonitor;
     
     // Events for derived classes or game logic
@@ -78,6 +80,14 @@ public class Engine : IDisposable
         // Initialize input
         _inputContext = _window.CreateInput();
         _inputManager = new Input.InputManager(_inputContext);
+        
+        // Initialize audio (optional - may fail on headless systems)
+        _audioEngine = new Audio.AudioEngine();
+        if (!_audioEngine.Initialize())
+        {
+            Console.WriteLine("⚠️  Audio engine initialization failed - audio will be disabled");
+            _audioEngine = null;
+        }
         
         Console.WriteLine($"MoonBrook Engine initialized");
         Console.WriteLine($"OpenGL Version: {_gl.GetStringS(StringName.Version)}");
@@ -138,6 +148,7 @@ public class Engine : IDisposable
     
     public void Dispose()
     {
+        _audioEngine?.Dispose();
         _inputContext?.Dispose();
         _gl?.Dispose();
         _window?.Dispose();
