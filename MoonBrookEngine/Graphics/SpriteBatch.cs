@@ -401,6 +401,34 @@ public class SpriteBatch : IDisposable
         }
     }
     
+    /// <summary>
+    /// Draw a particle system
+    /// </summary>
+    public void DrawParticles(ECS.Components.ParticleComponent particleComponent, Texture2D particleTexture)
+    {
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin() must be called before DrawParticles()");
+        
+        if (particleComponent == null || particleTexture == null)
+            return;
+        
+        // Draw each active particle
+        foreach (var particle in particleComponent.Particles)
+        {
+            if (!particle.IsActive)
+                continue;
+            
+            var position = new Vec2(particle.Position.X, particle.Position.Y);
+            var color = particle.Color;
+            var scale = new Vec2(particle.Size, particle.Size);
+            
+            // Draw particle as a sprite
+            Draw(particleTexture, position, null, color, particle.Rotation, 
+                new Vec2(particleTexture.Width / 2f, particleTexture.Height / 2f), 
+                scale, 0f);
+        }
+    }
+    
     public void Dispose()
     {
         _shader?.Dispose();

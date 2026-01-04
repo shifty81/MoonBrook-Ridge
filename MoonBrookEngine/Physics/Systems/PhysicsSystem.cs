@@ -5,11 +5,24 @@ using MoonBrookEngine.ECS.Components;
 namespace MoonBrookEngine.Physics.Systems;
 
 /// <summary>
+/// Represents a collision or trigger event between two entities
+/// </summary>
+public class CollisionEventArgs
+{
+    public Entity Entity1 { get; set; }
+    public Entity Entity2 { get; set; }
+    public Vector2 CollisionNormal { get; set; }
+    public Vector2 CollisionPoint { get; set; }
+}
+
+/// <summary>
 /// System that handles physics simulation for entities
 /// </summary>
 public class PhysicsSystem
 {
     private readonly World _world;
+    private readonly HashSet<(Entity, Entity)> _activeCollisions;
+    private readonly HashSet<(Entity, Entity)> _activeTriggers;
     
     /// <summary>
     /// Global gravity vector (units per second squared)
@@ -21,9 +34,31 @@ public class PhysicsSystem
     /// </summary>
     public bool EnableCollisionResolution { get; set; }
     
+    /// <summary>
+    /// Event fired when two non-trigger colliders start colliding
+    /// </summary>
+    public event Action<CollisionEventArgs>? OnCollisionEnter;
+    
+    /// <summary>
+    /// Event fired when two non-trigger colliders stop colliding
+    /// </summary>
+    public event Action<CollisionEventArgs>? OnCollisionExit;
+    
+    /// <summary>
+    /// Event fired when a collider enters a trigger
+    /// </summary>
+    public event Action<CollisionEventArgs>? OnTriggerEnter;
+    
+    /// <summary>
+    /// Event fired when a collider exits a trigger
+    /// </summary>
+    public event Action<CollisionEventArgs>? OnTriggerExit;
+    
     public PhysicsSystem(World world)
     {
         _world = world;
+        _activeCollisions = new HashSet<(Entity, Entity)>();
+        _activeTriggers = new HashSet<(Entity, Entity)>();
         Gravity = new Vector2(0, 980f); // Default: 980 pixels/sec² downward (like 9.8 m/s²)
         EnableCollisionResolution = true;
     }
@@ -98,10 +133,14 @@ public class PhysicsSystem
     }
     
     /// <summary>
-    /// Resolve collisions between entities
+    /// Resolve collisions between entities and fire trigger/collision events
     /// </summary>
     private void ResolveCollisions()
     {
+        // Track current frame collisions/triggers
+        var currentCollisions = new HashSet<(Entity, Entity)>();
+        var currentTriggers = new HashSet<(Entity, Entity)>();
+        
         // Avoid ToList() allocation by materializing only once or using array
         var colliderEntities = _world.GetEntitiesWith<ColliderComponent, TransformComponent>();
         var entityArray = colliderEntities as Entity[] ?? colliderEntities.ToArray();
@@ -126,9 +165,43 @@ public class PhysicsSystem
                 // Check for collision
                 if (collider1.Shape.Intersects(collider2.Shape, transform1.Position, transform2.Position))
                 {
-                    // Skip if either is a trigger
+                    var normal = Vector2.Normalize(transform1.Position - transform2.Position);
+                    var collisionPoint = (transform1.Position + transform2.Position) / 2;
+                    var pair = (entity1, entity2);
+                    
+                    // Handle triggers
                     if (collider1.IsTrigger || collider2.IsTrigger)
+                    {
+                        currentTriggers.Add(pair);
+                        
+                        // Fire OnTriggerEnter if this is a new trigger
+                        if (!_activeTriggers.Contains(pair))
+                        {
+                            OnTriggerEnter?.Invoke(new CollisionEventArgs
+                            {
+                                Entity1 = entity1,
+                                Entity2 = entity2,
+                                CollisionNormal = normal,
+                                CollisionPoint = collisionPoint
+                            });
+                        }
                         continue;
+                    }
+                    
+                    // Handle regular collisions
+                    currentCollisions.Add(pair);
+                    
+                    // Fire OnCollisionEnter if this is a new collision
+                    if (!_activeCollisions.Contains(pair))
+                    {
+                        OnCollisionEnter?.Invoke(new CollisionEventArgs
+                        {
+                            Entity1 = entity1,
+                            Entity2 = entity2,
+                            CollisionNormal = normal,
+                            CollisionPoint = collisionPoint
+                        });
+                    }
                     
                     var physics1 = _world.GetComponent<PhysicsComponent>(entity1);
                     var physics2 = _world.GetComponent<PhysicsComponent>(entity2);
@@ -138,7 +211,6 @@ public class PhysicsSystem
                     // Simple collision response: bounce back
                     if (velocity1 != null && physics1 != null && !physics1.IsStatic)
                     {
-                        var normal = Vector2.Normalize(transform1.Position - transform2.Position);
                         var relativeVelocity = velocity1.Velocity;
                         if (velocity2 != null)
                             relativeVelocity -= velocity2.Velocity;
@@ -189,6 +261,45 @@ public class PhysicsSystem
                 }
             }
         }
+        
+        // Fire OnCollisionExit for collisions that ended
+        foreach (var pair in _activeCollisions)
+        {
+            if (!currentCollisions.Contains(pair))
+            {
+                OnCollisionExit?.Invoke(new CollisionEventArgs
+                {
+                    Entity1 = pair.Item1,
+                    Entity2 = pair.Item2,
+                    CollisionNormal = Vector2.Zero,
+                    CollisionPoint = Vector2.Zero
+                });
+            }
+        }
+        
+        // Fire OnTriggerExit for triggers that ended
+        foreach (var pair in _activeTriggers)
+        {
+            if (!currentTriggers.Contains(pair))
+            {
+                OnTriggerExit?.Invoke(new CollisionEventArgs
+                {
+                    Entity1 = pair.Item1,
+                    Entity2 = pair.Item2,
+                    CollisionNormal = Vector2.Zero,
+                    CollisionPoint = Vector2.Zero
+                });
+            }
+        }
+        
+        // Update active collision/trigger tracking
+        _activeCollisions.Clear();
+        foreach (var pair in currentCollisions)
+            _activeCollisions.Add(pair);
+        
+        _activeTriggers.Clear();
+        foreach (var pair in currentTriggers)
+            _activeTriggers.Add(pair);
     }
     
     /// <summary>
