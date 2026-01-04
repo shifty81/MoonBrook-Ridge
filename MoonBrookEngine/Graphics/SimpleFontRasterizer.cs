@@ -11,9 +11,8 @@ internal static class SimpleFontRasterizer
 {
     /// <summary>
     /// Rasterize a character to a pixel array
-    /// Returns null if character cannot be rendered
     /// </summary>
-    public static byte[]? RasterizeCharacter(char c, int width, int height)
+    public static byte[] RasterizeCharacter(char c, int width, int height)
     {
         byte[] pixels = new byte[width * height * 4];
         
@@ -195,7 +194,7 @@ internal static class SimpleFontRasterizer
             return;
         
         int idx = (y * width + x) * 4;
-        if (idx >= 0 && idx < pixels.Length - 3)
+        if (idx >= 0 && idx < pixels.Length - 4)
         {
             pixels[idx + 3] = 255; // Set alpha to opaque
         }

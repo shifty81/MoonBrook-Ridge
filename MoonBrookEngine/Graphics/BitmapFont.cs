@@ -85,25 +85,22 @@ public class BitmapFont : IDisposable
             // Rasterize the character
             var charPixels = SimpleFontRasterizer.RasterizeCharacter((char)i, charWidth, charHeight);
             
-            if (charPixels != null)
+            // Copy character pixels into atlas
+            for (int y = 0; y < charHeight && startY + y < atlasHeight; y++)
             {
-                // Copy character pixels into atlas
-                for (int y = 0; y < charHeight && startY + y < atlasHeight; y++)
+                for (int x = 0; x < charWidth && startX + x < atlasWidth; x++)
                 {
-                    for (int x = 0; x < charWidth && startX + x < atlasWidth; x++)
+                    int srcIdx = (y * charWidth + x) * 4;
+                    int dstIdx = ((startY + y) * atlasWidth + (startX + x)) * 4;
+                    
+                    if (srcIdx >= 0 && srcIdx < charPixels.Length - 4 &&
+                        dstIdx >= 0 && dstIdx < atlasData.Length - 4)
                     {
-                        int srcIdx = (y * charWidth + x) * 4;
-                        int dstIdx = ((startY + y) * atlasWidth + (startX + x)) * 4;
-                        
-                        if (srcIdx >= 0 && srcIdx < charPixels.Length - 3 &&
-                            dstIdx >= 0 && dstIdx < atlasData.Length - 3)
-                        {
-                            // Copy RGBA
-                            atlasData[dstIdx + 0] = charPixels[srcIdx + 0];
-                            atlasData[dstIdx + 1] = charPixels[srcIdx + 1];
-                            atlasData[dstIdx + 2] = charPixels[srcIdx + 2];
-                            atlasData[dstIdx + 3] = charPixels[srcIdx + 3];
-                        }
+                        // Copy RGBA
+                        atlasData[dstIdx + 0] = charPixels[srcIdx + 0];
+                        atlasData[dstIdx + 1] = charPixels[srcIdx + 1];
+                        atlasData[dstIdx + 2] = charPixels[srcIdx + 2];
+                        atlasData[dstIdx + 3] = charPixels[srcIdx + 3];
                     }
                 }
             }
