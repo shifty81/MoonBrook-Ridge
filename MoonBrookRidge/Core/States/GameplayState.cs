@@ -177,6 +177,14 @@ public class GameplayState : GameState
         // Initialize tool manager with inventory
         _toolManager = new ToolManager(_worldMap, _player, _inventory);
         
+        // Subscribe to tool manager events for skill progression (Phase 10)
+        _toolManager.OnCropHarvested += (cropType, quality) =>
+        {
+            // Award farming XP for harvesting crops
+            bool isGoldQuality = (quality == Quality.Gold || quality == Quality.Iridium);
+            _skillProgressionSystem?.OnCropHarvested(isGoldQuality);
+        };
+        
         // Initialize seed manager
         _seedManager = new SeedManager(_inventory, _toolManager, _player);
         
@@ -231,9 +239,25 @@ public class GameplayState : GameState
         
         // Initialize Phase 6 systems
         _magicSystem = new MagicSystem(100f); // Start with 100 max mana
+        
+        // Subscribe to magic system events for skill progression (Phase 10)
+        _magicSystem.OnSpellCast += (spell) =>
+        {
+            // Award magic XP for casting spells
+            _skillProgressionSystem?.OnSpellCast(spell.Name);
+        };
+        
         _magicMenu = new MagicMenu(_magicSystem);
         
         _alchemySystem = new AlchemySystem();
+        
+        // Subscribe to alchemy system events for skill progression (Phase 10)
+        _alchemySystem.OnPotionBrewed += (potion) =>
+        {
+            // Award magic XP for brewing potions
+            _skillProgressionSystem?.OnPotionBrewed(potion.Name);
+        };
+        
         _alchemyMenu = new AlchemyMenu(_alchemySystem, _inventory);
         
         _skillSystem = new SkillTreeSystem();
@@ -1007,6 +1031,14 @@ public class GameplayState : GameState
         
         // Initialize fishing manager
         _fishingManager = new FishingManager();
+        
+        // Subscribe to fishing manager events for skill progression (Phase 10)
+        _fishingManager.OnFishCaught += (fish) =>
+        {
+            // Determine rarity from fish name/description
+            string rarity = DetermineFishRarity(fish.Name);
+            _skillProgressionSystem?.OnFishCaught(rarity);
+        };
         
         // Link managers to tool manager
         _toolManager.SetMiningManager(_miningManager);
@@ -3201,5 +3233,30 @@ public class GameplayState : GameState
         {
             _projectileSystem.RemoveProjectile(projectile);
         }
+    }
+    
+    /// <summary>
+    /// Determine fish rarity based on name for skill progression XP calculation.
+    /// </summary>
+    private string DetermineFishRarity(string fishName)
+    {
+        // Legendary fish names (high rarity)
+        string[] legendaryFish = { "Legend", "Crimsonfish", "Angler", "Glacierfish", "Mutant Carp" };
+        foreach (var legendary in legendaryFish)
+        {
+            if (fishName.Contains(legendary, StringComparison.OrdinalIgnoreCase))
+                return "legendary";
+        }
+        
+        // Rare fish names (medium rarity)
+        string[] rareFish = { "Sturgeon", "Catfish", "Eel", "Octopus", "Squid", "Tiger Trout", "Dorado", "Lava Eel" };
+        foreach (var rare in rareFish)
+        {
+            if (fishName.Contains(rare, StringComparison.OrdinalIgnoreCase))
+                return "rare";
+        }
+        
+        // All other fish are common
+        return "common";
     }
 }
