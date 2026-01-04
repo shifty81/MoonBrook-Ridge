@@ -22,6 +22,26 @@ public struct Color : IEquatable<Color>
     public static readonly Color Magenta = new Color(255, 0, 255, 255);
     public static readonly Color CornflowerBlue = new Color(100, 149, 237, 255); // Classic MonoGame default
     
+    // Additional colors used by the game
+    public static readonly Color Brown = new Color(165, 42, 42, 255);
+    public static readonly Color Orange = new Color(255, 165, 0, 255);
+    public static readonly Color Gray = new Color(128, 128, 128, 255);
+    public static readonly Color DarkGray = new Color(169, 169, 169, 255);
+    public static readonly Color LightGray = new Color(211, 211, 211, 255);
+    public static readonly Color Purple = new Color(128, 0, 128, 255);
+    public static readonly Color DarkGreen = new Color(0, 100, 0, 255);
+    public static readonly Color LightGreen = new Color(144, 238, 144, 255);
+    public static readonly Color OrangeRed = new Color(255, 69, 0, 255);
+    public static readonly Color DarkRed = new Color(139, 0, 0, 255);
+    public static readonly Color SandyBrown = new Color(244, 164, 96, 255);
+    public static readonly Color LimeGreen = new Color(50, 205, 50, 255);
+    public static readonly Color Gold = new Color(255, 215, 0, 255);
+    public static readonly Color SkyBlue = new Color(135, 206, 235, 255);
+    public static readonly Color LightBlue = new Color(173, 216, 230, 255);
+    public static readonly Color Silver = new Color(192, 192, 192, 255);
+    public static readonly Color Violet = new Color(238, 130, 238, 255);
+    public static readonly Color LightYellow = new Color(255, 255, 224, 255);
+    
     public Color(byte r, byte g, byte b, byte a = 255)
     {
         R = r;

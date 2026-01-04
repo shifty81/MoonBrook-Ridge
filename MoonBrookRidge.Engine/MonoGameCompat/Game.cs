@@ -191,13 +191,13 @@ public abstract class Game : IDisposable
 /// </summary>
 public class GameTime
 {
-    public double TotalGameTime { get; }
-    public double ElapsedGameTime { get; }
+    public TimeSpan TotalGameTime { get; }
+    public TimeSpan ElapsedGameTime { get; }
     
     public GameTime(double totalSeconds, double elapsedSeconds)
     {
-        TotalGameTime = totalSeconds;
-        ElapsedGameTime = elapsedSeconds;
+        TotalGameTime = TimeSpan.FromSeconds(totalSeconds);
+        ElapsedGameTime = TimeSpan.FromSeconds(elapsedSeconds);
     }
 }
 

@@ -9,16 +9,21 @@ namespace MoonBrookRidge.Engine.MonoGameCompat;
 public class SpriteBatch : IDisposable
 {
     private MoonBrookEngine.Graphics.SpriteBatch _engineBatch;
+    private GraphicsDevice _graphicsDevice;
     private bool _isBegun;
+    
+    public GraphicsDevice GraphicsDevice => _graphicsDevice;
     
     public SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch)
     {
         _engineBatch = engineBatch;
+        _graphicsDevice = null!; // Will be set when needed
         _isBegun = false;
     }
     
     public SpriteBatch(GraphicsDevice graphicsDevice)
     {
+        _graphicsDevice = graphicsDevice;
         var gl = graphicsDevice.GetInternalGL();
         _engineBatch = new MoonBrookEngine.Graphics.SpriteBatch(gl);
         _isBegun = false;
@@ -29,6 +34,28 @@ public class SpriteBatch : IDisposable
         if (_isBegun)
             throw new InvalidOperationException("Begin cannot be called again until End has been called.");
         
+        _engineBatch.Begin();
+        _isBegun = true;
+    }
+    
+    /// <summary>
+    /// Begin with optional parameters (MonoGame-style overload)
+    /// </summary>
+    public void Begin(
+        SpriteSortMode sortMode = SpriteSortMode.Deferred,
+        BlendState? blendState = null,
+        SamplerState? samplerState = null,
+        DepthStencilState? depthStencilState = null,
+        RasterizerState? rasterizerState = null,
+        Effect? effect = null,
+        Matrix? transformMatrix = null)
+    {
+        if (_isBegun)
+            throw new InvalidOperationException("Begin cannot be called again until End has been called.");
+        
+        // For now, we ignore most of these parameters and just begin the batch
+        // The custom engine doesn't support all these options yet
+        // TODO: Implement full parameter support
         _engineBatch.Begin();
         _isBegun = true;
     }
@@ -240,4 +267,55 @@ public enum SpriteEffects
     None = 0,
     FlipHorizontally = 1,
     FlipVertically = 2
+}
+
+/// <summary>
+/// Defines sprite sort rendering options
+/// </summary>
+public enum SpriteSortMode
+{
+    Deferred,
+    Immediate,
+    Texture,
+    BackToFront,
+    FrontToBack
+}
+
+/// <summary>
+/// Defines blend modes for rendering
+/// </summary>
+public class BlendState
+{
+    public static readonly BlendState Opaque = new BlendState();
+    public static readonly BlendState AlphaBlend = new BlendState();
+    public static readonly BlendState Additive = new BlendState();
+    public static readonly BlendState NonPremultiplied = new BlendState();
+}
+
+/// <summary>
+/// Defines depth and stencil state
+/// </summary>
+public class DepthStencilState
+{
+    public static readonly DepthStencilState Default = new DepthStencilState();
+    public static readonly DepthStencilState DepthRead = new DepthStencilState();
+    public static readonly DepthStencilState None = new DepthStencilState();
+}
+
+/// <summary>
+/// Defines rasterizer state
+/// </summary>
+public class RasterizerState
+{
+    public static readonly RasterizerState CullClockwise = new RasterizerState();
+    public static readonly RasterizerState CullCounterClockwise = new RasterizerState();
+    public static readonly RasterizerState CullNone = new RasterizerState();
+}
+
+/// <summary>
+/// Defines shader effects (stub for compatibility)
+/// </summary>
+public class Effect : IDisposable
+{
+    public void Dispose() { }
 }
