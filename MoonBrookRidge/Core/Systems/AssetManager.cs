@@ -124,7 +124,7 @@ public class AssetManager
     private Texture2D CreateFallbackTexture()
     {
         var texture = new Texture2D(_graphicsDevice, 1, 1);
-        texture.SetData(new[] { Microsoft.Xna.Framework.Color.Magenta });
+        texture.SetData(new[] { Color.Magenta });
         return texture;
     }
     

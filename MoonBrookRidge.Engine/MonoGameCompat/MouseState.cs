@@ -11,6 +11,11 @@ public struct MouseState
     public ButtonState RightButton { get; internal set; }
     public ButtonState MiddleButton { get; internal set; }
     public int ScrollWheelValue { get; internal set; }
+    
+    /// <summary>
+    /// Gets the mouse position as a Point
+    /// </summary>
+    public Point Position => new Point(X, Y);
 
     public MouseState()
     {

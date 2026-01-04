@@ -8,17 +8,31 @@ namespace MoonBrookRidge.Engine.MonoGameCompat;
 /// </summary>
 public class SpriteBatch : IDisposable
 {
+    // Flip flag constants for engine batch
+    private const float FLIP_NONE = 0f;
+    private const float FLIP_HORIZONTAL = 1f;
+    private const float FLIP_VERTICAL = 2f;
+    
     private MoonBrookEngine.Graphics.SpriteBatch _engineBatch;
+    private GraphicsDevice _graphicsDevice;
     private bool _isBegun;
     
-    public SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch)
+    public GraphicsDevice GraphicsDevice => _graphicsDevice;
+    
+    /// <summary>
+    /// Internal constructor for wrapping an existing engine batch
+    /// Note: GraphicsDevice property will not be available when using this constructor
+    /// </summary>
+    internal SpriteBatch(MoonBrookEngine.Graphics.SpriteBatch engineBatch, GraphicsDevice? graphicsDevice = null)
     {
         _engineBatch = engineBatch;
+        _graphicsDevice = graphicsDevice!;
         _isBegun = false;
     }
     
     public SpriteBatch(GraphicsDevice graphicsDevice)
     {
+        _graphicsDevice = graphicsDevice;
         var gl = graphicsDevice.GetInternalGL();
         _engineBatch = new MoonBrookEngine.Graphics.SpriteBatch(gl);
         _isBegun = false;
@@ -29,6 +43,28 @@ public class SpriteBatch : IDisposable
         if (_isBegun)
             throw new InvalidOperationException("Begin cannot be called again until End has been called.");
         
+        _engineBatch.Begin();
+        _isBegun = true;
+    }
+    
+    /// <summary>
+    /// Begin with optional parameters (MonoGame-style overload)
+    /// </summary>
+    public void Begin(
+        SpriteSortMode sortMode = SpriteSortMode.Deferred,
+        BlendState? blendState = null,
+        SamplerState? samplerState = null,
+        DepthStencilState? depthStencilState = null,
+        RasterizerState? rasterizerState = null,
+        Effect? effect = null,
+        Matrix? transformMatrix = null)
+    {
+        if (_isBegun)
+            throw new InvalidOperationException("Begin cannot be called again until End has been called.");
+        
+        // For now, we ignore most of these parameters and just begin the batch
+        // The custom engine doesn't support all these options yet
+        // TODO: Implement full parameter support
         _engineBatch.Begin();
         _isBegun = true;
     }
@@ -130,6 +166,58 @@ public class SpriteBatch : IDisposable
         );
     }
     
+    // Full Draw overload with destination rectangle and all parameters
+    public void Draw(
+        Texture2D texture,
+        Rectangle destinationRectangle,
+        Rectangle? sourceRectangle,
+        Color color,
+        float rotation,
+        Vector2 origin,
+        SpriteEffects effects,
+        float layerDepth)
+    {
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin must be called before Draw.");
+        
+        // Convert destination rectangle to position
+        var position = new MoonBrookEngine.Math.Vector2(destinationRectangle.X, destinationRectangle.Y);
+        
+        MoonBrookEngine.Math.Rectangle? srcRect = null;
+        if (sourceRectangle.HasValue)
+        {
+            var src = sourceRectangle.Value;
+            srcRect = new MoonBrookEngine.Math.Rectangle(src.X, src.Y, src.Width, src.Height);
+        }
+        
+        // Calculate scale based on destination vs source (or texture) size
+        float srcWidth = sourceRectangle?.Width ?? texture.Width;
+        float srcHeight = sourceRectangle?.Height ?? texture.Height;
+        
+        var scale = new MoonBrookEngine.Math.Vector2(
+            destinationRectangle.Width / srcWidth,
+            destinationRectangle.Height / srcHeight
+        );
+        
+        // Convert effects to flags (bit field)
+        float flipFlags = FLIP_NONE;
+        if ((effects & SpriteEffects.FlipHorizontally) != 0)
+            flipFlags += FLIP_HORIZONTAL;
+        if ((effects & SpriteEffects.FlipVertically) != 0)
+            flipFlags += FLIP_VERTICAL;
+        
+        _engineBatch.Draw(
+            texture.InternalTexture,
+            position,
+            srcRect,
+            color,
+            rotation,
+            origin,
+            scale,
+            flipFlags
+        );
+    }
+    
     // Full Draw overload with all parameters
     public void Draw(
         Texture2D texture,
@@ -168,11 +256,11 @@ public class SpriteBatch : IDisposable
         }
         
         // Convert effects to flags (bit field)
-        float flipFlags = 0f;
+        float flipFlags = FLIP_NONE;
         if ((effects & SpriteEffects.FlipHorizontally) != 0)
-            flipFlags += 1f;
+            flipFlags += FLIP_HORIZONTAL;
         if ((effects & SpriteEffects.FlipVertically) != 0)
-            flipFlags += 2f;
+            flipFlags += FLIP_VERTICAL;
         
         _engineBatch.Draw(
             texture.InternalTexture,
@@ -240,4 +328,55 @@ public enum SpriteEffects
     None = 0,
     FlipHorizontally = 1,
     FlipVertically = 2
+}
+
+/// <summary>
+/// Defines sprite sort rendering options
+/// </summary>
+public enum SpriteSortMode
+{
+    Deferred,
+    Immediate,
+    Texture,
+    BackToFront,
+    FrontToBack
+}
+
+/// <summary>
+/// Defines blend modes for rendering
+/// </summary>
+public class BlendState
+{
+    public static readonly BlendState Opaque = new BlendState();
+    public static readonly BlendState AlphaBlend = new BlendState();
+    public static readonly BlendState Additive = new BlendState();
+    public static readonly BlendState NonPremultiplied = new BlendState();
+}
+
+/// <summary>
+/// Defines depth and stencil state
+/// </summary>
+public class DepthStencilState
+{
+    public static readonly DepthStencilState Default = new DepthStencilState();
+    public static readonly DepthStencilState DepthRead = new DepthStencilState();
+    public static readonly DepthStencilState None = new DepthStencilState();
+}
+
+/// <summary>
+/// Defines rasterizer state
+/// </summary>
+public class RasterizerState
+{
+    public static readonly RasterizerState CullClockwise = new RasterizerState();
+    public static readonly RasterizerState CullCounterClockwise = new RasterizerState();
+    public static readonly RasterizerState CullNone = new RasterizerState();
+}
+
+/// <summary>
+/// Defines shader effects (stub for compatibility)
+/// </summary>
+public class Effect : IDisposable
+{
+    public void Dispose() { }
 }

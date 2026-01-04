@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Numerics;
 using MoonBrookRidge.World.Tiles;
 
 namespace MoonBrookRidge.World.Mining;
@@ -77,7 +78,7 @@ public static class MineGenConfigApplier
         {
             for (int y = 0; y < config.Height; y++)
             {
-                tiles[x, y] = new Tile(wallType, new Microsoft.Xna.Framework.Vector2(x, y));
+                tiles[x, y] = new Tile(wallType, new Vector2(x, y));
             }
         }
         
@@ -190,7 +191,7 @@ public static class MineGenConfigApplier
         {
             for (int y = System.Math.Max(0, startY); y < maxY; y++)
             {
-                tiles[x, y] = new Tile(floorType, new Microsoft.Xna.Framework.Vector2(x, y));
+                tiles[x, y] = new Tile(floorType, new Vector2(x, y));
             }
         }
     }
@@ -209,7 +210,7 @@ public static class MineGenConfigApplier
             {
                 if (x >= 0 && x < tilesWidth && y + w >= 0 && y + w < tilesHeight)
                 {
-                    tiles[x, y + w] = new Tile(floorType, new Microsoft.Xna.Framework.Vector2(x, y + w));
+                    tiles[x, y + w] = new Tile(floorType, new Vector2(x, y + w));
                 }
             }
             x += (x < x2) ? 1 : -1;
@@ -222,7 +223,7 @@ public static class MineGenConfigApplier
             {
                 if (x + w >= 0 && x + w < tilesWidth && y >= 0 && y < tilesHeight)
                 {
-                    tiles[x + w, y] = new Tile(floorType, new Microsoft.Xna.Framework.Vector2(x + w, y));
+                    tiles[x + w, y] = new Tile(floorType, new Vector2(x + w, y));
                 }
             }
             y += (y < y2) ? 1 : -1;
