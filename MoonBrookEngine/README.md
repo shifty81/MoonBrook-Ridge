@@ -38,6 +38,16 @@ MoonBrook Engine is a lightweight, high-performance 2D game engine designed spec
 - **Animation Events**: Frame change and completion callbacks
 - **Helper Methods**: Easy sprite sheet layout parsing
 
+### UI System (✅ Implemented)
+- **UIElement Base**: Position, size, visibility, hierarchy, events
+- **UISystem**: Element management, input handling, Z-ordering
+- **Label**: Text display with alignment and auto-sizing
+- **Button**: Clickable buttons with hover/press states
+- **Panel**: Container for child elements with background
+- **Checkbox**: Toggle component with checked state events
+- **Slider**: Value adjustment with draggable handle
+- **Mouse Interaction**: Hover, click, and drag support
+
 ### Particle System (✅ Implemented)
 - **Particle Emitters**: Configurable particle spawning
 - **Particle Pooling**: Zero-allocation particle management
@@ -206,8 +216,21 @@ engine.Run();
 - [x] Animation events (OnAnimationComplete, OnFrameChange)
 - [x] Helper methods for sprite sheet layouts
 
+### Week 9 (✅ Complete)
+- [x] UI System foundation (UIElement, UISystem)
+- [x] SpriteBatch enhancements (DrawRectangle, DrawRectangleOutline, DrawString with scale)
+- [x] Label component (text display with alignment)
+- [x] Button component (clickable with hover/press states)
+- [x] Panel component (container with child management)
+- [x] Checkbox component (toggle with events)
+- [x] Slider component (value adjustment with drag)
+- [x] Mouse interaction (hover, click, drag support)
+- [x] UI Test Scene demonstration
+
 ### Week 9+ (Planned)
 - [ ] UI System (Button, Label, Panel, Layout)
+- [ ] TextBox and advanced input components
+- [ ] Layout managers (StackLayout, GridLayout)
 - [ ] Audio enhancements (positional audio, audio pools)
 - [ ] Advanced resource management (asset bundles, streaming)
 - [ ] Rendering improvements (sprite sorting, frustum culling)

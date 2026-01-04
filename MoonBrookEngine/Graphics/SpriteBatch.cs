@@ -29,6 +29,7 @@ public class SpriteBatch : IDisposable
     private Camera2D? _camera;
     private Matrix4x4 _transformMatrix;
     private Core.PerformanceMonitor? _performanceMonitor;
+    private Texture2D? _whitePixelTexture;
     
     public SpriteBatch(GL gl, Core.PerformanceMonitor? performanceMonitor = null)
     {
@@ -77,6 +78,14 @@ public class SpriteBatch : IDisposable
         _shader = new Shader(_gl, vertexShader, fragmentShader);
         
         InitializeBuffers();
+        CreateWhitePixelTexture();
+    }
+    
+    private unsafe void CreateWhitePixelTexture()
+    {
+        // Create a 1x1 white pixel texture for solid color rendering
+        byte[] pixelData = new byte[] { 255, 255, 255, 255 };
+        _whitePixelTexture = new Texture2D(_gl, pixelData, 1, 1);
     }
     
     private unsafe void InitializeBuffers()
@@ -358,6 +367,14 @@ public class SpriteBatch : IDisposable
     /// </summary>
     public void DrawString(BitmapFont font, string text, Vec2 position, Col color)
     {
+        DrawString(font, text, position, color, 1.0f);
+    }
+    
+    /// <summary>
+    /// Draw text using a bitmap font with scale
+    /// </summary>
+    public void DrawString(BitmapFont font, string text, Vec2 position, Col color, float scale)
+    {
         if (!_isBegun)
             throw new InvalidOperationException("Begin() must be called before DrawString()");
         
@@ -381,7 +398,7 @@ public class SpriteBatch : IDisposable
             {
                 // Move to next line
                 x = position.X;
-                y += font.LineSpacing;
+                y += font.LineSpacing * scale;
                 continue;
             }
             
@@ -389,16 +406,59 @@ public class SpriteBatch : IDisposable
             {
                 // Draw character sprite
                 Vec2 charPos = new Vec2(
-                    x + charInfo.Offset.X,
-                    y + charInfo.Offset.Y
+                    x + charInfo.Offset.X * scale,
+                    y + charInfo.Offset.Y * scale
                 );
                 
-                Draw(atlasTexture, charPos, charInfo.SourceRect, color, 0f, Vec2.Zero, Vec2.One, 0f);
+                Draw(atlasTexture, charPos, charInfo.SourceRect, color, 0f, Vec2.Zero, new Vec2(scale, scale), 0f);
                 
                 // Advance position
-                x += charInfo.XAdvance + font.Spacing;
+                x += (charInfo.XAdvance + font.Spacing) * scale;
             }
         }
+    }
+    
+    /// <summary>
+    /// Draw a filled rectangle
+    /// </summary>
+    public void DrawRectangle(Rect rectangle, Col color)
+    {
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin() must be called before DrawRectangle()");
+        
+        if (_whitePixelTexture == null)
+            return;
+        
+        Draw(_whitePixelTexture, new Vec2(rectangle.X, rectangle.Y), null, color, 0f, Vec2.Zero, 
+            new Vec2(rectangle.Width, rectangle.Height), 0f);
+    }
+    
+    /// <summary>
+    /// Draw a rectangle outline
+    /// </summary>
+    public void DrawRectangleOutline(Rect rectangle, Col color, float thickness = 1f)
+    {
+        if (!_isBegun)
+            throw new InvalidOperationException("Begin() must be called before DrawRectangleOutline()");
+        
+        if (_whitePixelTexture == null)
+            return;
+        
+        // Top
+        Draw(_whitePixelTexture, new Vec2(rectangle.X, rectangle.Y), null, color, 0f, Vec2.Zero,
+            new Vec2(rectangle.Width, thickness), 0f);
+        
+        // Bottom
+        Draw(_whitePixelTexture, new Vec2(rectangle.X, rectangle.Y + rectangle.Height - thickness), null, color, 0f, Vec2.Zero,
+            new Vec2(rectangle.Width, thickness), 0f);
+        
+        // Left
+        Draw(_whitePixelTexture, new Vec2(rectangle.X, rectangle.Y), null, color, 0f, Vec2.Zero,
+            new Vec2(thickness, rectangle.Height), 0f);
+        
+        // Right
+        Draw(_whitePixelTexture, new Vec2(rectangle.X + rectangle.Width - thickness, rectangle.Y), null, color, 0f, Vec2.Zero,
+            new Vec2(thickness, rectangle.Height), 0f);
     }
     
     /// <summary>
@@ -432,6 +492,7 @@ public class SpriteBatch : IDisposable
     public void Dispose()
     {
         _shader?.Dispose();
+        _whitePixelTexture?.Dispose();
         if (_vao != 0) _gl.DeleteVertexArray(_vao);
         if (_vbo != 0) _gl.DeleteBuffer(_vbo);
         if (_ebo != 0) _gl.DeleteBuffer(_ebo);
