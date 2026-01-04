@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Items.Inventory;
 
 namespace MoonBrookRidge.Farming.Tools;

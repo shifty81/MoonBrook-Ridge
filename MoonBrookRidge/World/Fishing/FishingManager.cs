@@ -1,5 +1,5 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using MoonBrookRidge.Engine.MonoGameCompat;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Items;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.World.Tiles;

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using Microsoft.Xna.Framework;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Characters.Player;
 using MoonBrookRidge.Core.Systems;
 using MoonBrookRidge.Items.Inventory;

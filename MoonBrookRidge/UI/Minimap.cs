@@ -1,6 +1,6 @@
 using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using MoonBrookRidge.Engine.MonoGameCompat;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Maps;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.Characters.Player;

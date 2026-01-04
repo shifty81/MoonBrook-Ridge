@@ -1,6 +1,6 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using MoonBrookRidge.Engine.MonoGameCompat;
+using MoonBrookRidge.Engine.MonoGameCompat;
+using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Items.Shop;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Characters.Player;
