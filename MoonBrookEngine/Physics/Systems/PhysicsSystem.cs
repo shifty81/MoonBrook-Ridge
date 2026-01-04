@@ -21,8 +21,8 @@ public class CollisionEventArgs
 public class PhysicsSystem
 {
     private readonly World _world;
-    private readonly HashSet<(Entity, Entity)> _activeCollisions;
-    private readonly HashSet<(Entity, Entity)> _activeTriggers;
+    private HashSet<(Entity, Entity)> _activeCollisions;
+    private HashSet<(Entity, Entity)> _activeTriggers;
     
     /// <summary>
     /// Global gravity vector (units per second squared)
@@ -271,6 +271,7 @@ public class PhysicsSystem
                 {
                     Entity1 = pair.Item1,
                     Entity2 = pair.Item2,
+                    // CollisionNormal and CollisionPoint are not meaningful for exit events
                     CollisionNormal = Vector2.Zero,
                     CollisionPoint = Vector2.Zero
                 });
@@ -286,20 +287,16 @@ public class PhysicsSystem
                 {
                     Entity1 = pair.Item1,
                     Entity2 = pair.Item2,
+                    // CollisionNormal and CollisionPoint are not meaningful for exit events
                     CollisionNormal = Vector2.Zero,
                     CollisionPoint = Vector2.Zero
                 });
             }
         }
         
-        // Update active collision/trigger tracking
-        _activeCollisions.Clear();
-        foreach (var pair in currentCollisions)
-            _activeCollisions.Add(pair);
-        
-        _activeTriggers.Clear();
-        foreach (var pair in currentTriggers)
-            _activeTriggers.Add(pair);
+        // Update active collision/trigger tracking (optimized: direct assignment)
+        _activeCollisions = currentCollisions;
+        _activeTriggers = currentTriggers;
     }
     
     /// <summary>

@@ -159,6 +159,11 @@ public class ParticleComponent : Component
     /// </summary>
     public float EmissionAccumulator { get; set; }
     
+    /// <summary>
+    /// Cached count of active particles (updated by ParticleSystem)
+    /// </summary>
+    internal int _activeParticleCount;
+    
     public ParticleComponent()
     {
         MaxParticles = 100;
@@ -190,7 +195,7 @@ public class ParticleComponent : Component
     }
     
     /// <summary>
-    /// Get number of active particles
+    /// Get number of active particles (cached for performance)
     /// </summary>
-    public int ActiveParticleCount => Particles.Count(p => p.IsActive);
+    public int ActiveParticleCount => _activeParticleCount;
 }

@@ -111,10 +111,14 @@ public class ParticleSystem
     /// </summary>
     private void UpdateParticles(ParticleComponent emitter, float deltaTime)
     {
+        int activeCount = 0;
+        
         foreach (var particle in emitter.Particles)
         {
             if (!particle.IsActive)
                 continue;
+            
+            activeCount++;
             
             // Age particle
             particle.Age += deltaTime;
@@ -123,6 +127,7 @@ public class ParticleSystem
             if (particle.Age >= particle.Lifetime)
             {
                 particle.Reset();
+                activeCount--; // Particle just deactivated
                 continue;
             }
             
@@ -141,8 +146,11 @@ public class ParticleSystem
             particle.Color = LerpColor(particle.StartColor, particle.EndColor, t);
             
             // Interpolate size over lifetime
-            particle.Size = MathHelper.Lerp(particle.StartSize, particle.EndSize, t);
+            particle.Size = particle.StartSize + (particle.EndSize - particle.StartSize) * t;
         }
+        
+        // Update cached active particle count
+        emitter._activeParticleCount = activeCount;
     }
     
     /// <summary>
@@ -150,30 +158,12 @@ public class ParticleSystem
     /// </summary>
     private Math.Color LerpColor(Math.Color start, Math.Color end, float t)
     {
-        t = MathHelper.Clamp(t, 0f, 1f);
+        t = System.Math.Clamp(t, 0f, 1f);
         return new Math.Color(
             (byte)(start.R + (end.R - start.R) * t),
             (byte)(start.G + (end.G - start.G) * t),
             (byte)(start.B + (end.B - start.B) * t),
             (byte)(start.A + (end.A - start.A) * t)
         );
-    }
-}
-
-/// <summary>
-/// Math helper functions for particles
-/// </summary>
-internal static class MathHelper
-{
-    public static float Lerp(float start, float end, float t)
-    {
-        return start + (end - start) * t;
-    }
-    
-    public static float Clamp(float value, float min, float max)
-    {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
     }
 }
