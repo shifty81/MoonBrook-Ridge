@@ -24,26 +24,18 @@ public class TrueTypeFontLoader
         // Read TTF file
         byte[] fontData = File.ReadAllBytes(ttfPath);
         
-        // Initialize StbTrueType
-        var fontInfo = new StbTrueType.stbtt_fontinfo();
-        unsafe
+        // Initialize StbTrueType using the high-level API
+        var fontInfo = StbTrueType.CreateFont(fontData, 0);
+        if (fontInfo == null)
         {
-            fixed (byte* dataPtr = fontData)
-            {
-                if (StbTrueType.stbtt_InitFont(fontInfo, dataPtr, 0) == 0)
-                {
-                    throw new Exception($"Failed to initialize font: {ttfPath}");
-                }
-            }
+            throw new Exception($"Failed to initialize font: {ttfPath}");
         }
 
         // Calculate scale for the desired font size
-        float scale = StbTrueType.stbtt_ScaleForPixelHeight(fontInfo, fontSize);
+        float scale = fontInfo.ScaleForPixelHeight(fontSize);
 
         // Get font metrics
-        int ascent, descent, lineGap;
-        StbTrueType.stbtt_GetFontVMetrics(fontInfo, out ascent, out descent, out lineGap);
-        
+        fontInfo.GetFontVMetrics(out int ascent, out int descent, out int lineGap);
         float lineSpacing = (ascent - descent + lineGap) * scale;
 
         // Pre-calculate character sizes for atlas packing
@@ -53,15 +45,12 @@ public class TrueTypeFontLoader
 
         foreach (char c in charList)
         {
-            int glyphIndex = StbTrueType.stbtt_FindGlyphIndex(fontInfo, c);
+            int glyphIndex = fontInfo.FindGlyphIndex(c);
             if (glyphIndex == 0 && c != ' ') // Missing glyph (except space)
                 continue;
 
-            int advance, leftSideBearing;
-            StbTrueType.stbtt_GetGlyphHMetrics(fontInfo, glyphIndex, out advance, out leftSideBearing);
-
-            int x0, y0, x1, y1;
-            StbTrueType.stbtt_GetGlyphBitmapBox(fontInfo, glyphIndex, scale, scale, out x0, out y0, out x1, out y1);
+            fontInfo.GetGlyphHMetrics(glyphIndex, out int advance, out int leftSideBearing);
+            fontInfo.GetGlyphBitmapBox(glyphIndex, scale, scale, out int x0, out int y0, out int x1, out int y1);
 
             int width = x1 - x0;
             int height = y1 - y0;
@@ -77,7 +66,7 @@ public class TrueTypeFontLoader
                 LeftSideBearing = leftSideBearing * scale
             };
 
-            maxCharHeight = Math.Max(maxCharHeight, height);
+            maxCharHeight = System.Math.Max(maxCharHeight, height);
         }
 
         // Create atlas layout (simple horizontal packing with wrapping)
@@ -119,7 +108,7 @@ public class TrueTypeFontLoader
             atlasPixels[i] = 255;     // R
             atlasPixels[i + 1] = 255; // G
             atlasPixels[i + 2] = 255; // B
-            atlasPixels[i + 3] = 0;   // A
+            atlasPixels[i + 3] = 0;   // A (transparent)
         }
 
         // Rasterize each character into the atlas
@@ -131,46 +120,34 @@ public class TrueTypeFontLoader
             if (data.Width == 0 || data.Height == 0)
                 continue;
 
-            // Allocate buffer for this character
-            byte[] charBitmap = new byte[data.Width * data.Height];
-
-            unsafe
-            {
-                fixed (byte* fontDataPtr = fontData)
-                fixed (byte* charBitmapPtr = charBitmap)
-                {
-                    StbTrueType.stbtt_MakeGlyphBitmap(
-                        fontInfo,
-                        charBitmapPtr,
-                        data.Width,
-                        data.Height,
-                        data.Width,
-                        scale,
-                        scale,
-                        data.GlyphIndex
-                    );
-                }
-            }
+            // Rasterize character using StbTrueType high-level API
+            var charBitmap = fontInfo.GetGlyphBitmap(scale, scale, data.GlyphIndex, out int bitmapWidth, out int bitmapHeight);
+            
+            if (charBitmap == null || charBitmap.Length == 0)
+                continue;
 
             // Copy character bitmap into atlas
-            for (int y = 0; y < data.Height; y++)
+            for (int y = 0; y < bitmapHeight && y < data.Height; y++)
             {
-                for (int x = 0; x < data.Width; x++)
+                for (int x = 0; x < bitmapWidth && x < data.Width; x++)
                 {
-                    int srcIdx = y * data.Width + x;
+                    int srcIdx = y * bitmapWidth + x;
                     int dstX = data.AtlasX + x;
                     int dstY = data.AtlasY + y;
                     int dstIdx = (dstY * atlasWidth + dstX) * 4;
 
-                    byte alpha = charBitmap[srcIdx];
-                    atlasPixels[dstIdx + 3] = alpha; // Set alpha channel
+                    if (srcIdx >= 0 && srcIdx < charBitmap.Length &&
+                        dstIdx >= 0 && dstIdx < atlasPixels.Length - 3)
+                    {
+                        byte alpha = charBitmap[srcIdx];
+                        atlasPixels[dstIdx + 3] = alpha; // Set alpha channel
+                    }
                 }
             }
         }
 
-        // Create OpenGL texture from atlas
-        var atlasTexture = new Texture2D(_gl, atlasWidth, atlasHeight);
-        atlasTexture.SetData(atlasPixels);
+        // Create OpenGL texture from atlas using correct Texture2D constructor
+        var atlasTexture = new Texture2D(_gl, atlasPixels, atlasWidth, atlasHeight);
 
         // Create BitmapFont
         var font = new BitmapFont(_gl)
