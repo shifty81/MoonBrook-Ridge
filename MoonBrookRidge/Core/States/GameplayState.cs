@@ -843,7 +843,10 @@ public class GameplayState : GameState
     {
         base.LoadContent();
         
+        Console.WriteLine("=== GameplayState LoadContent Started ===");
+        
         // Load character animation textures
+        Console.WriteLine("Loading character animations...");
         var animations = new Dictionary<string, Texture2D>
         {
             ["walk"] = Game.Content.Load<Texture2D>("Textures/Characters/Animations/base_walk_strip8"),
@@ -881,7 +884,10 @@ public class GameplayState : GameState
         // Pass animations to player
         _player.LoadContent(animations, toolAnimations);
         
+        Console.WriteLine($"Character animations loaded: {animations.Count} base, {toolAnimations.Count} tools");
+        
         // Load crop textures
+        Console.WriteLine("Loading crop textures...");
         var cropTextures = new Dictionary<string, Texture2D[]>
         {
             ["wheat"] = new Texture2D[6]
@@ -931,7 +937,10 @@ public class GameplayState : GameState
             }
         };
         
+        Console.WriteLine($"Crop textures loaded: {cropTextures.Count} crop types");
+        
         // Load tile textures
+        Console.WriteLine("Loading tile textures...");
         var tileTextures = new Dictionary<TileType, Texture2D>
         {
             [TileType.Grass] = Game.Content.Load<Texture2D>("Textures/Tiles/grass"),
@@ -955,14 +964,22 @@ public class GameplayState : GameState
             [TileType.Flooring] = Game.Content.Load<Texture2D>("Textures/Tiles/flooring")
         };
         
+        Console.WriteLine($"Tile textures loaded: {tileTextures.Count} tile types");
+        
         // Load world map content with legacy textures (as fallback)
+        Console.WriteLine("Loading world map content...");
         _worldMap.LoadContent(tileTextures, cropTextures);
         
         // Load the Sunnyside World tileset as the primary tileset
+        Console.WriteLine("Loading Sunnyside World tileset...");
         Texture2D sunnysideTileset = Game.Content.Load<Texture2D>("Textures/Tiles/sunnyside_tileset");
+        Console.WriteLine($"Sunnyside tileset loaded: {sunnysideTileset.Width}x{sunnysideTileset.Height}");
         _worldMap.LoadSunnysideTileset(sunnysideTileset);
         
+        Console.WriteLine("World map initialized successfully");
+        
         // Load building textures
+        Console.WriteLine("Loading building textures...");
         var buildings = new Dictionary<string, Texture2D>
         {
             ["House1"] = Game.Content.Load<Texture2D>("Textures/Buildings/House1"),
@@ -1097,6 +1114,8 @@ public class GameplayState : GameState
         
         // Register all loaded assets with AssetManager for caching and category management
         RegisterLoadedAssets();
+        
+        Console.WriteLine("=== GameplayState LoadContent Completed Successfully ===");
     }
     
     /// <summary>

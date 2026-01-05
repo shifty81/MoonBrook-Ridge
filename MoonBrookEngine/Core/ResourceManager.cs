@@ -104,24 +104,32 @@ public class ResourceManager : IDisposable
         // Normalize path separators
         assetName = assetName.Replace('\\', '/');
         
+        Console.WriteLine($"LoadFont called for: {assetName}");
+        Console.WriteLine($"Root directory: {_rootDirectory}");
+        
         // Check if already loaded
         if (_fonts.TryGetValue(assetName, out var cached))
         {
+            Console.WriteLine($"Font already cached: {assetName}");
             return cached;
         }
         
         // Try to load from .spritefont file
         string spriteFontPath = Path.Combine(_rootDirectory, assetName + ".spritefont");
+        Console.WriteLine($"Looking for .spritefont at: {spriteFontPath}");
         
         if (File.Exists(spriteFontPath))
         {
+            Console.WriteLine($"Found .spritefont file at: {spriteFontPath}");
             try
             {
                 // Parse .spritefont descriptor
                 var descriptor = SpriteFontDescriptor.Parse(spriteFontPath);
+                Console.WriteLine($"Parsed descriptor - FontName: {descriptor.FontName}, Size: {descriptor.Size}");
                 
                 // Find TTF font file
                 string ttfPath = FindFontFile(descriptor.FontName);
+                Console.WriteLine($"TTF path resolved to: {ttfPath}");
                 
                 if (ttfPath != null && File.Exists(ttfPath))
                 {
@@ -136,6 +144,8 @@ public class ResourceManager : IDisposable
                         descriptor.Spacing
                     );
                     
+                    Console.WriteLine($"Font loaded successfully, has atlas: {font.HasAtlas}");
+                    
                     _fonts[assetName] = font;
                     return font;
                 }
@@ -148,13 +158,30 @@ public class ResourceManager : IDisposable
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading font {assetName}: {ex.Message}");
+                // Stack trace only logged in debug builds
+                #if DEBUG
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                #endif
             }
+        }
+        else
+        {
+            Console.WriteLine($".spritefont file not found at: {spriteFontPath}");
         }
         
         // Fallback: create default font
         Console.WriteLine($"Creating default font for: {assetName}");
         var defaultFont = BitmapFont.CreateDefault(_gl, defaultFontSize);
         _fonts[assetName] = defaultFont;
+        
+        // Verify the default font has an atlas
+        Console.WriteLine($"Default font has atlas: {defaultFont.HasAtlas}");
+        if (defaultFont.HasAtlas)
+        {
+            var atlas = defaultFont.GetAtlasTexture();
+            Console.WriteLine($"Atlas texture: {atlas?.Width}x{atlas?.Height}");
+        }
+        
         return defaultFont;
     }
     
