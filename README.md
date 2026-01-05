@@ -11,6 +11,7 @@ An **auto-shooter roguelite** farming and life simulation game combining peacefu
 ### For Developers
 - **[Post-Migration Onboarding](docs/guides/POST_MIGRATION_ONBOARDING.md)** ⭐ **NEW!** - Start here if you're new to the post-migration codebase
 - **[Setup & Development](docs/guides/DEVELOPMENT.md)** - Getting started with development
+- **[Unit Testing Summary](UNIT_TESTING_SUMMARY.md)** ⭐ **NEW!** - 86 automated tests covering engine and game logic
 - **[Runtime Testing Preparation](RUNTIME_TESTING_PREPARATION.md)** ⭐ **NEW!** - Prepare for runtime testing
 - **[Runtime Testing Guide](docs/guides/RUNTIME_TESTING_GUIDE.md)** - Testing procedures after engine migration
 - **[CI/CD Readiness](CI_CD_READINESS.md)** ⭐ **NEW!** - Continuous integration setup guide
