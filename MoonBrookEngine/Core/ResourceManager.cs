@@ -158,7 +158,10 @@ public class ResourceManager : IDisposable
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading font {assetName}: {ex.Message}");
+                // Stack trace only logged in debug builds
+                #if DEBUG
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                #endif
             }
         }
         else
