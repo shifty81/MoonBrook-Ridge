@@ -98,7 +98,25 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         
         // Load default font
-        _defaultFont = Content.Load<SpriteFont>("Fonts/Default");
+        Console.WriteLine("=== Loading Default Font ===");
+        try
+        {
+            _defaultFont = Content.Load<SpriteFont>("Fonts/Default");
+            Console.WriteLine($"Font loaded successfully: {_defaultFont != null}");
+            
+            // Test font rendering capability
+            if (_defaultFont != null)
+            {
+                var testSize = _defaultFont.MeasureString("Test");
+                Console.WriteLine($"Font test measurement: {testSize.X}x{testSize.Y}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR loading font: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
+        Console.WriteLine("=== Font Loading Complete ===");
         
         // Start with menu state
         _stateManager.ChangeState(new MenuState(this));

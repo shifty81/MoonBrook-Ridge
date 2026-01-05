@@ -1,5 +1,4 @@
-using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
+using System;
 using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Core.Systems;
 
@@ -35,6 +34,7 @@ public class MenuState : GameState
     {
         base.Initialize();
         _inputManager = new InputManager();
+        Console.WriteLine("=== MenuState Initialized ===");
     }
     
     public override void LoadContent()
@@ -42,6 +42,8 @@ public class MenuState : GameState
         base.LoadContent();
         // Create and cache pixel texture
         _pixelTexture = CreatePixelTexture();
+        Console.WriteLine("=== MenuState Content Loaded ===");
+        Console.WriteLine($"Pixel texture created: {_pixelTexture != null}");
     }
     
     public override void Update(GameTime gameTime)
@@ -156,8 +158,13 @@ public class MenuState : GameState
             Vector2 testSize = Game.DefaultFont.MeasureString("Test");
             if (testSize.X <= 0 || testSize.Y <= 0)
             {
+                Console.WriteLine($"WARNING: Font measurement failed - using fallback rendering (testSize: {testSize.X}x{testSize.Y})");
                 fontWorking = false;
             }
+        }
+        else
+        {
+            Console.WriteLine("WARNING: No default font available - using fallback rendering");
         }
         
         if (fontWorking)
@@ -213,6 +220,7 @@ public class MenuState : GameState
         else
         {
             // Fallback if font not loaded or not working
+            Console.WriteLine("Using simple menu fallback rendering");
             DrawSimpleMenu(spriteBatch);
         }
         
