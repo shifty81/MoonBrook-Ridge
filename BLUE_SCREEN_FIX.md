@@ -3,16 +3,37 @@
 ## Problem
 When running the game from Visual Studio, the game window opens but shows only a blue screen with no menu options or game content.
 
-## Root Cause
-The issue was caused by font loading problems in the custom game engine:
+**MOST COMMON CAUSE**: The Content directory (containing textures and fonts) is not being copied to the build output directory, causing `FileNotFoundException` when trying to load assets.
 
-1. The game uses a custom engine (`MoonBrookEngine`) with MonoGame compatibility
-2. Font loading was failing or creating incomplete fonts without proper atlas textures
-3. When `SpriteBatch.DrawString()` was called with a broken font, it would silently return without drawing anything
-4. This resulted in a blue screen (the background color) with no visible menu text
+## Root Cause
+The issue can be caused by one or more of the following:
+
+### 1. Content Files Not Copied to Output (MOST COMMON)
+The `.csproj` file must be configured to copy the entire `Content` directory to the build output. Without this, the game cannot find textures, fonts, or other assets at runtime, resulting in `FileNotFoundException` errors.
+
+**Fix**: Ensure `MoonBrookRidge.csproj` contains:
+```xml
+<ItemGroup>
+  <!-- Include entire Content directory in output -->
+  <None Update="Content\**\*">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+```
+
+### 2. Font Loading Problems
+The game uses a custom engine (`MoonBrookEngine`) with MonoGame compatibility:
+- Font loading was failing or creating incomplete fonts without proper atlas textures
+- When `SpriteBatch.DrawString()` was called with a broken font, it would silently return without drawing anything
+- This resulted in a blue screen (the background color) with no visible menu text
 
 ## Solution
 We've implemented multiple layers of fixes to ensure the menu is always visible:
+
+### 0. Content Directory Configuration (PRIMARY FIX)
+- Updated `MoonBrookRidge.csproj` to copy the entire `Content` directory to the build output
+- Previously only `WorldGen/*.json` files were copied, causing all texture and font loads to fail
+- This is the most important fix and resolves the majority of blue screen issues
 
 ### 1. Enhanced Font Character Support
 - Upgraded `SimpleFontRasterizer.cs` to support the complete ASCII character set
@@ -68,8 +89,11 @@ If you still see only a blue screen with no menu:
 
 1. **Check Console Output**: Look at the Output window in Visual Studio for error messages
 2. **Check for Exceptions**: Look for any red exception messages in the console
-3. **Verify Content Files**: Make sure `Content/Fonts/Default.spritefont` exists
-4. **Check Build Output**: Ensure all projects built successfully
+3. **Verify Content Files**: Make sure the `Content` directory is being copied to the build output
+   - Check that `bin/Debug/net9.0/Content/` exists and contains Textures and Fonts subdirectories
+   - The `.csproj` file should have: `<None Update="Content\**\*"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>`
+4. **Verify Specific Files**: Ensure `Content/Fonts/Default.spritefont` and `Content/Textures/Characters/Animations/base_walk_strip8.png` exist in the output directory
+5. **Check Build Output**: Ensure all projects built successfully
 
 ## Technical Details
 
@@ -77,6 +101,7 @@ If you still see only a blue screen with no menu:
 - `MoonBrookEngine/Graphics/SimpleFontRasterizer.cs` - Added complete character set
 - `MoonBrookRidge/Core/States/MenuState.cs` - Added font health check and improved fallback
 - `MoonBrookRidge/Game1.cs` - Added font loading diagnostics
+- `MoonBrookRidge/MoonBrookRidge.csproj` - **CRITICAL FIX**: Updated to copy entire Content directory to output (previously only copied WorldGen JSON files)
 
 ### Architecture Notes
 The game uses a custom engine with MonoGame API compatibility:

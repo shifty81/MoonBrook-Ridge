@@ -28,8 +28,8 @@
     <ProjectReference Include="..\MoonBrookRidge.Engine\MoonBrookRidge.Engine.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <!-- Include WorldGen JSON configs in output -->
-    <None Update="Content\WorldGen\*.json">
+    <!-- Include entire Content directory in output -->
+    <None Update="Content\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

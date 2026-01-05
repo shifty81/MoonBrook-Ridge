@@ -448,6 +448,10 @@ See [RUNTIME_TESTING_GUIDE.md](docs/guides/RUNTIME_TESTING_GUIDE.md) for compreh
    dotnet run
    ```
 
+### Troubleshooting
+
+If you see a blue screen when launching the game, see [BLUE_SCREEN_FIX.md](BLUE_SCREEN_FIX.md) for solutions. The most common cause is the Content directory not being copied to the build output, which has been fixed in the latest version.
+
 ### Playtest Guide
 
 **New!** See [PLAYTEST_GUIDE.md](docs/guides/PLAYTEST_GUIDE.md) for:
