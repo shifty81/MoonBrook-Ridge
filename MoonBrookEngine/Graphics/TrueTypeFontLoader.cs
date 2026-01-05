@@ -24,18 +24,28 @@ public class TrueTypeFontLoader
         // Read TTF file
         byte[] fontData = File.ReadAllBytes(ttfPath);
         
-        // Initialize StbTrueType using the high-level API
-        var fontInfo = StbTrueType.CreateFont(fontData, 0);
-        if (fontInfo == null)
+        // Initialize StbTrueType using the low-level API
+        StbTrueType.stbtt_fontinfo fontInfo = new StbTrueType.stbtt_fontinfo();
+        unsafe
         {
-            throw new Exception($"Failed to initialize font: {ttfPath}");
+            fixed (byte* ptr = fontData)
+            {
+                if (StbTrueType.stbtt_InitFont(fontInfo, ptr, 0) == 0)
+                {
+                    throw new Exception($"Failed to initialize font: {ttfPath}");
+                }
+            }
         }
 
         // Calculate scale for the desired font size
-        float scale = fontInfo.ScaleForPixelHeight(fontSize);
+        float scale = StbTrueType.stbtt_ScaleForPixelHeight(fontInfo, fontSize);
 
         // Get font metrics
-        fontInfo.GetFontVMetrics(out int ascent, out int descent, out int lineGap);
+        int ascent, descent, lineGap;
+        unsafe
+        {
+            StbTrueType.stbtt_GetFontVMetrics(fontInfo, &ascent, &descent, &lineGap);
+        }
         float lineSpacing = (ascent - descent + lineGap) * scale;
 
         // Pre-calculate character sizes for atlas packing
@@ -45,12 +55,17 @@ public class TrueTypeFontLoader
 
         foreach (char c in charList)
         {
-            int glyphIndex = fontInfo.FindGlyphIndex(c);
+            int glyphIndex = StbTrueType.stbtt_FindGlyphIndex(fontInfo, c);
             if (glyphIndex == 0 && c != ' ') // Missing glyph (except space)
                 continue;
 
-            fontInfo.GetGlyphHMetrics(glyphIndex, out int advance, out int leftSideBearing);
-            fontInfo.GetGlyphBitmapBox(glyphIndex, scale, scale, out int x0, out int y0, out int x1, out int y1);
+            int advance, leftSideBearing;
+            int x0, y0, x1, y1;
+            unsafe
+            {
+                StbTrueType.stbtt_GetGlyphHMetrics(fontInfo, glyphIndex, &advance, &leftSideBearing);
+                StbTrueType.stbtt_GetGlyphBitmapBox(fontInfo, glyphIndex, scale, scale, &x0, &y0, &x1, &y1);
+            }
 
             int width = x1 - x0;
             int height = y1 - y0;
@@ -120,28 +135,39 @@ public class TrueTypeFontLoader
             if (data.Width == 0 || data.Height == 0)
                 continue;
 
-            // Rasterize character using StbTrueType high-level API
-            var charBitmap = fontInfo.GetGlyphBitmap(scale, scale, data.GlyphIndex, out int bitmapWidth, out int bitmapHeight);
-            
-            if (charBitmap == null || charBitmap.Length == 0)
-                continue;
-
-            // Copy character bitmap into atlas
-            for (int y = 0; y < bitmapHeight && y < data.Height; y++)
+            // Rasterize character using StbTrueType low-level API
+            int bitmapWidth, bitmapHeight, xoff, yoff;
+            unsafe
             {
-                for (int x = 0; x < bitmapWidth && x < data.Width; x++)
-                {
-                    int srcIdx = y * bitmapWidth + x;
-                    int dstX = data.AtlasX + x;
-                    int dstY = data.AtlasY + y;
-                    int dstIdx = (dstY * atlasWidth + dstX) * 4;
+                byte* charBitmap = StbTrueType.stbtt_GetGlyphBitmap(fontInfo, scale, scale, data.GlyphIndex, &bitmapWidth, &bitmapHeight, &xoff, &yoff);
+                
+                if (charBitmap == null)
+                    continue;
 
-                    if (srcIdx >= 0 && srcIdx < charBitmap.Length &&
-                        dstIdx >= 0 && dstIdx < atlasPixels.Length - 3)
+                try
+                {
+                    // Copy character bitmap into atlas
+                    for (int y = 0; y < bitmapHeight && y < data.Height; y++)
                     {
-                        byte alpha = charBitmap[srcIdx];
-                        atlasPixels[dstIdx + 3] = alpha; // Set alpha channel
+                        for (int x = 0; x < bitmapWidth && x < data.Width; x++)
+                        {
+                            int srcIdx = y * bitmapWidth + x;
+                            int dstX = data.AtlasX + x;
+                            int dstY = data.AtlasY + y;
+                            int dstIdx = (dstY * atlasWidth + dstX) * 4;
+
+                            if (dstIdx >= 0 && dstIdx < atlasPixels.Length - 3)
+                            {
+                                byte alpha = charBitmap[srcIdx];
+                                atlasPixels[dstIdx + 3] = alpha; // Set alpha channel
+                            }
+                        }
                     }
+                }
+                finally
+                {
+                    // Free the bitmap memory
+                    StbTrueType.stbtt_FreeBitmap(charBitmap, null);
                 }
             }
         }
