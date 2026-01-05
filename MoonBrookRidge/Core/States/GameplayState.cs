@@ -1185,7 +1185,8 @@ public class GameplayState : GameState
         _assetManager.RegisterAsset("Tiles", "Textures/Tiles/tilled_soil_dry");
         _assetManager.RegisterAsset("Tiles", "Textures/Tiles/tilled_soil_watered");
         
-        Console.WriteLine($"[AssetManager] Registered {_assetManager.GetStats().TotalRegisteredAssets} assets across {_assetManager.GetStats().CategoriesAvailable} categories");
+        var stats = _assetManager.GetStats();
+        Console.WriteLine($"[AssetManager] Registered {stats.TotalRegisteredAssets} assets across {stats.CategoriesAvailable} categories");
     }
 
     public override void Update(GameTime gameTime)
