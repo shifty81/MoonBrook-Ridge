@@ -146,8 +146,21 @@ public class MenuState : GameState
         
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         
-        // Draw title
-        if (Game.DefaultFont != null)
+        // Try to draw with font, but fall back to simple menu if font is not working
+        bool fontWorking = Game.DefaultFont != null;
+        
+        // Check if font can actually render (has internal font)
+        if (fontWorking)
+        {
+            // Test if font can measure strings - if it returns 0 for a non-empty string, font is broken
+            Vector2 testSize = Game.DefaultFont.MeasureString("Test");
+            if (testSize.X <= 0 || testSize.Y <= 0)
+            {
+                fontWorking = false;
+            }
+        }
+        
+        if (fontWorking)
         {
             string title = "MoonBrook Ridge";
             Vector2 titleSize = Game.DefaultFont.MeasureString(title);
@@ -199,7 +212,7 @@ public class MenuState : GameState
         }
         else
         {
-            // Fallback if font not loaded
+            // Fallback if font not loaded or not working
             DrawSimpleMenu(spriteBatch);
         }
         
@@ -209,17 +222,44 @@ public class MenuState : GameState
     private void DrawSimpleMenu(SpriteBatch spriteBatch)
     {
         // Simple colored rectangles as menu items if font is not available
+        // Draw title bar
+        Rectangle titleRect = new Rectangle(
+            Game.GraphicsDevice.Viewport.Width / 2 - 200,
+            80,
+            400,
+            50
+        );
+        spriteBatch.Draw(_pixelTexture, titleRect, Color.LightBlue * 0.8f);
+        
+        // Draw menu option rectangles
         for (int i = 0; i < _menuOptions.Length; i++)
         {
             Color color = (i == _selectedOption) ? _selectedColor : _normalColor;
             Rectangle rect = new Rectangle(
-                Game.GraphicsDevice.Viewport.Width / 2 - 100,
+                Game.GraphicsDevice.Viewport.Width / 2 - 150,
                 200 + i * 60,
-                200,
-                40
+                300,
+                45
             );
-            spriteBatch.Draw(_pixelTexture, rect, color);
+            
+            // Draw border for selected item
+            if (i == _selectedOption)
+            {
+                Rectangle borderRect = new Rectangle(rect.X - 5, rect.Y - 5, rect.Width + 10, rect.Height + 10);
+                spriteBatch.Draw(_pixelTexture, borderRect, Color.Yellow * 0.5f);
+            }
+            
+            spriteBatch.Draw(_pixelTexture, rect, color * 0.7f);
         }
+        
+        // Draw hint at bottom
+        Rectangle hintRect = new Rectangle(
+            Game.GraphicsDevice.Viewport.Width / 2 - 250,
+            Game.GraphicsDevice.Viewport.Height - 60,
+            500,
+            30
+        );
+        spriteBatch.Draw(_pixelTexture, hintRect, Color.Gray * 0.5f);
     }
     
     private Texture2D CreatePixelTexture()
