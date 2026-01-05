@@ -424,12 +424,12 @@ Now that the engine migration is complete, development can continue on:
 
 ### Documentation
 - [README.md](../../README.md) - Project overview and features
-- [RUNTIME_TESTING_GUIDE.md](RUNTIME_TESTING_GUIDE.md) - Testing procedures
+- [RUNTIME_TESTING_GUIDE.md](../guides/RUNTIME_TESTING_GUIDE.md) - Testing procedures
 - [RUNTIME_TESTING_PREPARATION.md](../../RUNTIME_TESTING_PREPARATION.md) - Testing preparation
 - [ENGINE_MIGRATION_STATUS.md](../../ENGINE_MIGRATION_STATUS.md) - Migration details
 - [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - System architecture
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Development guide
-- [CONTROLS.md](CONTROLS.md) - Game controls reference
+- [DEVELOPMENT.md](../guides/DEVELOPMENT.md) - Development guide
+- [CONTROLS.md](../guides/CONTROLS.md) - Game controls reference
 
 ### Code References
 - `MoonBrookEngine/` - Core engine implementation
