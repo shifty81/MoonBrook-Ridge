@@ -125,8 +125,6 @@ public class Vector2Tests
         Assert.Equal(5f, result.Y);
     }
 
-
-
     [Fact]
     public void StaticProperties_ShouldHaveCorrectValues()
     {

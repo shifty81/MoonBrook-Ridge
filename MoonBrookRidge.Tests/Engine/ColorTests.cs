@@ -45,8 +45,6 @@ public class ColorTests
         Assert.InRange(color.A, (byte)30, (byte)32);
     }
 
-
-
     [Fact]
     public void Multiply_ShouldScaleColorComponents()
     {
@@ -111,6 +109,4 @@ public class ColorTests
         Assert.False(color1.Equals(color2));
         Assert.True(color1 != color2);
     }
-
-
 }
