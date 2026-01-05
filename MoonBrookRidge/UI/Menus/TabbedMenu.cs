@@ -304,7 +304,7 @@ public abstract class TabbedMenu
     
     public bool IsActive => _isActive;
     public int SelectedTabIndex => _selectedTabIndex;
-    public MenuTab SelectedTab => _tabs.Count > 0 ? _tabs[_selectedTabIndex] : null;
+    public MenuTab? SelectedTab => _tabs.Count > 0 ? _tabs[_selectedTabIndex] : null;
 }
 
 /// <summary>

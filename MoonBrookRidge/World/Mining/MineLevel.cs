@@ -122,7 +122,7 @@ public class MineLevel
     /// <summary>
     /// Try to mine a rock at the given position
     /// </summary>
-    public bool TryMineRock(Vector2 position, out Item[] drops)
+    public bool TryMineRock(Vector2 position, out Item[]? drops)
     {
         drops = null;
         

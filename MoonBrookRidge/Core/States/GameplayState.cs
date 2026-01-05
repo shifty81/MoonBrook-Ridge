@@ -2286,7 +2286,7 @@ public class GameplayState : GameState
             Vector2 spawnPosition = _player.Position + offset;
             
             // Spawn different enemy types based on level
-            Enemy enemy = null;
+            Enemy? enemy = null;
             if (level <= 2)
             {
                 // Easy enemies
