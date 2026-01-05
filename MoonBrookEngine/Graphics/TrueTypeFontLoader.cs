@@ -41,7 +41,9 @@ public class TrueTypeFontLoader
         float scale = StbTrueType.stbtt_ScaleForPixelHeight(fontInfo, fontSize);
 
         // Get font metrics
-        int ascent, descent, lineGap;
+        int ascent;
+        int descent;
+        int lineGap;
         unsafe
         {
             StbTrueType.stbtt_GetFontVMetrics(fontInfo, &ascent, &descent, &lineGap);
@@ -59,8 +61,12 @@ public class TrueTypeFontLoader
             if (glyphIndex == 0 && c != ' ') // Missing glyph (except space)
                 continue;
 
-            int advance, leftSideBearing;
-            int x0, y0, x1, y1;
+            int advance;
+            int leftSideBearing;
+            int x0;
+            int y0;
+            int x1;
+            int y1;
             unsafe
             {
                 StbTrueType.stbtt_GetGlyphHMetrics(fontInfo, glyphIndex, &advance, &leftSideBearing);
@@ -136,7 +142,10 @@ public class TrueTypeFontLoader
                 continue;
 
             // Rasterize character using StbTrueType low-level API
-            int bitmapWidth, bitmapHeight, xoff, yoff;
+            int bitmapWidth;
+            int bitmapHeight;
+            int xoff;
+            int yoff;
             unsafe
             {
                 byte* charBitmap = StbTrueType.stbtt_GetGlyphBitmap(fontInfo, scale, scale, data.GlyphIndex, &bitmapWidth, &bitmapHeight, &xoff, &yoff);
