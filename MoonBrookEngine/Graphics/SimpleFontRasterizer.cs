@@ -44,7 +44,10 @@ internal static class SimpleFontRasterizer
         int gridWidth = width - margin * 2;
         int gridHeight = height - margin * 2;
         
-        switch (c)
+        // Handle both upper and lower case
+        char upper = char.ToUpper(c);
+        
+        switch (upper)
         {
             case ' ': // Space
                 break;
@@ -55,11 +58,50 @@ internal static class SimpleFontRasterizer
                 DrawLine(pixels, width, height, margin + gridWidth / 4, centerY, width - margin - gridWidth / 4, centerY);
                 break;
                 
+            case 'B':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, margin, width - margin - 2, margin);
+                DrawLine(pixels, width, height, width - margin - 2, margin, width - margin, margin + gridHeight / 6);
+                DrawLine(pixels, width, height, width - margin, margin + gridHeight / 6, width - margin - 2, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin - 2, centerY);
+                DrawLine(pixels, width, height, width - margin - 2, centerY, width - margin, centerY + gridHeight / 6);
+                DrawLine(pixels, width, height, width - margin, centerY + gridHeight / 6, width - margin - 2, height - margin);
+                DrawLine(pixels, width, height, width - margin - 2, height - margin, margin, height - margin);
+                break;
+                
+            case 'C':
+                DrawLine(pixels, width, height, width - margin, margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                break;
+                
+            case 'D':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, margin, width - margin - 2, margin);
+                DrawLine(pixels, width, height, width - margin - 2, margin, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, width - margin - 2, height - margin);
+                DrawLine(pixels, width, height, width - margin - 2, height - margin, margin, height - margin);
+                break;
+                
             case 'E':
                 DrawLine(pixels, width, height, margin, margin, margin, height - margin);
                 DrawLine(pixels, width, height, margin, margin, width - margin, margin);
                 DrawLine(pixels, width, height, margin, centerY, width - margin * 2, centerY);
                 DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                break;
+                
+            case 'F':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, margin, centerY, width - margin * 2, centerY);
+                break;
+                
+            case 'G':
+                DrawLine(pixels, width, height, width - margin, margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, height - margin, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, centerX, centerY);
                 break;
                 
             case 'H':
@@ -74,13 +116,95 @@ internal static class SimpleFontRasterizer
                 DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
                 break;
                 
+            case 'K':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, margin, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, height - margin);
+                break;
+                
+            case 'L':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                break;
+                
+            case 'M':
+                DrawLine(pixels, width, height, margin, height - margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, centerX, centerY);
+                DrawLine(pixels, width, height, centerX, centerY, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, width - margin, height - margin);
+                break;
+                
+            case 'N':
+                DrawLine(pixels, width, height, margin, height - margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, height - margin, width - margin, margin);
+                break;
+                
             case 'O':
                 DrawRect(pixels, width, height, margin, margin, gridWidth, gridHeight, false);
+                break;
+                
+            case 'P':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, margin, centerY);
+                break;
+                
+            case 'R':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, height - margin);
+                break;
+                
+            case 'S':
+                DrawLine(pixels, width, height, width - margin, margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, height - margin, margin, height - margin);
                 break;
                 
             case 'T':
                 DrawLine(pixels, width, height, margin, margin, width - margin, margin);
                 DrawLine(pixels, width, height, centerX, margin, centerX, height - margin);
+                break;
+                
+            case 'U':
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, height - margin, width - margin, margin);
+                break;
+                
+            case 'V':
+                DrawLine(pixels, width, height, margin, margin, centerX, height - margin);
+                DrawLine(pixels, width, height, centerX, height - margin, width - margin, margin);
+                break;
+                
+            case 'W':
+                DrawLine(pixels, width, height, margin, margin, margin + gridWidth / 4, height - margin);
+                DrawLine(pixels, width, height, margin + gridWidth / 4, height - margin, centerX, centerY);
+                DrawLine(pixels, width, height, centerX, centerY, width - margin - gridWidth / 4, height - margin);
+                DrawLine(pixels, width, height, width - margin - gridWidth / 4, height - margin, width - margin, margin);
+                break;
+                
+            case 'X':
+                DrawLine(pixels, width, height, margin, margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, margin, margin, height - margin);
+                break;
+                
+            case 'Y':
+                DrawLine(pixels, width, height, margin, margin, centerX, centerY);
+                DrawLine(pixels, width, height, width - margin, margin, centerX, centerY);
+                DrawLine(pixels, width, height, centerX, centerY, centerX, height - margin);
+                break;
+                
+            case 'Z':
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
                 break;
                 
             // Numbers
@@ -102,6 +226,53 @@ internal static class SimpleFontRasterizer
                 DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
                 break;
                 
+            case '3':
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                break;
+                
+            case '4':
+                DrawLine(pixels, width, height, margin, margin, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, margin, width - margin, height - margin);
+                break;
+                
+            case '5':
+                DrawLine(pixels, width, height, width - margin, margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, height - margin, margin, height - margin);
+                break;
+                
+            case '6':
+                DrawLine(pixels, width, height, width - margin, margin, margin, margin);
+                DrawLine(pixels, width, height, margin, margin, margin, height - margin);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, width - margin, height - margin);
+                DrawLine(pixels, width, height, width - margin, height - margin, margin, height - margin);
+                break;
+                
+            case '7':
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, centerX, height - margin);
+                break;
+                
+            case '8':
+                DrawRect(pixels, width, height, margin, margin, gridWidth, gridHeight / 2, false);
+                DrawRect(pixels, width, height, margin, centerY, gridWidth, gridHeight / 2, false);
+                break;
+                
+            case '9':
+                DrawLine(pixels, width, height, margin, margin, width - margin, margin);
+                DrawLine(pixels, width, height, width - margin, margin, width - margin, height - margin);
+                DrawLine(pixels, width, height, margin, margin, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, height - margin);
+                break;
+                
             // Punctuation
             case '.':
                 DrawRect(pixels, width, height, centerX - 1, height - margin - 2, 3, 3, true);
@@ -117,6 +288,14 @@ internal static class SimpleFontRasterizer
                 DrawRect(pixels, width, height, centerX - 1, height - margin - gridHeight / 3, 3, 3, true);
                 break;
                 
+            case ';':
+                DrawRect(pixels, width, height, centerX - 1, margin + gridHeight / 3, 3, 3, true);
+                DrawRect(pixels, width, height, centerX - 1, height - margin - gridHeight / 3 - 3, 3, 3, true);
+                // Draw tail below the bottom dot (but keep it within bounds)
+                int tailStartY = height - margin - gridHeight / 3;
+                DrawLine(pixels, width, height, centerX, tailStartY, centerX - 2, System.Math.Min(tailStartY + 3, height - margin));
+                break;
+                
             case '!':
                 DrawLine(pixels, width, height, centerX, margin, centerX, centerY + 2);
                 DrawRect(pixels, width, height, centerX - 1, height - margin - 2, 3, 3, true);
@@ -129,11 +308,60 @@ internal static class SimpleFontRasterizer
                 DrawRect(pixels, width, height, centerX - 1, height - margin - 2, 3, 3, true);
                 break;
                 
-            default:
-                // For unknown characters, draw a box with an X
-                DrawRect(pixels, width, height, margin, margin, gridWidth, gridHeight, false);
+            case '-':
+            case '_':
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                break;
+                
+            case '/':
+                DrawLine(pixels, width, height, margin, height - margin, width - margin, margin);
+                break;
+                
+            case '\\':
                 DrawLine(pixels, width, height, margin, margin, width - margin, height - margin);
-                DrawLine(pixels, width, height, width - margin, margin, margin, height - margin);
+                break;
+                
+            case '|':
+                DrawLine(pixels, width, height, centerX, margin, centerX, height - margin);
+                break;
+                
+            case '>':
+                DrawLine(pixels, width, height, margin, margin, width - margin, centerY);
+                DrawLine(pixels, width, height, width - margin, centerY, margin, height - margin);
+                break;
+                
+            case '<':
+                DrawLine(pixels, width, height, width - margin, margin, margin, centerY);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, height - margin);
+                break;
+                
+            case '+':
+                DrawLine(pixels, width, height, centerX, margin, centerX, height - margin);
+                DrawLine(pixels, width, height, margin, centerY, width - margin, centerY);
+                break;
+                
+            case '=':
+                DrawLine(pixels, width, height, margin, centerY - gridHeight / 6, width - margin, centerY - gridHeight / 6);
+                DrawLine(pixels, width, height, margin, centerY + gridHeight / 6, width - margin, centerY + gridHeight / 6);
+                break;
+                
+            case '(':
+            case '[':
+                DrawLine(pixels, width, height, width - margin, margin, centerX, margin);
+                DrawLine(pixels, width, height, centerX, margin, centerX, height - margin);
+                DrawLine(pixels, width, height, centerX, height - margin, width - margin, height - margin);
+                break;
+                
+            case ')':
+            case ']':
+                DrawLine(pixels, width, height, margin, margin, centerX, margin);
+                DrawLine(pixels, width, height, centerX, margin, centerX, height - margin);
+                DrawLine(pixels, width, height, centerX, height - margin, margin, height - margin);
+                break;
+                
+            default:
+                // For unknown characters, draw a small dot
+                DrawRect(pixels, width, height, centerX - 2, centerY - 2, 4, 4, true);
                 break;
         }
     }
