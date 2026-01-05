@@ -476,7 +476,6 @@ public class TunnelBoringMachine
     private float _boringTimePerFloor = 3f; // 3 seconds per floor
     private float _boringTimer;
     private int _targetDepth;
-    private Action<int, Dictionary<string, int>> _onFloorCompleted; // Callback with floor and resources
     
     public event Action<int> OnBoringStarted; // Floor number
     public event Action<int, Dictionary<string, int>> OnBoringCompleted; // Floor number, resources

@@ -34,7 +34,6 @@ public class FurnitureMenu
     public bool IsActive => _isActive;
     
     public event Action<Furniture>? OnFurniturePlaced;
-    public event Action<Furniture>? OnFurnitureRemoved;
     
     public FurnitureMenu(FurnitureSystem furnitureSystem)
     {
