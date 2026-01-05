@@ -117,6 +117,8 @@ public class GameplayState : GameState
     private UnifiedPlayerMenu _unifiedPlayerMenu;
     // Shared 1x1 white pixel texture for UI rendering - prevents memory leaks from creating new textures each frame
     private Texture2D _pixelTexture;
+    // Asset Management System - provides caching, lazy loading, and category management
+    private AssetManager _assetManager;
     private bool _isPaused;
     private KeyboardState _previousKeyboardState;
     private MouseState _previousMouseState;
@@ -129,6 +131,9 @@ public class GameplayState : GameState
     public override void Initialize()
     {
         base.Initialize();
+        
+        // Initialize Asset Manager - provides caching, lazy loading, and category management
+        _assetManager = new AssetManager(Game.Content, Game.GraphicsDevice);
         
         // Initialize core systems
         _timeSystem = new TimeSystem();
@@ -1089,6 +1094,99 @@ public class GameplayState : GameState
         
         // Initialize starter quests
         InitializeQuests();
+        
+        // Register all loaded assets with AssetManager for caching and category management
+        RegisterLoadedAssets();
+    }
+    
+    /// <summary>
+    /// Register all loaded assets with AssetManager for category-based management
+    /// This enables preloading, unloading, and caching features
+    /// </summary>
+    private void RegisterLoadedAssets()
+    {
+        // Register character animations
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_walk_strip8");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_run_strip8");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_idle_strip9");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_waiting_strip9");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_dig_strip13");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_mining_strip10");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_axe_strip10");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_watering_strip5");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_casting_strip15");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_reeling_strip13");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_caught_strip10");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_attack_strip10");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_hurt_strip8");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Animations/base_death_strip13");
+        
+        // Register tool overlays
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_walk_strip8");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_run_strip8");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_idle_strip9");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_waiting_strip9");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_dig_strip13");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_mining_strip10");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_axe_strip10");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_watering_strip5");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_casting_strip15");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_reeling_strip13");
+        _assetManager.RegisterAsset("Characters", "Textures/Characters/Tools/tools_caught_strip10");
+        
+        // Register crop textures (all 11 types)
+        string[] cropTypes = { "wheat", "potato", "carrot", "cabbage", "beetroot", "sunflower", 
+                               "pumpkin", "cauliflower", "kale", "parsnip", "radish" };
+        foreach (var cropType in cropTypes)
+        {
+            for (int i = 0; i <= 5; i++)
+            {
+                _assetManager.RegisterAsset("Crops", $"Textures/Crops/{cropType}_{i:D2}");
+            }
+        }
+        
+        // Register building textures
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/House1");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/House2");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/House3_Yellow");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Tower_Blue");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Tower_Red");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Tower_Yellow");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Tower_Purple");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Castle_Black");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Castle_Blue");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Castle_Red");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Castle_Yellow");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Barracks_Blue");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Barracks_Red");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Barracks_Yellow");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Barracks_Purple");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Archery_Blue");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Archery_Red");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Archery_Yellow");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Monastery_Blue");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Monastery_Red");
+        _assetManager.RegisterAsset("Buildings", "Textures/Buildings/Monastery_Yellow");
+        
+        // Register resource textures
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Tree1");
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Tree2");
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Tree3");
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Tree4");
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Rock1");
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Rock2");
+        _assetManager.RegisterAsset("Resources", "Textures/Resources/Rock3");
+        
+        // Register tile textures
+        _assetManager.RegisterAsset("Tiles", "Textures/Tiles/grass");
+        _assetManager.RegisterAsset("Tiles", "Textures/Tiles/plains");
+        _assetManager.RegisterAsset("Tiles", "Textures/Tiles/dirt_01");
+        _assetManager.RegisterAsset("Tiles", "Textures/Tiles/stone_01");
+        _assetManager.RegisterAsset("Tiles", "Textures/Tiles/tilled_soil_dry");
+        _assetManager.RegisterAsset("Tiles", "Textures/Tiles/tilled_soil_watered");
+        
+        var stats = _assetManager.GetStats();
+        Console.WriteLine($"[AssetManager] Registered {stats.TotalRegisteredAssets} assets across {stats.CategoriesAvailable} categories");
     }
 
     public override void Update(GameTime gameTime)
