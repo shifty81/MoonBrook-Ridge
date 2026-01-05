@@ -321,8 +321,7 @@ public class WorldMap
         }
         
         // Log first draw call for diagnostic purposes
-        bool logFirstDraw = !_hasLoggedFirstDraw;
-        if (logFirstDraw)
+        if (!_hasLoggedFirstDraw)
         {
             Console.WriteLine($"[WorldMap] First Draw call:");
             Console.WriteLine($"  - Sunnyside tileset: {(_sunnysideTileset != null ? "Available" : "NULL")}");
