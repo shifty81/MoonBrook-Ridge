@@ -84,11 +84,13 @@ public class AssetManager
     /// </summary>
     private Texture2D LoadTextureFromFile(string path)
     {
-        // Try various possible paths
+        // Try various possible paths including sprites directory
         string[] possiblePaths = {
             Path.Combine("Content", "Textures", $"{path}.png"),
             Path.Combine("Content", "Textures", path),
             Path.Combine("Content", $"{path}.png"),
+            Path.Combine("sprites", $"{path}.png"),
+            Path.Combine("sprites", path),
             path
         };
         
@@ -105,6 +107,7 @@ public class AssetManager
                     // Store category mapping for efficient unloading
                     StoreCategory(path);
                     
+                    Console.WriteLine($"[AssetManager] Dynamically loaded texture from: {filePath}");
                     return texture;
                 }
                 catch (Exception ex)
@@ -114,6 +117,7 @@ public class AssetManager
             }
         }
         
+        Console.WriteLine($"[AssetManager] Asset not found, using fallback: {path}");
         // Return a fallback texture (1x1 magenta pixel)
         return CreateFallbackTexture();
     }
