@@ -290,8 +290,10 @@ internal static class SimpleFontRasterizer
                 
             case ';':
                 DrawRect(pixels, width, height, centerX - 1, margin + gridHeight / 3, 3, 3, true);
-                DrawRect(pixels, width, height, centerX - 1, height - margin - gridHeight / 3, 3, 3, true);
-                DrawLine(pixels, width, height, centerX, height - margin - gridHeight / 3 + 3, centerX - 2, height - margin - gridHeight / 3 + 6);
+                DrawRect(pixels, width, height, centerX - 1, height - margin - gridHeight / 3 - 3, 3, 3, true);
+                // Draw tail below the bottom dot (but keep it within bounds)
+                int tailStartY = height - margin - gridHeight / 3;
+                DrawLine(pixels, width, height, centerX, tailStartY, centerX - 2, System.Math.Min(tailStartY + 3, height - margin));
                 break;
                 
             case '!':
