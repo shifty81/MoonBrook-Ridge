@@ -8,12 +8,20 @@ An **auto-shooter roguelite** farming and life simulation game combining peacefu
 
 **[Full Documentation →](docs/)**
 
+### For Developers
+- **[Post-Migration Onboarding](docs/guides/POST_MIGRATION_ONBOARDING.md)** ⭐ **NEW!** - Start here if you're new to the post-migration codebase
 - **[Setup & Development](docs/guides/DEVELOPMENT.md)** - Getting started with development
-- **[Runtime Testing Guide](docs/guides/RUNTIME_TESTING_GUIDE.md)** ⭐ **NEW!** - Testing after engine migration
+- **[Runtime Testing Preparation](RUNTIME_TESTING_PREPARATION.md)** ⭐ **NEW!** - Prepare for runtime testing
+- **[Runtime Testing Guide](docs/guides/RUNTIME_TESTING_GUIDE.md)** - Testing procedures after engine migration
+- **[CI/CD Readiness](CI_CD_READINESS.md)** ⭐ **NEW!** - Continuous integration setup guide
+
+### For Players
 - **[Game Controls](docs/guides/CONTROLS.md)** - How to play
+
+### Technical Documentation
 - **[Architecture](docs/architecture/ARCHITECTURE.md)** - System architecture overview  
 - **[Custom Engine](docs/architecture/CUSTOM_ENGINE_CONVERSION_PLAN.md)** - Custom game engine migration plan
-- **[Engine Migration Status](ENGINE_MIGRATION_STATUS.md)** ⭐ **NEW!** - Migration completion status
+- **[Engine Migration Status](ENGINE_MIGRATION_STATUS.md)** - Migration completion status
 
 ## 🎮 Game Concept
 

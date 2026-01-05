@@ -1,0 +1,43 @@
+name: Build and Validate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Validate engine (Linux only)
+      if: runner.os == 'Linux'
+      run: ./validate-engine.sh
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.os }}
+        path: |
+          MoonBrookRidge/bin/Release/net9.0/
+          MoonBrookRidge.Engine/bin/Release/net9.0/
+          MoonBrookEngine/bin/Release/net9.0/
+        retention-days: 7

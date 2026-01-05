@@ -1,8 +1,8 @@
 # Next Steps Completion Summary
 
-## Task: "Continue Next Steps"
+## Task: "Continue Next Steps" - Follow-up (PR #82)
 
-This document summarizes the completion of the "continue next steps" task for the MoonBrook Ridge custom engine migration.
+This document summarizes the completion of the "continue next steps" follow-up task for the MoonBrook Ridge custom engine migration, building on the work completed in PR #81.
 
 ---
 

@@ -150,6 +150,22 @@ public class BitmapFont : IDisposable
     }
     
     /// <summary>
+    /// Set the atlas texture
+    /// </summary>
+    internal void SetAtlasTexture(Texture2D texture)
+    {
+        _atlasTexture = texture;
+    }
+    
+    /// <summary>
+    /// Add a character to the font
+    /// </summary>
+    internal void AddCharacter(char c, CharacterInfo info)
+    {
+        _characters[c] = info;
+    }
+    
+    /// <summary>
     /// Measure the size of a string when rendered with this font
     /// </summary>
     public Vector2 MeasureString(string text)

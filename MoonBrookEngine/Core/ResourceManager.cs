@@ -97,10 +97,9 @@ public class ResourceManager : IDisposable
     }
     
     /// <summary>
-    /// Load or create a bitmap font
-    /// For now, creates a default font since we don't have font atlas support yet
+    /// Load or create a bitmap font from a .spritefont descriptor and TTF file
     /// </summary>
-    public BitmapFont LoadFont(string assetName, int fontSize = 16)
+    public BitmapFont LoadFont(string assetName, int defaultFontSize = 16)
     {
         // Normalize path separators
         assetName = assetName.Replace('\\', '/');
@@ -111,12 +110,133 @@ public class ResourceManager : IDisposable
             return cached;
         }
         
-        // For now, create a default font
-        // TODO: Load actual font atlas from .fnt/.png files
-        var font = BitmapFont.CreateDefault(_gl, fontSize);
-        _fonts[assetName] = font;
+        // Try to load from .spritefont file
+        string spriteFontPath = Path.Combine(_rootDirectory, assetName + ".spritefont");
         
-        return font;
+        if (File.Exists(spriteFontPath))
+        {
+            try
+            {
+                // Parse .spritefont descriptor
+                var descriptor = SpriteFontDescriptor.Parse(spriteFontPath);
+                
+                // Find TTF font file
+                string ttfPath = FindFontFile(descriptor.FontName);
+                
+                if (ttfPath != null && File.Exists(ttfPath))
+                {
+                    Console.WriteLine($"Loading font from: {ttfPath} (size: {descriptor.Size})");
+                    
+                    // Load TTF and generate atlas
+                    var loader = new TrueTypeFontLoader(_gl);
+                    var font = loader.LoadFromFile(
+                        ttfPath,
+                        descriptor.Size,
+                        descriptor.GetCharacters(),
+                        descriptor.Spacing
+                    );
+                    
+                    _fonts[assetName] = font;
+                    return font;
+                }
+                else
+                {
+                    Console.WriteLine($"Warning: TTF font file not found: {descriptor.FontName}");
+                    Console.WriteLine($"Searched: {ttfPath ?? "null"}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading font {assetName}: {ex.Message}");
+            }
+        }
+        
+        // Fallback: create default font
+        Console.WriteLine($"Creating default font for: {assetName}");
+        var defaultFont = BitmapFont.CreateDefault(_gl, defaultFontSize);
+        _fonts[assetName] = defaultFont;
+        return defaultFont;
+    }
+    
+    /// <summary>
+    /// Find a font file by name (looks in Content/Fonts and common system paths)
+    /// </summary>
+    private string? FindFontFile(string fontName)
+    {
+        // Check if it's already a full path or relative path with extension
+        if (File.Exists(fontName))
+            return fontName;
+        
+        // Check in Content/Fonts directory
+        string contentFontPath = Path.Combine(_rootDirectory, "Fonts", fontName);
+        if (File.Exists(contentFontPath))
+            return contentFontPath;
+        
+        // Try with .ttf extension
+        if (!fontName.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase))
+        {
+            string ttfPath = Path.Combine(_rootDirectory, "Fonts", fontName + ".ttf");
+            if (File.Exists(ttfPath))
+                return ttfPath;
+        }
+        
+        // Check system font directories (for common fonts)
+        string[] systemFontDirs;
+        if (OperatingSystem.IsWindows())
+        {
+            systemFontDirs = new[] { "C:\\Windows\\Fonts" };
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            systemFontDirs = new[]
+            {
+                "/usr/share/fonts",
+                "/usr/local/share/fonts",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".fonts")
+            };
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            systemFontDirs = new[]
+            {
+                "/System/Library/Fonts",
+                "/Library/Fonts",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library/Fonts")
+            };
+        }
+        else
+        {
+            return null;
+        }
+        
+        // Search system font directories
+        foreach (var dir in systemFontDirs)
+        {
+            if (!Directory.Exists(dir))
+                continue;
+            
+            // Look for the font file
+            try
+            {
+                var found = Directory.GetFiles(dir, fontName, SearchOption.AllDirectories).FirstOrDefault();
+                if (found != null)
+                    return found;
+                
+                // Try with .ttf extension
+                if (!fontName.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase))
+                {
+                    found = Directory.GetFiles(dir, fontName + ".ttf", SearchOption.AllDirectories).FirstOrDefault();
+                    if (found != null)
+                        return found;
+                }
+            }
+            catch
+            {
+                // Ignore permission errors
+            }
+        }
+        
+        return null;
     }
     
     /// <summary>
