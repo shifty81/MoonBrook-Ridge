@@ -45,6 +45,7 @@ public class ResourceManager : IDisposable
         // Check if already loaded
         if (_textures.TryGetValue(assetName, out var cached))
         {
+            Console.WriteLine($"[ResourceManager] Texture '{assetName}' loaded from cache ({cached.Width}x{cached.Height})");
             return cached;
         }
         
@@ -69,6 +70,8 @@ public class ResourceManager : IDisposable
             
             if (foundPath == null)
             {
+                Console.WriteLine($"[ResourceManager] ERROR: Could not find texture: {assetName}");
+                Console.WriteLine($"[ResourceManager] Searched: {fullPath} with extensions .png, .jpg, .jpeg, .bmp");
                 throw new FileNotFoundException($"Could not find texture: {assetName}");
             }
             
@@ -76,7 +79,9 @@ public class ResourceManager : IDisposable
         }
         
         // Load texture
+        Console.WriteLine($"[ResourceManager] Loading texture from: {fullPath}");
         var texture = new Texture2D(_gl, fullPath);
+        Console.WriteLine($"[ResourceManager] Texture '{assetName}' loaded successfully ({texture.Width}x{texture.Height})");
         _textures[assetName] = texture;
         
         return texture;

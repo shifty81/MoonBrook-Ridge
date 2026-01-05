@@ -31,6 +31,9 @@ public class WorldMap
     // World objects (buildings, trees, rocks, decorations)
     private List<WorldObject> _worldObjects;
     
+    // Diagnostic flag for logging first draw
+    private bool _hasLoggedFirstDraw = false;
+    
     // Mine entrance location
     public Vector2 MineEntranceGridPosition { get; private set; }
     
@@ -210,8 +213,11 @@ public class WorldMap
     /// </summary>
     public void LoadSunnysideTileset(Texture2D sunnysideTilesetTexture)
     {
+        Console.WriteLine($"[WorldMap] Loading Sunnyside tileset: {sunnysideTilesetTexture.Width}x{sunnysideTilesetTexture.Height}");
         _sunnysideTileset = new SunnysideTilesetHelper(sunnysideTilesetTexture);
+        Console.WriteLine($"[WorldMap] Sunnyside tileset helper created: {_sunnysideTileset.TotalTiles} tiles available");
         InitializeSunnysideTileMapping();
+        Console.WriteLine($"[WorldMap] Sunnyside tile mapping initialized: {_sunnysideTileMapping.Count} tile types mapped");
     }
     
     /// <summary>
@@ -312,6 +318,17 @@ public class WorldMap
             endX = Math.Min(_width, (bounds.Right / TILE_SIZE) + BUFFER_TILES + 1);
             startY = Math.Max(0, (bounds.Top / TILE_SIZE) - BUFFER_TILES);
             endY = Math.Min(_height, (bounds.Bottom / TILE_SIZE) + BUFFER_TILES + 1);
+        }
+        
+        // Log first draw call for diagnostic purposes
+        if (!_hasLoggedFirstDraw)
+        {
+            Console.WriteLine($"[WorldMap] First Draw call:");
+            Console.WriteLine($"  - Sunnyside tileset: {(_sunnysideTileset != null ? "Available" : "NULL")}");
+            Console.WriteLine($"  - Tile textures: {_tileTextures.Count} loaded");
+            Console.WriteLine($"  - Tile mapping: {_sunnysideTileMapping.Count} entries");
+            Console.WriteLine($"  - Drawing tiles from ({startX},{startY}) to ({endX},{endY})");
+            _hasLoggedFirstDraw = true;
         }
         
         // Use Sunnyside tileset if available, otherwise fall back to individual textures or colored squares

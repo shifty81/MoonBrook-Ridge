@@ -284,8 +284,23 @@ public class SpriteBatch : IDisposable
         if (!_isBegun)
             throw new InvalidOperationException("Begin must be called before DrawString.");
         
-        if (font?.InternalFont == null)
-            return; // Can't render without internal font
+        if (font == null)
+        {
+            Console.WriteLine("[SpriteBatch] WARNING: DrawString called with null font!");
+            return;
+        }
+        
+        if (font.InternalFont == null)
+        {
+            Console.WriteLine("[SpriteBatch] WARNING: DrawString called with font that has null InternalFont!");
+            return;
+        }
+        
+        if (!font.InternalFont.HasAtlas)
+        {
+            Console.WriteLine("[SpriteBatch] WARNING: DrawString called with font that has no atlas! Font will not render.");
+            return;
+        }
         
         _engineBatch.DrawString(font.InternalFont, text, position, color);
     }
@@ -304,11 +319,26 @@ public class SpriteBatch : IDisposable
         if (!_isBegun)
             throw new InvalidOperationException("Begin must be called before DrawString.");
         
-        // Use scale parameter (rotation, origin, effects, and layerDepth are not yet supported)
-        if (font?.InternalFont != null)
+        if (font == null)
         {
-            _engineBatch.DrawString(font.InternalFont, text, position, color, scale);
+            Console.WriteLine("[SpriteBatch] WARNING: DrawString called with null font!");
+            return;
         }
+        
+        if (font.InternalFont == null)
+        {
+            Console.WriteLine("[SpriteBatch] WARNING: DrawString called with font that has null InternalFont!");
+            return;
+        }
+        
+        if (!font.InternalFont.HasAtlas)
+        {
+            Console.WriteLine("[SpriteBatch] WARNING: DrawString called with font that has no atlas! Font will not render.");
+            return;
+        }
+        
+        // Use scale parameter (rotation, origin, effects, and layerDepth are not yet supported)
+        _engineBatch.DrawString(font.InternalFont, text, position, color, scale);
     }
     
     public void Dispose()
