@@ -347,7 +347,7 @@ public class WorldMap
                 // Fall back to individual textures
                 else if (_tileTextures.Count > 0)
                 {
-                    Texture2D texture = GetTileTexture(tile.Type);
+                    Texture2D? texture = GetTileTexture(tile.Type);
                     
                     if (texture != null)
                     {
@@ -407,11 +407,11 @@ public class WorldMap
     
     private void DrawCrop(SpriteBatch spriteBatch, Tile tile, Rectangle tileRect)
     {
-        Crop crop = tile.Crop;
+        Crop? crop = tile.Crop;
         if (crop == null) return;
         
         // Get the crop texture array for this crop type
-        if (_cropTextures.TryGetValue(crop.CropType.ToLower(), out Texture2D[] stages))
+        if (_cropTextures.TryGetValue(crop.CropType.ToLower(), out Texture2D[]? stages) && stages != null)
         {
             // Clamp growth stage to available textures
             int stage = Math.Clamp(crop.GrowthStage, 0, stages.Length - 1);
@@ -428,7 +428,7 @@ public class WorldMap
     private Texture2D? GetTileTexture(TileType type)
     {
         // Try to get texture from dictionary
-        if (_tileTextures.TryGetValue(type, out Texture2D texture))
+        if (_tileTextures.TryGetValue(type, out Texture2D? texture) && texture != null)
         {
             return texture;
         }

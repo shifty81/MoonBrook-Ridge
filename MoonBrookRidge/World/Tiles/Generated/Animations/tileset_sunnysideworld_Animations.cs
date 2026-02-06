@@ -50,7 +50,7 @@ public static class SunnysideworldAnimations
     /// <returns>Tile ID for the current frame</returns>
     public static int GetAnimationFrame(string animationName, float elapsedTime, float frameRate = 5.0f)
     {
-        if (!Animations.TryGetValue(animationName, out int[] frames))
+        if (!Animations.TryGetValue(animationName, out int[]? frames) || frames == null)
             return -1;
         
         int frameIndex = (int)(elapsedTime * frameRate) % frames.Length;

@@ -100,9 +100,9 @@ public class OreNode
 /// </summary>
 public class ExpandedOreSystem
 {
-    private Dictionary<UndergroundBiomeType, List<OreType>> _biomeOres;
-    private Dictionary<OreType, string> _oreDescriptions;
-    private Dictionary<OreType, int> _tierLevels;
+    private Dictionary<UndergroundBiomeType, List<OreType>> _biomeOres = new();
+    private Dictionary<OreType, string> _oreDescriptions = new();
+    private Dictionary<OreType, int> _tierLevels = new();
     
     public ExpandedOreSystem()
     {

@@ -10,7 +10,7 @@ public class Tile
     private TileType _type;
     private Vector2 _gridPosition;
     private bool _isWatered;
-    private Crop _crop;
+    private Crop? _crop;
     private string _animationName;
     private int _spriteId = -1; // Sprite ID from tileset (-1 means use default for tile type)
     
@@ -135,7 +135,7 @@ public class Tile
     }
     
     public bool IsWatered => _isWatered;
-    public Crop Crop => _crop;
+    public Crop? Crop => _crop;
     public Vector2 GridPosition => _gridPosition;
     
     /// <summary>

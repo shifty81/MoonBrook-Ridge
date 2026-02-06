@@ -380,12 +380,12 @@ public class FastTravelMenu
         
         // Draw destination info
         int infoY = confirmY + PADDING * 3;
-        string destText = $"Destination: {_selectedWaypoint.Name}";
+        string destText = $"Destination: {_selectedWaypoint?.Name}";
         Vector2 destPos = new Vector2(confirmX + PADDING, infoY);
         DrawTextWithShadow(spriteBatch, font, destText, destPos, Color.White);
         
         infoY += 30;
-        string descText = $"{_selectedWaypoint.Description}";
+        string descText = $"{_selectedWaypoint?.Description}";
         Vector2 descPos = new Vector2(confirmX + PADDING, infoY);
         DrawTextWithShadow(spriteBatch, font, descText, descPos, Color.LightGray);
         

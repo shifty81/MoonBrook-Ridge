@@ -1856,7 +1856,7 @@ public class GameplayState : GameState
             case Pickaxe:
                 // Mining XP - check what was mined
                 Vector2 gridPos = position / GameConstants.TILE_SIZE;
-                Tile tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
+                Tile? tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
                 if (tile != null && tile.Type == TileType.Rock)
                 {
                     _skillProgressionSystem.OnResourceMined("stone");

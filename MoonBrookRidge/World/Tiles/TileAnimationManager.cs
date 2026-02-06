@@ -81,7 +81,7 @@ public class TileAnimationManager
     /// <returns>The tile ID to render for this frame, or -1 if animation not found</returns>
     public int GetCurrentFrame(string animationName)
     {
-        if (_animations.TryGetValue(animationName, out TileAnimation animation))
+        if (_animations.TryGetValue(animationName, out TileAnimation? animation) && animation != null)
         {
             return animation.Frames[animation.CurrentFrameIndex];
         }
