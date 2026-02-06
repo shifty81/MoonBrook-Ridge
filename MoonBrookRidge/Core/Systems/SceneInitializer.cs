@@ -155,7 +155,7 @@ public class SceneInitializer
     /// <summary>
     /// Get dungeon floor generator for a dungeon
     /// </summary>
-    public DungeonFloorGenerator GetDungeonGenerator(string dungeonName)
+    public DungeonFloorGenerator? GetDungeonGenerator(string dungeonName)
     {
         return _dungeonGenerators.TryGetValue(dungeonName, out var generator) ? generator : null;
     }

@@ -105,7 +105,7 @@ public abstract class Renderable
 /// </summary>
 public class SpriteRenderable : Renderable
 {
-    public Texture2D Texture { get; set; }
+    public Texture2D Texture { get; set; } = null!;
     public Rectangle SourceRectangle { get; set; }
     public Color Tint { get; set; } = Color.White;
     public Vector2 Origin { get; set; }

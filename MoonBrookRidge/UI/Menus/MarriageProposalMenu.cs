@@ -13,17 +13,17 @@ namespace MoonBrookRidge.UI.Menus;
 public class MarriageProposalMenu
 {
     private bool _isActive;
-    private NPCCharacter _targetNPC;
+    private NPCCharacter? _targetNPC;
     private MarriageSystem _marriageSystem;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     private int _selectedOption; // 0 = Yes, 1 = No
     
     private const int MENU_WIDTH = 500;
     private const int MENU_HEIGHT = 300;
     private const int PADDING = 20;
     
-    public event Action<NPCCharacter, bool> OnProposalDecision; // NPC, accepted/declined
+    public event Action<NPCCharacter?, bool>? OnProposalDecision; // NPC, accepted/declined
     
     public MarriageProposalMenu(MarriageSystem marriageSystem)
     {
@@ -224,5 +224,5 @@ public class MarriageProposalMenu
     }
     
     public bool IsActive => _isActive;
-    public NPCCharacter TargetNPC => _targetNPC;
+    public NPCCharacter? TargetNPC => _targetNPC;
 }

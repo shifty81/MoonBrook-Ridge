@@ -126,7 +126,7 @@ public class AutoTileRenderer
                 TileType tileType = tiles[x, y].Type;
                 
                 // Check if this tile type has autotiling rules
-                if (tileTypeToAutoTileSetMapping.TryGetValue(tileType, out int[] autoTileSet))
+                if (tileTypeToAutoTileSetMapping.TryGetValue(tileType, out int[]? autoTileSet) && autoTileSet != null)
                 {
                     int autoTileId = GetAutoTileId(tiles, x, y, tileType, autoTileSet);
                     
@@ -144,7 +144,7 @@ public class AutoTileRenderer
     /// Get the autotile set for common terrain types.
     /// Helper method to access the generated autotile rules easily.
     /// </summary>
-    public static int[] GetAutoTileSetForTerrainType(string terrainType)
+    public static int[]? GetAutoTileSetForTerrainType(string terrainType)
     {
         return terrainType.ToLower() switch
         {

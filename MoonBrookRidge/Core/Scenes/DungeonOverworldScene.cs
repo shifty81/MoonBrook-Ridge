@@ -443,7 +443,7 @@ public class DungeonOverworldScene : ExteriorScene
             if (camera.IsInView(building.Position, building.Width, building.Height))
             {
                 // TODO: Load and pass proper building textures
-                building.Draw(spriteBatch, null, Color.White);
+                building.Draw(spriteBatch, null!, Color.White);
             }
         }
         

@@ -14,7 +14,7 @@ public abstract class TabbedMenu
     protected List<MenuTab> _tabs;
     protected int _selectedTabIndex;
     protected bool _isActive;
-    protected Texture2D _pixelTexture;
+    protected Texture2D _pixelTexture = null!;
     protected KeyboardState _previousKeyboardState;
     protected MouseState _previousMouseState;
     
@@ -312,7 +312,7 @@ public abstract class TabbedMenu
 /// </summary>
 public class MenuTab
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public int Index { get; set; }
 }

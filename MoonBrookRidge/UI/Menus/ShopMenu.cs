@@ -21,7 +21,7 @@ public class ShopMenu
     private int _selectedItemIndex;
     private ShopMode _currentMode;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     private string _statusMessage;
     private float _messageTimer;
     

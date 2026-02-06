@@ -16,7 +16,7 @@ public class MagicMenu
     private List<Spell> _knownSpells;
     private int _selectedSpellIndex;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     
     private const int MENU_WIDTH = 650;
     private const int MENU_HEIGHT = 550;

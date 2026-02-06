@@ -146,7 +146,7 @@ public class EntityFrustumCulling
         var positionProperty = entity.GetType().GetProperty("Position");
         if (positionProperty != null && positionProperty.PropertyType == typeof(Vector2))
         {
-            return (Vector2)positionProperty.GetValue(entity);
+            return (Vector2)(positionProperty.GetValue(entity) ?? Vector2.Zero);
         }
         
         // Default to origin if position cannot be determined

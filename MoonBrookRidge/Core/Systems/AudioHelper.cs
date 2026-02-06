@@ -7,7 +7,7 @@ namespace MoonBrookRidge.Core.Systems;
 /// </summary>
 public static class AudioHelper
 {
-    private static AudioManager _audioManager;
+    private static AudioManager? _audioManager;
     
     public static void Initialize(AudioManager audioManager)
     {
@@ -18,7 +18,7 @@ public static class AudioHelper
     
     public static void PlayToolSound(string toolName)
     {
-        string soundName = toolName.ToLower() switch
+        string? soundName = toolName.ToLower() switch
         {
             "hoe" => SoundEffects.Hoe,
             "watering can" => SoundEffects.WateringCan,
@@ -98,7 +98,7 @@ public static class AudioHelper
     {
         if (_audioManager == null) return;
         
-        string musicTrack = location.ToLower() switch
+        string? musicTrack = location.ToLower() switch
         {
             "mine" => MusicTracks.Mine,
             "town" => MusicTracks.Town,
@@ -116,7 +116,7 @@ public static class AudioHelper
     {
         if (_audioManager == null) return;
         
-        string musicTrack = eventType.ToLower() switch
+        string? musicTrack = eventType.ToLower() switch
         {
             "festival" => MusicTracks.Festival,
             "wedding" => MusicTracks.Wedding,

@@ -13,8 +13,8 @@ public class SettingsMenu
 {
     private AudioManager _audioManager;
     private Game1 _game;
-    private SpriteFont _font;
-    private Texture2D _pixel;
+    private SpriteFont _font = null!;
+    private Texture2D _pixel = null!;
     
     public bool IsVisible { get; set; }
     

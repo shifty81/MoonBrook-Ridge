@@ -317,7 +317,7 @@ public class GameplayState : GameState
         {
             // Find target direction
             var enemies = _combatSystem.GetActiveEnemies();
-            Enemy nearestEnemy = null;
+            Enemy? nearestEnemy = null;
             float nearestDistance = float.MaxValue;
             
             foreach (var enemy in enemies)
@@ -439,7 +439,7 @@ public class GameplayState : GameState
         // Hook up marriage proposal menu events
         _marriageProposalMenu.OnProposalDecision += (npc, accepted) =>
         {
-            if (accepted)
+            if (accepted && npc != null)
             {
                 // Schedule wedding ceremony (happens immediately for now)
                 _marriageSystem.MarryNPC(npc, _timeSystem.Day, (int)_timeSystem.CurrentSeason, _timeSystem.Year);
@@ -1618,7 +1618,7 @@ public class GameplayState : GameState
         // Check if a new event has been triggered and show notification
         if (_eventSystem.HasActiveEvent && _eventSystem.ActiveEvent != _lastShownEvent)
         {
-            _eventNotification.Show(_eventSystem.ActiveEvent);
+            _eventNotification.Show(_eventSystem.ActiveEvent!);
             _lastShownEvent = _eventSystem.ActiveEvent;
         }
         
@@ -1856,7 +1856,7 @@ public class GameplayState : GameState
             case Pickaxe:
                 // Mining XP - check what was mined
                 Vector2 gridPos = position / GameConstants.TILE_SIZE;
-                Tile tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
+                Tile? tile = _worldMap.GetTile((int)gridPos.X, (int)gridPos.Y);
                 if (tile != null && tile.Type == TileType.Rock)
                 {
                     _skillProgressionSystem.OnResourceMined("stone");
@@ -2108,7 +2108,7 @@ public class GameplayState : GameState
                     {
                         // Calculate direction to nearest enemy or facing direction
                         Vector2 direction = Vector2.Zero;
-                        Enemy nearestEnemy = null;
+                        Enemy? nearestEnemy = null;
                         float nearestDistance = float.MaxValue;
                         
                         foreach (var enemy in enemies)
@@ -2172,7 +2172,7 @@ public class GameplayState : GameState
                     else if (weapon.Type == WeaponType.Melee)
                     {
                         // Find nearest enemy in melee range
-                        Enemy nearestEnemy = null;
+                        Enemy? nearestEnemy = null;
                         float nearestDistance = float.MaxValue;
                         
                         foreach (var enemy in enemies)
@@ -2200,7 +2200,7 @@ public class GameplayState : GameState
                     {
                         // Calculate direction similar to ranged weapons
                         Vector2 direction = Vector2.Zero;
-                        Enemy nearestEnemy = null;
+                        Enemy? nearestEnemy = null;
                         float nearestDistance = float.MaxValue;
                         
                         foreach (var enemy in enemies)

@@ -252,7 +252,7 @@ public class FurnitureMenu
                 Color textColor = i == _selectedIndex ? Color.Yellow : Color.White;
                 
                 // Draw selection highlight
-                if (i == _selectedIndex)
+                if (i == _selectedIndex && _pixel != null)
                 {
                     spriteBatch.Draw(_pixel, new Rectangle(menuX + PADDING, itemY, MENU_WIDTH - PADDING * 2, ITEM_HEIGHT - 5), Color.Yellow * 0.3f);
                 }
