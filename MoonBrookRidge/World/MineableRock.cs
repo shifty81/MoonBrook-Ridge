@@ -1,5 +1,4 @@
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Items;
 using MoonBrookRidge.Core.Systems;

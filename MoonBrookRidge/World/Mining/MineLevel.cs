@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Tiles;
 using MoonBrookRidge.Core.Systems;
 using MoonBrookRidge.Items.Inventory;

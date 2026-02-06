@@ -1,6 +1,5 @@
 using System;
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 
 namespace MoonBrookRidge.Core.Systems;
 

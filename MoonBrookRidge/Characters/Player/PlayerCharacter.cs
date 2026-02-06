@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Core.Components;
 using MoonBrookRidge.Core.Systems;
 
