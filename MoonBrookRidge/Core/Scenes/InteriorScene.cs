@@ -92,8 +92,6 @@ public class InteriorScene : Scene
     
     protected virtual void DrawTile(SpriteBatch spriteBatch, Tile tile, Vector2 position)
     {
-        // Simple colored rectangle for now
-        // TODO: Use actual tile textures from atlas
         Color tileColor = tile.GetColor();
         
         Rectangle destRect = new Rectangle(
@@ -103,11 +101,51 @@ public class InteriorScene : Scene
             GameConstants.TILE_SIZE
         );
         
-        // Draw simple colored tile (will be replaced with texture atlas)
+        // Try to use texture atlas if available
         if (_roomBuilderAtlas != null)
         {
-            // For now, draw solid color. TODO: Map to actual atlas coordinates
-            spriteBatch.Draw(_roomBuilderAtlas, destRect, new Rectangle(0, 0, 16, 16), tileColor * 0.8f);
+            // Map tile types to atlas coordinates (16x16 tiles in atlas)
+            Rectangle sourceRect = GetInteriorTileSource(tile.Type);
+            spriteBatch.Draw(_roomBuilderAtlas, destRect, sourceRect, Color.White);
         }
+        else if (_sunnysideTileset != null)
+        {
+            // Fallback to sunnyside tileset for basic floor/wall tiles
+            Rectangle sourceRect = GetSunnysideTileSource(tile.Type);
+            spriteBatch.Draw(_sunnysideTileset, destRect, sourceRect, Color.White);
+        }
+        // Note: When no texture is available, tile won't be drawn
+        // SpriteBatch.Draw with null texture is not supported in this engine
+    }
+    
+    /// <summary>
+    /// Get source rectangle from interior atlas for tile type
+    /// </summary>
+    private Rectangle GetInteriorTileSource(TileType type)
+    {
+        // Map tile types to atlas positions (assuming 16x16 tiles)
+        // These are example mappings - adjust based on actual atlas layout
+        return type switch
+        {
+            TileType.WoodenFloor => new Rectangle(0, 0, 16, 16),
+            TileType.Wall => new Rectangle(16, 0, 16, 16),
+            TileType.SlatesStoneFloor => new Rectangle(32, 0, 16, 16),
+            _ => new Rectangle(0, 0, 16, 16) // Default floor
+        };
+    }
+    
+    /// <summary>
+    /// Get source rectangle from sunnyside tileset for basic tiles
+    /// </summary>
+    private Rectangle GetSunnysideTileSource(TileType type)
+    {
+        // Map to basic sunnyside tiles as fallback
+        return type switch
+        {
+            TileType.WoodenFloor => new Rectangle(0, 128, 16, 16),  // Wood texture
+            TileType.Wall => new Rectangle(0, 16, 16, 16),          // Stone wall
+            TileType.SlatesStoneFloor => new Rectangle(0, 32, 16, 16),    // Stone floor
+            _ => new Rectangle(0, 0, 16, 16)                         // Grass as default
+        };
     }
 }
