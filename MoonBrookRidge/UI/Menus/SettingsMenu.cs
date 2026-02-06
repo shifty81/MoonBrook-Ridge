@@ -1,7 +1,5 @@
 using System;
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Core.Systems;
 
 namespace MoonBrookRidge.UI.Menus;

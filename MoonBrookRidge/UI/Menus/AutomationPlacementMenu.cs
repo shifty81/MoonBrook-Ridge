@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Mining;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.Core.Systems;

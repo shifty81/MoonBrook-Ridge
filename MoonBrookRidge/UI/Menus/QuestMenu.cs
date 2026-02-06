@@ -1,6 +1,4 @@
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Quests;
 using System.Collections.Generic;
 

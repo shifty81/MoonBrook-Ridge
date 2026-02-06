@@ -1,5 +1,4 @@
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Characters.NPCs;
 
 namespace MoonBrookRidge.UI.Dialogue;

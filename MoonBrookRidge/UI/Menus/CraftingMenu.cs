@@ -1,6 +1,4 @@
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.Items.Crafting;
 using MoonBrookRidge.Items.Inventory;
 using System.Collections.Generic;

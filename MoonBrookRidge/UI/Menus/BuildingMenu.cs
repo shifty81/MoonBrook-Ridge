@@ -1,6 +1,4 @@
 using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
-using MoonBrookRidge.Engine.MonoGameCompat;
 using MoonBrookRidge.World.Buildings;
 using MoonBrookRidge.Items.Inventory;
 using MoonBrookRidge.World.Tiles;

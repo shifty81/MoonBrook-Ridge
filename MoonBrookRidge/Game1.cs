@@ -149,7 +149,7 @@ public class Game1 : Game
     public StateManager StateManager => _stateManager;
     public AudioManager AudioManager => _audioManager;
     public AchievementSystem AchievementSystem => _achievementSystem;
-    public GraphicsDeviceManager Graphics => _graphics;
+    public new GraphicsDeviceManager Graphics => _graphics;
     public GameSettings Settings => _settings;
     public float UIScale => _settings.UIScale;
 }

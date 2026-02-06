@@ -341,8 +341,18 @@ public class SpriteBatch : IDisposable
         }
         else
         {
-            // Use identity matrices if no camera
-            _shader.SetUniform("uProjection", Matrix4x4.Identity);
+            // Create a default orthographic projection from the GL viewport
+            // so that pixel coordinates map correctly to screen space
+            int[] viewport = new int[4];
+            _gl.GetInteger(GetPName.Viewport, viewport);
+            int vpWidth = viewport[2];
+            int vpHeight = viewport[3];
+            if (vpWidth <= 0) vpWidth = 1280;
+            if (vpHeight <= 0) vpHeight = 720;
+
+            var projection = Matrix4x4.CreateOrthographicOffCenter(
+                0, vpWidth, vpHeight, 0, -1, 1);
+            _shader.SetUniform("uProjection", projection);
             _shader.SetUniform("uView", Matrix4x4.Identity);
         }
         
