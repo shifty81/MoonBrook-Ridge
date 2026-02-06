@@ -332,18 +332,8 @@ public class DungeonScene : Scene
         // Map tile types to dungeon-appropriate textures
         Rectangle? sourceRect = GetDungeonTileSource(tile.Type);
         
-        if (sourceRect.HasValue)
-        {
-            // Draw with texture if available
-            // Note: Would need actual dungeon texture atlas loaded
-            System.Diagnostics.Debug.WriteLine($"[DungeonScene] Drawing tile {tile.Type} with texture at {position}");
-        }
-        else
-        {
-            // Fallback to colored rectangle rendering
-            // Create visual representation using tile color
-            System.Diagnostics.Debug.WriteLine($"[DungeonScene] Drawing tile {tile.Type} with color fallback at {position}");
-        }
+        // Note: Texture drawing would happen here when dungeon texture atlas is loaded
+        // For now, tiles will use fallback color rendering from base Scene class
     }
     
     /// <summary>

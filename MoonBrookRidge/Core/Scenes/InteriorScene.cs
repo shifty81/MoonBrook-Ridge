@@ -114,13 +114,8 @@ public class InteriorScene : Scene
             Rectangle sourceRect = GetSunnysideTileSource(tile.Type);
             spriteBatch.Draw(_sunnysideTileset, destRect, sourceRect, Color.White);
         }
-        else
-        {
-            // Final fallback: draw solid colored rectangle
-            // Note: SpriteBatch.Draw with null texture is not supported, so we skip drawing
-            // In a real scenario, we'd create a 1x1 pixel texture for this
-            System.Diagnostics.Debug.WriteLine($"[InteriorScene] No texture available for tile {tile.Type} at {position}");
-        }
+        // Note: When no texture is available, tile won't be drawn
+        // SpriteBatch.Draw with null texture is not supported in this engine
     }
     
     /// <summary>

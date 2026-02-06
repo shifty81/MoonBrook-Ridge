@@ -600,7 +600,6 @@ public class TunnelBoringMachine
         // Draw machine body using color representation (will be replaced with sprite)
         Color machineColor = IsBoring ? Color.Orange : Color.Gray;
         // Note: Actual sprite drawing would require texture loaded in ContentManager
-        System.Diagnostics.Debug.WriteLine($"[TunnelBoringMachine] Drawing at {Position} - Status: {(IsBoring ? "Boring" : "Idle")}");
         
         // Draw progress bar if boring
         if (IsBoring)
@@ -626,7 +625,6 @@ public class TunnelBoringMachine
             );
             
             // Note: Would draw these rectangles with appropriate textures/colors
-            System.Diagnostics.Debug.WriteLine($"[TunnelBoringMachine] Progress: {BoringProgress:P0}");
         }
     }
 }
