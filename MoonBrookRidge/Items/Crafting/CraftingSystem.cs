@@ -11,7 +11,7 @@ public class CraftingSystem
     private Dictionary<string, Recipe> _recipes;
     
     // Event fired when an item is successfully crafted (Phase 10)
-    public event System.Action<string> OnItemCrafted;
+    public event System.Action<string>? OnItemCrafted;
     
     public CraftingSystem()
     {
@@ -203,7 +203,7 @@ public class Recipe
 {
     public string Name { get; set; }
     public Dictionary<string, int> Ingredients { get; private set; }
-    public string OutputName { get; private set; }
+    public string OutputName { get; private set; } = string.Empty;
     public int OutputQuantity { get; private set; }
     
     public Recipe(string name)

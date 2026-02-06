@@ -18,7 +18,7 @@ public class NPCCharacter
     private Texture2D _sprite;
     private Vector2 _velocity;
     private const float WALK_SPEED = 60f;
-    private static Texture2D _pixelTexture;
+    private static Texture2D _pixelTexture = null!;
     
     // NPC stats and preferences
     private List<string> _lovedGifts;
@@ -147,7 +147,7 @@ public class NPCCharacter
         return _friendshipLevel / 250;
     }
     
-    public DialogueTree GetDialogue(string dialogueKey)
+    public DialogueTree? GetDialogue(string dialogueKey)
     {
         if (_dialogueTrees.ContainsKey(dialogueKey))
         {
@@ -161,8 +161,8 @@ public class NPCCharacter
         _dialogueTrees[key] = tree;
     }
     
-    public void SetGiftPreferences(List<string> loved = null, List<string> liked = null, 
-                                   List<string> disliked = null, List<string> hated = null)
+    public void SetGiftPreferences(List<string>? loved = null, List<string>? liked = null, 
+                                   List<string>? disliked = null, List<string>? hated = null)
     {
         if (loved != null) _lovedGifts = loved;
         if (liked != null) _likedGifts = liked;
@@ -183,7 +183,7 @@ public class NPCCharacter
 public class NPCSchedule
 {
     private Dictionary<float, ScheduleLocation> _schedule;
-    private ScheduleLocation _currentLocation;
+    private ScheduleLocation? _currentLocation;
     
     public NPCSchedule()
     {
@@ -196,14 +196,14 @@ public class NPCSchedule
         _schedule[time] = location;
     }
     
-    public ScheduleLocation Update(TimeSystem timeSystem)
+    public ScheduleLocation? Update(TimeSystem timeSystem)
     {
         // Determine current location based on time of day
         float currentTime = timeSystem.TimeOfDay;
         
         // Find the most recent schedule entry before current time
         float closestTime = -1f;
-        ScheduleLocation targetLocation = null;
+        ScheduleLocation? targetLocation = null;
         
         foreach (var entry in _schedule)
         {
@@ -222,7 +222,7 @@ public class NPCSchedule
         return _currentLocation;
     }
     
-    public ScheduleLocation CurrentLocation => _currentLocation;
+    public ScheduleLocation? CurrentLocation => _currentLocation;
 }
 
 public class ScheduleLocation
