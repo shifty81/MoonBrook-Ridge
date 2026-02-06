@@ -18,7 +18,7 @@ public class SkillsMenu
     private SkillCategory _selectedCategory;
     private int _selectedSkillIndex;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     
     private const int MENU_WIDTH = 750;
     private const int MENU_HEIGHT = 600;

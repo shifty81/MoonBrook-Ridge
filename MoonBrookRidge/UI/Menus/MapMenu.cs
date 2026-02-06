@@ -22,7 +22,7 @@ public class MapMenu : TabbedMenu
     private List<Waypoint> _unlockedWaypoints;
     private int _selectedWaypointIndex;
     private bool _confirmationMode;
-    private Waypoint _selectedWaypoint;
+    private Waypoint? _selectedWaypoint;
     private string _statusMessage;
     private float _messageTimer;
     
@@ -36,7 +36,7 @@ public class MapMenu : TabbedMenu
     private const float MESSAGE_DURATION = 2f;
     
     // Event raised when fast travel occurs
-    public event Action<Vector2, int> OnFastTravel; // destination, cost
+    public event Action<Vector2, int>? OnFastTravel; // destination, cost
     
     public MapMenu(WaypointSystem waypointSystem, TimeSystem timeSystem, PlayerCharacter player, Minimap minimap)
     {

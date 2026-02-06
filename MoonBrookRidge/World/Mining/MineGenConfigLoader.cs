@@ -14,7 +14,7 @@ public static class MineGenConfigLoader
     /// </summary>
     /// <param name="filePath">Path to the JSON configuration file</param>
     /// <returns>MineGenConfig object or null if loading fails</returns>
-    public static MineGenConfig LoadMineConfig(string filePath)
+    public static MineGenConfig? LoadMineConfig(string filePath)
     {
         try
         {

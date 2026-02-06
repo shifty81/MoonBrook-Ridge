@@ -15,11 +15,11 @@ public class GiftMenu
 {
     private bool _isActive;
     private InventorySystem _inventory;
-    private NPCCharacter _targetNPC;
+    private NPCCharacter? _targetNPC;
     private List<InventorySlot> _giftableItems;
     private int _selectedItemIndex;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     private string _statusMessage;
     private float _messageTimer;
     
@@ -59,7 +59,7 @@ public class GiftMenu
         _targetNPC = null;
     }
     
-    public void Toggle(NPCCharacter targetNPC = null)
+    public void Toggle(NPCCharacter? targetNPC = null)
     {
         if (_isActive)
             Hide();
@@ -303,5 +303,5 @@ public class GiftMenu
     }
     
     public bool IsActive => _isActive;
-    public NPCCharacter TargetNPC => _targetNPC;
+    public NPCCharacter? TargetNPC => _targetNPC;
 }

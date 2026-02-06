@@ -16,7 +16,7 @@ public class PetMenu
     private List<Pet> _ownedPets;
     private int _selectedPetIndex;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     
     private const int MENU_WIDTH = 700;
     private const int MENU_HEIGHT = 550;

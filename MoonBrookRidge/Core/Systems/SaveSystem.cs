@@ -49,7 +49,7 @@ public class SaveSystem
     /// <summary>
     /// Loads a saved game
     /// </summary>
-    public GameSaveData LoadGame(string saveName)
+    public GameSaveData? LoadGame(string saveName)
     {
         try
         {
@@ -158,27 +158,27 @@ public class SaveSystem
 /// </summary>
 public class GameSaveData
 {
-    public string SaveName { get; set; }
+    public string SaveName { get; set; } = string.Empty;
     public DateTime SaveTime { get; set; }
     public int PlayTimeSeconds { get; set; }
     
     // Player data
-    public PlayerSaveData Player { get; set; }
+    public PlayerSaveData Player { get; set; } = new();
     
     // Time system data
-    public TimeSaveData Time { get; set; }
+    public TimeSaveData Time { get; set; } = new();
     
     // Inventory data
-    public InventorySaveData Inventory { get; set; }
+    public InventorySaveData Inventory { get; set; } = new();
     
     // World data (simplified - just crops for now)
-    public WorldSaveData World { get; set; }
+    public WorldSaveData World { get; set; } = new();
     
     // Phase 6 data
-    public MagicSaveData Magic { get; set; }
-    public SkillsSaveData Skills { get; set; }
-    public PetsSaveData Pets { get; set; }
-    public DungeonProgressData DungeonProgress { get; set; }
+    public MagicSaveData Magic { get; set; } = new();
+    public SkillsSaveData Skills { get; set; } = new();
+    public PetsSaveData Pets { get; set; } = new();
+    public DungeonProgressData DungeonProgress { get; set; } = new();
     
     public GameSaveData()
     {
@@ -210,26 +210,26 @@ public class TimeSaveData
 
 public class InventorySaveData
 {
-    public InventorySlotData[] Slots { get; set; }
+    public InventorySlotData[] Slots { get; set; } = Array.Empty<InventorySlotData>();
 }
 
 public class InventorySlotData
 {
-    public string ItemName { get; set; }
-    public string ItemType { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public string ItemType { get; set; } = string.Empty;
     public int Quantity { get; set; }
 }
 
 public class WorldSaveData
 {
-    public CropSaveData[] Crops { get; set; }
+    public CropSaveData[] Crops { get; set; } = Array.Empty<CropSaveData>();
 }
 
 public class CropSaveData
 {
     public int GridX { get; set; }
     public int GridY { get; set; }
-    public string CropType { get; set; }
+    public string CropType { get; set; } = string.Empty;
     public int GrowthStage { get; set; }
     public int MaxGrowthStage { get; set; }
     public float HoursGrown { get; set; }
@@ -243,7 +243,7 @@ public class MagicSaveData
 {
     public float CurrentMana { get; set; }
     public float MaxMana { get; set; }
-    public string[] LearnedSpellIds { get; set; }
+    public string[] LearnedSpellIds { get; set; } = Array.Empty<string>();
 }
 
 /// <summary>
@@ -252,15 +252,15 @@ public class MagicSaveData
 public class SkillsSaveData
 {
     public int AvailableSkillPoints { get; set; }
-    public SkillCategorySaveData[] Categories { get; set; }
+    public SkillCategorySaveData[] Categories { get; set; } = Array.Empty<SkillCategorySaveData>();
 }
 
 public class SkillCategorySaveData
 {
-    public string CategoryName { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
     public int Level { get; set; }
     public float Experience { get; set; }
-    public string[] UnlockedSkillIds { get; set; }
+    public string[] UnlockedSkillIds { get; set; } = Array.Empty<string>();
 }
 
 /// <summary>
@@ -268,14 +268,14 @@ public class SkillCategorySaveData
 /// </summary>
 public class PetsSaveData
 {
-    public PetSaveData[] OwnedPets { get; set; }
-    public string ActivePetId { get; set; }
+    public PetSaveData[] OwnedPets { get; set; } = Array.Empty<PetSaveData>();
+    public string ActivePetId { get; set; } = string.Empty;
 }
 
 public class PetSaveData
 {
-    public string DefinitionId { get; set; }
-    public string Name { get; set; }
+    public string DefinitionId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
     public int Level { get; set; }
     public float Experience { get; set; }
     public float Health { get; set; }
@@ -291,15 +291,15 @@ public class PetSaveData
 /// </summary>
 public class DungeonProgressData
 {
-    public DungeonCompletionData[] CompletedDungeons { get; set; }
+    public DungeonCompletionData[] CompletedDungeons { get; set; } = Array.Empty<DungeonCompletionData>();
     public bool IsInDungeon { get; set; }
-    public string CurrentDungeonType { get; set; }
+    public string CurrentDungeonType { get; set; } = string.Empty;
     public int CurrentFloor { get; set; }
 }
 
 public class DungeonCompletionData
 {
-    public string DungeonType { get; set; }
+    public string DungeonType { get; set; } = string.Empty;
     public int HighestFloorReached { get; set; }
     public bool Completed { get; set; }
     public DateTime FirstCompletionTime { get; set; }

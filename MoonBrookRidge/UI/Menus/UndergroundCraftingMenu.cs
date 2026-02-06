@@ -19,7 +19,7 @@ public class UndergroundCraftingMenu
     private UndergroundCraftingSystem _craftingSystem;
     private InventorySystem _inventory;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     
     // UI State
     private int _selectedTierIndex;

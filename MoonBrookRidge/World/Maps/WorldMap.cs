@@ -425,7 +425,7 @@ public class WorldMap
         }
     }
     
-    private Texture2D GetTileTexture(TileType type)
+    private Texture2D? GetTileTexture(TileType type)
     {
         // Try to get texture from dictionary
         if (_tileTextures.TryGetValue(type, out Texture2D texture))
@@ -452,7 +452,7 @@ public class WorldMap
         };
     }
     
-    public Tile GetTile(int x, int y)
+    public Tile? GetTile(int x, int y)
     {
         if (x >= 0 && x < _width && y >= 0 && y < _height)
         {
@@ -526,7 +526,7 @@ public class WorldMap
     /// <summary>
     /// Get world object at a specific position within a radius
     /// </summary>
-    public WorldObject GetWorldObjectAt(Vector2 position, float radius = 16f)
+    public WorldObject? GetWorldObjectAt(Vector2 position, float radius = 16f)
     {
         foreach (var obj in _worldObjects)
         {

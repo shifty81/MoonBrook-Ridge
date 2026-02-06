@@ -13,7 +13,7 @@ public class AudioManager
     private Dictionary<string, Song> _music;
     private Dictionary<string, SoundEffectInstance> _loopingSounds;
     
-    private string _currentMusicTrack;
+    private string? _currentMusicTrack;
     private float _musicVolume;
     private float _sfxVolume;
     private bool _isMusicEnabled;

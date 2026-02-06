@@ -21,11 +21,11 @@ public class FastTravelMenu
     private List<Waypoint> _unlockedWaypoints;
     private int _selectedIndex;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     private string _statusMessage;
     private float _messageTimer;
     private bool _confirmationMode;
-    private Waypoint _selectedWaypoint;
+    private Waypoint? _selectedWaypoint;
     
     // Waypoint icon sprites (optional - falls back to text if null)
     private Dictionary<WaypointType, Texture2D> _waypointIcons;
@@ -38,7 +38,7 @@ public class FastTravelMenu
     private const int ICON_SIZE = 32; // Size for sprite icons
     
     // Event raised when fast travel occurs
-    public event Action<Vector2, int> OnFastTravel; // destination, cost
+    public event Action<Vector2, int>? OnFastTravel; // destination, cost
     
     public FastTravelMenu(WaypointSystem waypointSystem, TimeSystem timeSystem, PlayerCharacter player)
     {
@@ -307,7 +307,7 @@ public class FastTravelMenu
                 
                 // Draw waypoint icon (sprite if available, otherwise text)
                 Vector2 iconPos = new Vector2(itemRect.X + 10, itemRect.Y + 10);
-                if (_waypointIcons.TryGetValue(waypoint.Type, out Texture2D iconTexture))
+                if (_waypointIcons.TryGetValue(waypoint.Type, out Texture2D? iconTexture) && iconTexture != null)
                 {
                     // Draw sprite icon
                     Color iconColor = GetWaypointColor(waypoint.Type);
@@ -360,7 +360,7 @@ public class FastTravelMenu
     private void DrawConfirmation(SpriteBatch spriteBatch, SpriteFont font, int menuX, int menuY)
     {
         // Get travel cost
-        int cost = _waypointSystem.GetTravelCost(_selectedWaypoint.Id);
+        int cost = _waypointSystem.GetTravelCost(_selectedWaypoint?.Id ?? "");
         
         // Draw confirmation box
         int confirmWidth = 600;

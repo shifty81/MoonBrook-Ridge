@@ -15,11 +15,11 @@ public class MouseGameplayManager
     private Vector2 _dragStartPosition;
     
     // Events for gameplay mouse actions
-    public event Action<Vector2> OnLeftClick;
-    public event Action<Vector2> OnRightClick;
-    public event Action<Vector2> OnMiddleClick;
-    public event Action<Vector2, Vector2> OnDrag;
-    public event Action<Vector2> OnHover;
+    public event Action<Vector2>? OnLeftClick;
+    public event Action<Vector2>? OnRightClick;
+    public event Action<Vector2>? OnMiddleClick;
+    public event Action<Vector2, Vector2>? OnDrag;
+    public event Action<Vector2>? OnHover;
     
     // Click thresholds
     private const float DRAG_THRESHOLD = 5f;

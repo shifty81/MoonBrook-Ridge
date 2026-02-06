@@ -16,7 +16,7 @@ public class QuestMenu
     private int _selectedQuestIndex;
     private QuestTab _currentTab;
     private KeyboardState _previousKeyboardState;
-    private Texture2D _pixelTexture;
+    private Texture2D _pixelTexture = null!;
     
     private const int MENU_WIDTH = 800;
     private const int MENU_HEIGHT = 600;
