@@ -192,32 +192,154 @@ public class ModLoader
     
     private void LoadModItems(string path)
     {
-        // TODO: Implement item loading from mod
-        System.Diagnostics.Debug.WriteLine($"Loading items from: {path}");
+        try
+        {
+            string jsonContent = File.ReadAllText(path);
+            var modItems = JsonSerializer.Deserialize<List<ModItemDefinition>>(jsonContent);
+            
+            if (modItems != null)
+            {
+                foreach (var modItem in modItems)
+                {
+                    // Validate item definition
+                    if (string.IsNullOrEmpty(modItem.Name))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping mod item with no name");
+                        continue;
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Loaded mod item: {modItem.Name} (Type: {modItem.Type})");
+                    // Note: Actual item registration would happen here in a full implementation
+                    // This would require access to a global item registry
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading items from {path}: {ex.Message}");
+        }
     }
     
     private void LoadModRecipes(string path)
     {
-        // TODO: Implement recipe loading from mod
-        System.Diagnostics.Debug.WriteLine($"Loading recipes from: {path}");
+        try
+        {
+            string jsonContent = File.ReadAllText(path);
+            var modRecipes = JsonSerializer.Deserialize<List<ModRecipeDefinition>>(jsonContent);
+            
+            if (modRecipes != null)
+            {
+                foreach (var modRecipe in modRecipes)
+                {
+                    // Validate recipe definition
+                    if (string.IsNullOrEmpty(modRecipe.Name) || 
+                        modRecipe.Ingredients == null || 
+                        modRecipe.Ingredients.Count == 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping invalid mod recipe: {modRecipe.Name}");
+                        continue;
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Loaded mod recipe: {modRecipe.Name} -> {modRecipe.OutputName} x{modRecipe.OutputQuantity}");
+                    // Note: Actual recipe registration would happen here in a full implementation
+                    // This would require access to the CraftingSystem
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading recipes from {path}: {ex.Message}");
+        }
     }
     
     private void LoadModCrops(string path)
     {
-        // TODO: Implement crop loading from mod
-        System.Diagnostics.Debug.WriteLine($"Loading crops from: {path}");
+        try
+        {
+            string jsonContent = File.ReadAllText(path);
+            var modCrops = JsonSerializer.Deserialize<List<ModCropDefinition>>(jsonContent);
+            
+            if (modCrops != null)
+            {
+                foreach (var modCrop in modCrops)
+                {
+                    // Validate crop definition
+                    if (string.IsNullOrEmpty(modCrop.Name) || modCrop.GrowthDays <= 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping invalid mod crop: {modCrop.Name}");
+                        continue;
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Loaded mod crop: {modCrop.Name} (Growth: {modCrop.GrowthDays} days, Seasons: {string.Join(",", modCrop.Seasons)})");
+                    // Note: Actual crop registration would happen here in a full implementation
+                    // This would require access to crop and seed managers
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading crops from {path}: {ex.Message}");
+        }
     }
     
     private void LoadModNPCs(string path)
     {
-        // TODO: Implement NPC loading from mod
-        System.Diagnostics.Debug.WriteLine($"Loading NPCs from: {path}");
+        try
+        {
+            string jsonContent = File.ReadAllText(path);
+            var modNPCs = JsonSerializer.Deserialize<List<ModNPCDefinition>>(jsonContent);
+            
+            if (modNPCs != null)
+            {
+                foreach (var modNPC in modNPCs)
+                {
+                    // Validate NPC definition
+                    if (string.IsNullOrEmpty(modNPC.Name))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping mod NPC with no name");
+                        continue;
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Loaded mod NPC: {modNPC.Name} (Birthday: {modNPC.Birthday})");
+                    // Note: Actual NPC registration would happen here in a full implementation
+                    // This would require access to NPCManager
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading NPCs from {path}: {ex.Message}");
+        }
     }
     
     private void LoadModQuests(string path)
     {
-        // TODO: Implement quest loading from mod
-        System.Diagnostics.Debug.WriteLine($"Loading quests from: {path}");
+        try
+        {
+            string jsonContent = File.ReadAllText(path);
+            var modQuests = JsonSerializer.Deserialize<List<ModQuestDefinition>>(jsonContent);
+            
+            if (modQuests != null)
+            {
+                foreach (var modQuest in modQuests)
+                {
+                    // Validate quest definition
+                    if (string.IsNullOrEmpty(modQuest.Id) || string.IsNullOrEmpty(modQuest.Title))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Skipping invalid mod quest: {modQuest.Id}");
+                        continue;
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Loaded mod quest: {modQuest.Title} (ID: {modQuest.Id}, Type: {modQuest.Type})");
+                    // Note: Actual quest registration would happen here in a full implementation
+                    // This would require access to QuestSystem
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading quests from {path}: {ex.Message}");
+        }
     }
     
     /// <summary>
@@ -291,4 +413,70 @@ public class ModInfo
     public string Description { get; set; } = "";
     public bool IsEnabled { get; set; } = false;
     public string FolderPath { get; set; } = "";
+}
+
+/// <summary>
+/// Mod item definition from JSON
+/// </summary>
+public class ModItemDefinition
+{
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string Type { get; set; } = "Crafting";
+    public int MaxStackSize { get; set; } = 99;
+    public int SellPrice { get; set; } = 0;
+    public int BuyPrice { get; set; } = 0;
+}
+
+/// <summary>
+/// Mod recipe definition from JSON
+/// </summary>
+public class ModRecipeDefinition
+{
+    public string Name { get; set; } = "";
+    public Dictionary<string, int> Ingredients { get; set; } = new Dictionary<string, int>();
+    public string OutputName { get; set; } = "";
+    public int OutputQuantity { get; set; } = 1;
+}
+
+/// <summary>
+/// Mod crop definition from JSON
+/// </summary>
+public class ModCropDefinition
+{
+    public string Name { get; set; } = "";
+    public int GrowthDays { get; set; } = 7;
+    public List<string> Seasons { get; set; } = new List<string>();
+    public int SeedPrice { get; set; } = 50;
+    public int HarvestSellPrice { get; set; } = 100;
+    public bool Regrowable { get; set; } = false;
+    public int RegrowthDays { get; set; } = 0;
+}
+
+/// <summary>
+/// Mod NPC definition from JSON
+/// </summary>
+public class ModNPCDefinition
+{
+    public string Name { get; set; } = "";
+    public string Birthday { get; set; } = "Spring 1";
+    public List<string> LovedGifts { get; set; } = new List<string>();
+    public List<string> LikedGifts { get; set; } = new List<string>();
+    public List<string> DislikedGifts { get; set; } = new List<string>();
+    public List<string> HatedGifts { get; set; } = new List<string>();
+    public Dictionary<string, string> Dialogues { get; set; } = new Dictionary<string, string>();
+}
+
+/// <summary>
+/// Mod quest definition from JSON
+/// </summary>
+public class ModQuestDefinition
+{
+    public string Id { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string Type { get; set; } = "Task";
+    public Dictionary<string, int> Rewards { get; set; } = new Dictionary<string, int>();
+    public int GoldReward { get; set; } = 0;
+    public int ExperienceReward { get; set; } = 0;
 }
